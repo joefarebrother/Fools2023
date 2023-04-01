@@ -1,26 +1,6 @@
 #pylint: disable=redefined-outer-name
-# dump = open("MATHTEST.PRG.dump")
-# prog_offset = 0x2000
-# maxlen = 0
 
-# dump = open("memory-part.dump")
-# prog_offset = 0xF000
-# maxlen = 0
 
-dump = open("REPORT03.PRG.dump")
-prog_offset = 0x2000
-maxlen = 0x0360
-
-mem = []
-
-for line in dump:
-    addr, memline, chrs = line.split(" | ")
-    for b in memline.split():
-        b = int(b, 16)
-        mem.append(b)
-
-if maxlen:
-    mem = mem[:maxlen]
 
 crashes = ['14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'a0', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'ca', 'cc', 'e4',
            'e5', 'e6', 'e7', 'e8', 'e9', 'ea', 'eb', 'ec', 'ed', 'ee', 'ef', 'f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa', 'fb', 'fc', 'fd', 'fe', 'ff']
@@ -83,8 +63,6 @@ known_syscalls = {
     0x02: "in",
     0x03: "halt",
 }
-
-
 def op_len(op):
     return op_lens.get(op, 0)
 
@@ -112,44 +90,66 @@ def tohex(n, pad=2):
 def as_le(args):
     assert len(args) == 2, args
     return tohex(args[1]) + tohex(args[0])
+# dump = open("MATHTEST.PRG.dump")
+# prog_offset = 0x2000
+# maxlen = 0
 
+# dump = open("memory-part.dump")
+# prog_offset = 0xF000
+# maxlen = 0
 
-pc = 0
-while pc < len(mem):
-    op = mem[pc]
-    opl = op_len(op)
-    assert opl+pc <= len(mem)
-    args = []
-    for i in range(opl):
-        args.append(mem[pc+1+i])
+maxlen = 0x0360
+def disasm(fname="REPORT03.PRG.dump",prog_offset =0x2000):
+    dump = open(fname)
 
-    line = ""
-    line += tohex(prog_offset + pc, 4) + " | "
-    line += tohex(op)
-    for a in args:
-        line += " " + tohex(a)
+    mem = []
+    for line in dump:
+        addr, memline, chrs = line.split(" | ")
+        for b in memline.split():
+            b = int(b, 16)
+            mem.append(b)
 
-    line += " "*(16-len(line)) + "| "
+    if maxlen:
+        mem = mem[:maxlen]
 
-    if op in known_opcodes:
-        op_name = known_opcodes[op]
-        if "$XXXX" in op_name:
-            arg = as_le(args)
-            argi = int(arg, 16)
-            if argi in known_funcs:
-                op_name = op_name.replace("$XXXX", known_funcs[argi] + f"(${arg})")
-            else:
-                op_name = op_name.replace("XXXX", arg)
-        elif "$XX" in op_name:
-            assert len(args) == 1
-            arg = tohex(args[0])
-            argi = args[0]
-            op_name = op_name.replace("XX", arg)
-            if "int" in op_name:
-                op_name += f' ({known_syscalls.get(argi, "unknown")})'
-        line += op_name
-    elif op in crashes:
-        line += "[wait! that's illegal!]"
+    pc = 0
+    while pc < len(mem):
+        op = mem[pc]
+        opl = op_len(op)
+        assert opl+pc <= len(mem)
+        args = []
+        for i in range(opl):
+            args.append(mem[pc+1+i])
 
-    pc += 1 + opl
-    print(line)
+        line = ""
+        line += tohex(prog_offset + pc, 4) + " | "
+        line += tohex(op)
+        for a in args:
+            line += " " + tohex(a)
+
+        line += " "*(16-len(line)) + "| "
+
+        if op in known_opcodes:
+            op_name = known_opcodes[op]
+            if "$XXXX" in op_name:
+                arg = as_le(args)
+                argi = int(arg, 16)
+                if argi in known_funcs:
+                    op_name = op_name.replace("$XXXX", known_funcs[argi] + f"(${arg})")
+                else:
+                    op_name = op_name.replace("XXXX", arg)
+            elif "$XX" in op_name:
+                assert len(args) == 1
+                arg = tohex(args[0])
+                argi = args[0]
+                op_name = op_name.replace("XX", arg)
+                if "int" in op_name:
+                    op_name += f' ({known_syscalls.get(argi, "unknown")})'
+            line += op_name
+        elif op in crashes:
+            line += "[wait! that's illegal!]"
+
+        pc += 1 + opl
+        print(line)
+if __name__=="__main__":
+    disasm()
