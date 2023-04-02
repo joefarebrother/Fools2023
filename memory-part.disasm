@@ -1,0 +1,454 @@
+F000 | 09 00 FF | ld sp $FF00
+F003 | 10 F0 FF | ld R0 $FFF0
+F006 | 11 98 00 | ld R1 $0098
+F009 | 61       | 
+F00A | A8       | inc R0
+F00B | 11 21 F0 | ld R1 Breakpoint             ; ($F021)
+F00E | 71       | ld [R0] R1
+F00F | 12 3F F3 | ld R2 .str_0_F33F_nWelcome   ; ($F33F)
+F012 | 99 08 00 | call PrintStr                ; ($0008)
+F015 | 00       | BRK
+F016 | 12 F3 F7 | ld R2 .str_1_F7F3_Dry        ; ($F7F3)
+F019 | 99 08 00 | call PrintStr                ; ($0008)
+F01C | 06 03    | int $03                      ; (halt)
+.infloop_F01E:
+F01E | 98 1E F0 | jp .infloop_F01E             ; ($F01E)
+Breakpoint:
+F021 | A6       | push sp
+F022 | BC 3E FB | ld [.mem_R0] R0              ; ($FB3E)
+F025 | BD 40 FB | ld [.mem_R1] R1              ; ($FB40)
+F028 | BE 42 FB | ld [.mem_R2] R2              ; ($FB42)
+F02B | BF 44 FB | ld [.mem_R3] R3              ; ($FB44)
+F02E | 94       | pop R0
+F02F | BC 46 FB | ld [.mem_sp] R0              ; ($FB46)
+F032 | 0A       | 
+F033 | 50       | 
+F034 | E0 FF FF | add R0 $FFFF
+F037 | BC 48 FB | ld [$FB48] R0
+F03A | 11 0C 00 | ld R1 $000C
+F03D | 12 4A FB | ld R2 $FB4A
+F040 | B7 46 FB | ld R3 [.mem_sp]              ; ($FB46)
+F043 | 99 28 00 | call MemCpy                  ; ($0028)
+F046 | 12 A4 FA | ld R2 .str_2_FAA4_BREAK      ; ($FAA4)
+F049 | 99 08 00 | call PrintStr                ; ($0008)
+InteractLoop:
+F04C | 10 00 00 | ld R0 $0000
+F04F | B8 02 E0 | 
+F052 | 12 9A FA | ld R2 .str_3_FA9A_Ready      ; ($FA9A)
+F055 | 99 08 00 | call PrintStr                ; ($0008)
+F058 | 12 00 E0 | ld R2 $E000
+F05B | 13 08 00 | ld R3 $0008
+F05E | 99 30 00 | call ReadStr                 ; ($0030)
+F061 | A5 00 00 | cmp R3 $0000
+F064 | 9C DC F0 | jp eq .lab_1_F0DC            ; ($F0DC)
+F067 | 12 00 E0 | ld R2 $E000
+F06A | 99 38 00 | call StrTrim                 ; ($0038)
+F06D | B0 02 E0 | 
+F070 | A2 00 00 | cmp R0 $0000
+F073 | 9D D3 F0 | jp ne .lab_2_F0D3            ; ($F0D3)
+F076 | B4 00 E0 | ld R0 [$E000]
+F079 | A2 68 0A | cmp R0 $0A68
+F07C | 9C E5 F0 | jp eq .lab_3_F0E5            ; ($F0E5)
+F07F | A2 68 00 | cmp R0 $0068
+F082 | 9C E5 F0 | jp eq .lab_3_F0E5            ; ($F0E5)
+F085 | A2 72 00 | cmp R0 $0072
+F088 | 9C EE F0 | jp eq .lab_5_F0EE            ; ($F0EE)
+F08B | A2 72 0A | cmp R0 $0A72
+F08E | 9C EE F0 | jp eq .lab_5_F0EE            ; ($F0EE)
+F091 | A2 70 00 | cmp R0 $0070
+F094 | 9C ED F1 | jp eq .lab_7_F1ED            ; ($F1ED)
+F097 | A2 70 0A | cmp R0 $0A70
+F09A | 9C ED F1 | jp eq .lab_7_F1ED            ; ($F1ED)
+F09D | A2 78 00 | cmp R0 $0078
+F0A0 | 9C 09 F2 | jp eq .lab_9_F209            ; ($F209)
+F0A3 | A2 78 0A | cmp R0 $0A78
+F0A6 | 9C 09 F2 | jp eq .lab_9_F209            ; ($F209)
+F0A9 | A2 63 00 | cmp R0 $0063
+F0AC | 9C 4F F2 | jp eq .lab_11_F24F           ; ($F24F)
+F0AF | A2 63 0A | cmp R0 $0A63
+F0B2 | 9C 4F F2 | jp eq .lab_11_F24F           ; ($F24F)
+F0B5 | A2 55 43 | cmp R0 $4355
+F0B8 | 9C A3 F2 | jp eq .lab_13_F2A3           ; ($F2A3)
+F0BB | A2 6C 73 | cmp R0 $736C
+F0BE | 9C 62 F2 | jp eq .lab_14_F262           ; ($F262)
+F0C1 | A2 72 66 | cmp R0 $6672
+F0C4 | 9C AC F2 | jp eq .lab_15_F2AC           ; ($F2AC)
+F0C7 | A2 77 00 | cmp R0 $0077
+F0CA | 9C 5E F1 | jp eq .lab_16_F15E           ; ($F15E)
+F0CD | A2 77 0A | cmp R0 $0A77
+F0D0 | 9C 5E F1 | jp eq .lab_16_F15E           ; ($F15E)
+.lab_2_F0D3:
+F0D3 | 12 3D F7 | ld R2 .str_4_F73D_Bad        ; ($F73D)
+F0D6 | 99 08 00 | call PrintStr                ; ($0008)
+F0D9 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_1_F0DC:
+F0DC | 12 24 F7 | ld R2 .str_5_F724_Input      ; ($F724)
+F0DF | 99 08 00 | call PrintStr                ; ($0008)
+F0E2 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_3_F0E5:
+F0E5 | 12 AC F8 | ld R2 .str_6_F8AC_Available  ; ($F8AC)
+F0E8 | 99 08 00 | call PrintStr                ; ($0008)
+F0EB | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_5_F0EE:
+F0EE | 12 78 F7 | ld R2 .str_7_F778_Which      ; ($F778)
+F0F1 | 99 08 00 | call PrintStr                ; ($0008)
+F0F4 | 12 00 E0 | ld R2 $E000
+F0F7 | 13 08 00 | ld R3 $0008
+F0FA | 99 30 00 | call ReadStr                 ; ($0030)
+F0FD | 12 00 E0 | ld R2 $E000
+F100 | 99 20 00 | call ConvertHex              ; ($0020)
+F103 | A2 FF FF | cmp R0 $FFFF
+F106 | 9C 55 F1 | jp eq .lab_21_F155           ; ($F155)
+F109 | 90       | push R0
+F10A | 12 8A F7 | ld R2 .str_8_F78A_How        ; ($F78A)
+F10D | 99 08 00 | call PrintStr                ; ($0008)
+F110 | 12 00 E0 | ld R2 $E000
+F113 | 13 08 00 | ld R3 $0008
+F116 | 99 30 00 | call ReadStr                 ; ($0030)
+F119 | 12 00 E0 | ld R2 $E000
+F11C | 99 20 00 | call ConvertHex              ; ($0020)
+F11F | A2 FF FF | cmp R0 $FFFF
+F122 | 9C 55 F1 | jp eq .lab_21_F155           ; ($F155)
+F125 | A2 00 00 | cmp R0 $0000
+F128 | 9C 55 F1 | jp eq .lab_21_F155           ; ($F155)
+F12B | 2C       | ld R3 R0
+F12C | 96       | pop R2
+.lab_24_F12D:
+F12D | 92       | push R2
+F12E | 93       | push R3
+F12F | 11 08 00 | ld R1 $0008
+F132 | 2E       | ld R3 R2
+F133 | 12 56 FB | ld R2 $FB56
+F136 | 99 28 00 | call MemCpy                  ; ($0028)
+F139 | 97       | pop R3
+F13A | 96       | pop R2
+F13B | BE 5E FB | ld [$FB5E] R2
+F13E | 92       | push R2
+F13F | 93       | push R3
+F140 | 12 17 FB | ld R2 .str_9_FB17_F0         ; ($FB17)
+F143 | 99 08 00 | call PrintStr                ; ($0008)
+F146 | 97       | pop R3
+F147 | 96       | pop R2
+F148 | E2 08 00 | add R2 $0008
+F14B | AF       | dec R3
+F14C | A5 00 00 | cmp R3 $0000
+F14F | 9D 2D F1 | jp ne .lab_24_F12D           ; ($F12D)
+F152 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_21_F155:
+F155 | 12 60 F7 | ld R2 .str_10_F760_Invalid   ; ($F760)
+F158 | 99 08 00 | call PrintStr                ; ($0008)
+F15B | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_16_F15E:
+F15E | 12 78 F7 | ld R2 .str_7_F778_Which      ; ($F778)
+F161 | 99 08 00 | call PrintStr                ; ($0008)
+F164 | 12 00 E0 | ld R2 $E000
+F167 | 13 08 00 | ld R3 $0008
+F16A | 99 30 00 | call ReadStr                 ; ($0030)
+F16D | 12 00 E0 | ld R2 $E000
+F170 | 99 20 00 | call ConvertHex              ; ($0020)
+F173 | A2 FF FF | cmp R0 $FFFF
+F176 | 9C E4 F1 | jp eq .lab_27_F1E4           ; ($F1E4)
+F179 | BC 5E FB | ld [$FB5E] R0
+F17C | 12 38 F8 | ld R2 .str_12_F838_Enter     ; ($F838)
+F17F | 99 08 00 | call PrintStr                ; ($0008)
+.lab_34_F182:
+F182 | 13 02 E0 | ld R3 $E002
+F185 | 10 00 00 | ld R0 $0000
+F188 | 6C       | 
+F189 | AF       | dec R3
+F18A | 6C       | 
+F18B | AF       | dec R3
+.lab_29_F18C:
+F18C | 06 02    | int $02                      ; (in)
+F18E | 6C       | 
+F18F | 2B       | ld R2 R3
+F190 | A2 2E 00 | cmp R0 $002E
+F193 | 9C D3 F1 | jp eq .lab_28_F1D3           ; ($F1D3)
+F196 | A2 0A 00 | cmp R0 $000A
+F199 | 9C 8C F1 | jp eq .lab_29_F18C           ; ($F18C)
+F19C | 93       | push R3
+F19D | 99 20 00 | call ConvertHex              ; ($0020)
+F1A0 | 97       | pop R3
+F1A1 | A2 FF FF | cmp R0 $FFFF
+F1A4 | 9C 8C F1 | jp eq .lab_29_F18C           ; ($F18C)
+F1A7 | AB       | inc R3
+.lab_32_F1A8:
+F1A8 | 06 02    | int $02                      ; (in)
+F1AA | 6C       | 
+F1AB | 2B       | ld R2 R3
+F1AC | A2 2E 00 | cmp R0 $002E
+F1AF | 9C D3 F1 | jp eq .lab_28_F1D3           ; ($F1D3)
+F1B2 | A2 0A 00 | cmp R0 $000A
+F1B5 | 9C A8 F1 | jp eq .lab_32_F1A8           ; ($F1A8)
+F1B8 | 93       | push R3
+F1B9 | 99 20 00 | call ConvertHex              ; ($0020)
+F1BC | 97       | pop R3
+F1BD | A2 FF FF | cmp R0 $FFFF
+F1C0 | 9C A8 F1 | jp eq .lab_32_F1A8           ; ($F1A8)
+F1C3 | AF       | dec R3
+F1C4 | 2B       | ld R2 R3
+F1C5 | 99 20 00 | call ConvertHex              ; ($0020)
+F1C8 | B5 5E FB | ld R1 [$FB5E]
+F1CB | 64       | 
+F1CC | A9       | inc R1
+F1CD | BD 5E FB | ld [$FB5E] R1
+F1D0 | 98 82 F1 | jp .lab_34_F182              ; ($F182)
+.lab_28_F1D3:
+F1D3 | 06 02    | int $02                      ; (in)
+F1D5 | A2 0A 00 | cmp R0 $000A
+F1D8 | 9D D3 F1 | jp ne .lab_28_F1D3           ; ($F1D3)
+F1DB | 12 EA F7 | ld R2 .str_13_F7EA_Loaded    ; ($F7EA)
+F1DE | 99 08 00 | call PrintStr                ; ($0008)
+F1E1 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_27_F1E4:
+F1E4 | 12 60 F7 | ld R2 .str_10_F760_Invalid   ; ($F760)
+F1E7 | 99 08 00 | call PrintStr                ; ($0008)
+F1EA | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_7_F1ED:
+F1ED | 12 78 F7 | ld R2 .str_7_F778_Which      ; ($F778)
+F1F0 | 99 08 00 | call PrintStr                ; ($0008)
+F1F3 | 12 00 E0 | ld R2 $E000
+F1F6 | 13 08 00 | ld R3 $0008
+F1F9 | 99 30 00 | call ReadStr                 ; ($0030)
+F1FC | 12 00 E0 | ld R2 $E000
+F1FF | 99 20 00 | call ConvertHex              ; ($0020)
+F202 | 28       | ld R2 R0
+F203 | 99 08 00 | call PrintStr                ; ($0008)
+F206 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_9_F209:
+F209 | 12 78 F7 | ld R2 .str_7_F778_Which      ; ($F778)
+F20C | 99 08 00 | call PrintStr                ; ($0008)
+F20F | 12 00 E0 | ld R2 $E000
+F212 | 13 08 00 | ld R3 $0008
+F215 | 99 30 00 | call ReadStr                 ; ($0030)
+F218 | 12 00 E0 | ld R2 $E000
+F21B | 99 20 00 | call ConvertHex              ; ($0020)
+F21E | 90       | push R0
+F21F | BC 5E FB | ld [$FB5E] R0
+F222 | 12 9D F7 | ld R2 .str_17_F79D_Really    ; ($F79D)
+F225 | 99 08 00 | call PrintStr                ; ($0008)
+F228 | 12 00 E0 | ld R2 $E000
+F22B | 13 08 00 | ld R3 $0008
+F22E | 99 30 00 | call ReadStr                 ; ($0030)
+F231 | B0 00 E0 | 
+F234 | A2 59 00 | cmp R0 $0059
+F237 | 9C 4A F2 | jp eq .lab_39_F24A           ; ($F24A)
+F23A | A2 79 00 | cmp R0 $0079
+F23D | 9C 4A F2 | jp eq .lab_39_F24A           ; ($F24A)
+F240 | 12 C2 F7 | ld R2 .str_18_F7C2_Cancelled ; ($F7C2)
+F243 | 99 08 00 | call PrintStr                ; ($0008)
+F246 | 94       | pop R0
+F247 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_39_F24A:
+F24A | 97       | pop R3
+F24B | CC       | call R3
+F24C | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_11_F24F:
+F24F | 12 DD F7 | ld R2 .str_19_F7DD_Continuing ; ($F7DD)
+F252 | 99 08 00 | call PrintStr                ; ($0008)
+F255 | B4 3E FB | ld R0 [.mem_R0]              ; ($FB3E)
+F258 | B5 40 FB | ld R1 [.mem_R1]              ; ($FB40)
+F25B | B6 42 FB | ld R2 [.mem_R2]              ; ($FB42)
+F25E | B7 44 FB | ld R3 [.mem_R3]              ; ($FB44)
+F261 | 05       | ret
+.lab_14_F262:
+F262 | 12 65 FA | ld R2 .str_20_FA65_BLK       ; ($FA65)
+F265 | 99 08 00 | call PrintStr                ; ($0008)
+F268 | 10 00 00 | ld R0 $0000
+F26B | 11 00 E0 | ld R1 $E000
+F26E | 06 04    | int $04                      ; (unknown)
+F270 | 13 00 E0 | ld R3 $E000
+.lab_44_F273:
+F273 | 43       | 
+F274 | A2 00 00 | cmp R0 $0000
+F277 | 9C 97 F2 | jp eq .lab_43_F297           ; ($F297)
+F27A | 93       | push R3
+F27B | B8 56 FB | 
+F27E | AB       | inc R3
+F27F | 53       | 
+F280 | 93       | push R3
+F281 | BC 5E FB | ld [$FB5E] R0
+F284 | 12 8E FA | ld R2 .str_21_FA8E_F1V       ; ($FA8E)
+F287 | 99 08 00 | call PrintStr                ; ($0008)
+F28A | 97       | pop R3
+F28B | AB       | inc R3
+F28C | AB       | inc R3
+F28D | 2B       | ld R2 R3
+F28E | 99 08 00 | call PrintStr                ; ($0008)
+F291 | 10 0A 00 | ld R0 $000A
+F294 | 06 01    | int $01                      ; (out)
+F296 | 97       | pop R3
+.lab_43_F297:
+F297 | E3 10 00 | add R3 $0010
+F29A | A5 00 EF | cmp R3 $EF00
+F29D | 9D 73 F2 | jp ne .lab_44_F273           ; ($F273)
+F2A0 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_13_F2A3:
+F2A3 | 12 67 F8 | ld R2 .str_22_F867_Wow       ; ($F867)
+F2A6 | 99 08 00 | call PrintStr                ; ($0008)
+F2A9 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_15_F2AC:
+F2AC | 12 12 F8 | ld R2 .str_23_F812_Filename  ; ($F812)
+F2AF | 99 08 00 | call PrintStr                ; ($0008)
+F2B2 | 10 00 00 | ld R0 $0000
+F2B5 | 11 00 E0 | ld R1 $E000
+F2B8 | 06 04    | int $04                      ; (unknown)
+F2BA | 12 B0 EF | ld R2 $EFB0
+F2BD | 13 10 00 | ld R3 $0010
+F2C0 | 99 30 00 | call ReadStr                 ; ($0030)
+F2C3 | A5 00 00 | cmp R3 $0000
+F2C6 | 9C 2D F3 | jp eq .lab_47_F32D           ; ($F32D)
+F2C9 | 12 B0 EF | ld R2 $EFB0
+F2CC | 99 38 00 | call StrTrim                 ; ($0038)
+F2CF | 13 03 E0 | ld R3 $E003
+.lab_50_F2D2:
+F2D2 | 12 B0 EF | ld R2 $EFB0
+F2D5 | 93       | push R3
+F2D6 | 99 10 00 | call StrCmp                  ; ($0010)
+F2D9 | 97       | pop R3
+F2DA | A2 00 00 | cmp R0 $0000
+F2DD | 9C EC F2 | jp eq .lab_48_F2EC           ; ($F2EC)
+F2E0 | E3 10 00 | add R3 $0010
+F2E3 | A5 03 EF | cmp R3 $EF03
+F2E6 | 9C 24 F3 | jp eq .lab_49_F324           ; ($F324)
+F2E9 | 98 D2 F2 | jp .lab_50_F2D2              ; ($F2D2)
+.lab_48_F2EC:
+F2EC | AF       | dec R3
+F2ED | AF       | dec R3
+F2EE | AF       | dec R3
+F2EF | 43       | 
+F2F0 | AB       | inc R3
+F2F1 | 57       | 
+F2F2 | 91       | push R1
+F2F3 | 11 00 E0 | ld R1 $E000
+F2F6 | 06 04    | int $04                      ; (unknown)
+F2F8 | 12 78 F7 | ld R2 .str_7_F778_Which      ; ($F778)
+F2FB | 99 08 00 | call PrintStr                ; ($0008)
+F2FE | 12 E0 EF | ld R2 $EFE0
+F301 | 13 10 00 | ld R3 $0010
+F304 | 99 30 00 | call ReadStr                 ; ($0030)
+F307 | 12 E0 EF | ld R2 $EFE0
+F30A | 99 20 00 | call ConvertHex              ; ($0020)
+F30D | 95       | pop R1
+F30E | A2 FF FF | cmp R0 $FFFF
+F311 | 9C 36 F3 | jp eq .lab_51_F336           ; ($F336)
+F314 | 28       | ld R2 R0
+F315 | 13 00 E0 | ld R3 $E000
+F318 | 99 28 00 | call MemCpy                  ; ($0028)
+F31B | 12 EA F7 | ld R2 .str_13_F7EA_Loaded    ; ($F7EA)
+F31E | 99 08 00 | call PrintStr                ; ($0008)
+F321 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_49_F324:
+F324 | 12 1F F8 | ld R2 .str_26_F81F_File      ; ($F81F)
+F327 | 99 08 00 | call PrintStr                ; ($0008)
+F32A | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_47_F32D:
+F32D | 12 24 F7 | ld R2 .str_5_F724_Input      ; ($F724)
+F330 | 99 08 00 | call PrintStr                ; ($0008)
+F333 | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.lab_51_F336:
+F336 | 12 60 F7 | ld R2 .str_10_F760_Invalid   ; ($F760)
+F339 | 99 08 00 | call PrintStr                ; ($0008)
+F33C | 98 4C F0 | jp InteractLoop              ; ($F04C)
+.str_0_F33F_nWelcome:
+F33F | 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 57 65 6C 63 6F 6D 65 20 74 6F 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 4E 65 74 77 6F 72 6B 3A 20 54 65 73 74 20 53 65 72 76 65 72 20 31 20 28 47 52 4C 54 53 30 31 29 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 47 52 4C 54 53 30 31 20 69 73 20 69 6E 74 65 6E 64 65 64 20 66 6F 72 20 72 65 73 65 61 72 63 68 20 70 75 72 70 6F 73 65 73 20 6F 6E 6C 79 2C 20 74 6F 20 61 69 64 20 6F 75 72 20 65 6E 67 69 6E 65 65 72 73 0A 69 6E 20 6D 69 67 72 61 74 69 6E 67 20 74 68 65 69 72 20 73 6F 66 74 77 61 72 65 20 74 6F 20 74 68 65 20 6C 61 74 65 73 74 20 47 4C 56 4D 20 61 72 63 68 69 74 65 63 74 75 72 65 2E 0A 54 68 69 73 20 73 65 72 76 65 72 20 77 69 6C 6C 20 62 6F 6F 74 20 69 6E 74 6F 20 61 20 6D 61 63 68 69 6E 65 20 6C 61 6E 67 75 61 67 65 20 6D 6F 6E 69 74 6F 72 2C 20 70 72 6F 76 69 64 69 6E 67 0A 61 20 73 69 6D 70 6C 65 20 65 6E 76 69 72 6F 6E 6D 65 6E 74 20 66 6F 72 20 64 65 76 65 6C 6F 70 6D 65 6E 74 20 61 6E 64 20 74 65 73 74 69 6E 67 2E 0A 0A 4E 6F 74 65 20 74 68 61 74 20 74 68 69 73 20 73 65 72 76 65 72 20 69 73 20 70 75 62 6C 69 63 6C 79 20 61 63 63 65 73 73 69 62 6C 65 2C 20 61 6E 64 20 74 68 75 73 2C 20 73 68 6F 75 6C 64 20 6E 65 76 65 72 0A 62 65 20 75 73 65 64 20 74 6F 20 73 74 6F 72 65 20 61 6E 79 20 63 6F 6E 66 69 64 65 6E 74 69 61 6C 20 69 6E 66 6F 72 6D 61 74 69 6F 6E 2E 20 49 66 20 73 74 6F 72 61 67 65 20 6F 66 20 64 61 74 61 20 69 73 0A 6E 65 63 65 73 73 61 72 79 2C 20 63 6F 6E 73 69 64 65 72 20 75 74 69 6C 69 7A 69 6E 67 20 65 6E 63 72 79 70 74 69 6F 6E 2C 20 6F 72 20 75 73 69 6E 67 20 6F 75 72 20 64 65 64 69 63 61 74 65 64 0A 73 74 6F 72 61 67 65 20 73 65 72 76 65 72 73 20 47 52 4C 46 53 30 31 2E 0A 41 64 64 69 74 69 6F 6E 61 6C 6C 79 2C 20 63 6F 6E 73 69 64 65 72 20 75 73 69 6E 67 20 47 52 4C 54 53 30 32 20 66 6F 72 20 61 6E 79 20 73 65 72 69 6F 75 73 20 77 6F 72 6B 20 2D 20 69 74 27 73 0A 61 6E 20 61 75 74 68 65 6E 74 69 63 61 74 65 64 20 74 65 73 74 20 73 65 72 76 65 72 2C 20 77 68 69 63 68 20 73 68 6F 75 6C 64 20 62 65 20 66 61 72 20 6D 6F 72 65 20 73 65 63 75 72 65 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 52 75 6E 6E 69 6E 67 20 6D 61 63 68 69 6E 65 20 6C 61 6E 67 75 61 67 65 20 6D 6F 6E 69 74 6F 72 20 6E 6F 77 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 0A 00  |
+    ds "======================================================================\nWelcome to Glitch Research Laboratory Network: Test Server 1 (GRLTS01)\n======================================================================\nGRLTS01 is intended for research purposes only, to aid our engineers\nin migrating their software to the latest GLVM architecture.\nThis server will boot into a machine language monitor, providing\na simple environment for development and testing.\n\nNote that this server is publicly accessible, and thus, should never\nbe used to store any confidential information. If storage of data is\nnecessary, consider utilizing encryption, or using our dedicated\nstorage servers GRLFS01.\nAdditionally, consider using GRLTS02 for any serious work - it's\nan authenticated test server, which should be far more secure.\n======================================================================\nRunning machine language monitor now.\n======================================================================\n\n"
+.str_5_F724_Input:
+F724 | 21 20 49 6E 70 75 74 20 74 6F 6F 20 6C 6F 6E 67 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Input too long error.\n"
+.str_4_F73D_Bad:
+F73D | 21 20 42 61 64 20 63 6F 6D 6D 61 6E 64 20 65 72 72 6F 72 20 28 68 20 66 6F 72 20 68 65 6C 70 29 2E 0A 00  |
+    ds "! Bad command error (h for help).\n"
+.str_10_F760_Invalid:
+F760 | 21 20 49 6E 76 61 6C 69 64 20 69 6E 70 75 74 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Invalid input error.\n"
+.str_7_F778_Which:
+F778 | 3E 20 57 68 69 63 68 20 61 64 64 72 65 73 73 3F 20 00  |
+    ds "> Which address? "
+.str_8_F78A_How:
+F78A | 3E 20 48 6F 77 20 6D 61 6E 79 20 6C 69 6E 65 73 3F 20 00  |
+    ds "> How many lines? "
+.str_17_F79D_Really:
+F79D | 3E 20 52 65 61 6C 6C 79 20 65 78 65 63 20 61 74 20 F0 5E FB 3F 20 54 79 70 65 20 59 20 69 66 20 73 6F 3A 20 00  |
+    ds "> Really exec at \F0[3FFB]? Type Y if so: "
+.str_18_F7C2_Cancelled:
+F7C2 | 21 20 43 61 6E 63 65 6C 6C 65 64 20 61 63 74 69 6F 6E 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Cancelled action error.\n"
+.str_19_F7DD_Continuing:
+F7DD | 43 6F 6E 74 69 6E 75 69 6E 67 2E 0A 00  |
+    ds "Continuing.\n"
+.str_13_F7EA_Loaded:
+F7EA | 4C 6F 61 64 65 64 2E 0A 00  |
+    ds "Loaded.\n"
+.str_1_F7F3_Dry:
+F7F3 | 21 20 44 72 79 20 73 74 61 63 6B 2E 20 48 61 6C 74 69 6E 67 20 6D 61 63 68 69 6E 65 2E 0A 00  |
+    ds "! Dry stack. Halting machine.\n"
+.str_23_F812_Filename:
+F812 | 3E 20 46 69 6C 65 6E 61 6D 65 3F 20 00  |
+    ds "> Filename? "
+.str_26_F81F_File:
+F81F | 21 20 46 69 6C 65 20 6E 6F 74 20 66 6F 75 6E 64 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! File not found error.\n"
+.str_12_F838_Enter:
+F838 | 3E 20 45 6E 74 65 72 20 68 65 78 20 64 61 74 61 2E 20 45 6E 64 20 77 69 74 68 20 64 6F 74 20 22 2E 22 20 2B 20 6E 65 77 6C 69 6E 65 3A 0A 00  |
+    ds "> Enter hex data. End with dot "." + newline:\n"
+.str_22_F867_Wow:
+F867 | 57 6F 77 2C 20 75 6E 64 6F 63 75 6D 65 6E 74 65 64 20 6D 6F 6E 69 74 6F 72 20 63 6F 6D 6D 61 6E 64 21 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 53 65 63 72 65 74 F0 00 E0 78 F0 01 E0 43 6F 6D 6D 61 6E 64 7D 0A 00  |
+    ds "Wow, undocumented monitor command! FOOLS2023_{Secret\F0[78E0]x\F0[43E0]Command}\n"
+.str_6_F8AC_Available:
+F8AC | 41 76 61 69 6C 61 62 6C 65 20 63 6F 6D 6D 61 6E 64 73 3A 0A 72 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 68 65 78 0A 70 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 74 65 78 74 0A 77 20 20 20 3A 3A 20 77 72 69 74 65 20 68 65 78 20 64 61 74 61 20 74 6F 20 6D 65 6D 6F 72 79 0A 78 20 20 20 3A 3A 20 65 78 65 63 75 74 65 20 6D 65 6D 6F 72 79 0A 72 66 20 20 3A 3A 20 6C 6F 61 64 20 6D 65 6D 6F 72 79 20 66 72 6F 6D 20 66 69 6C 65 0A 6C 73 20 20 3A 3A 20 70 72 69 6E 74 20 66 69 6C 65 20 69 6E 64 65 78 0A 68 20 20 20 3A 3A 20 70 72 69 6E 74 20 74 68 69 73 20 68 65 6C 70 20 6D 65 73 73 61 67 65 0A 63 20 20 20 3A 3A 20 65 78 69 74 20 6D 6F 6E 69 74 6F 72 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 0A 50 6C 65 61 73 65 20 65 6E 74 65 72 20 68 65 78 20 6E 75 6D 62 65 72 73 20 77 68 65 6E 20 70 72 6F 6D 70 74 65 64 2E 0A 49 66 20 6E 65 63 65 73 73 61 72 79 20 66 6F 72 20 64 65 62 75 67 67 69 6E 67 2C 20 79 6F 75 20 63 61 6E 20 62 72 65 61 6B 20 69 6E 74 6F 20 6D 6F 6E 69 74 6F 72 0A 77 69 74 68 20 69 6E 73 74 72 75 63 74 69 6F 6E 20 42 52 4B 20 28 30 78 30 30 29 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 20 77 69 74 68 20 27 63 27 0A 4E 6F 74 65 3A 20 6D 65 6D 6F 72 79 20 72 65 67 69 6F 6E 20 45 30 30 30 2D 46 46 46 46 20 69 73 20 75 73 65 64 20 62 79 20 6D 6F 6E 69 74 6F 72 0A 00  |
+    ds "Available commands:\nr   :: print memory as hex\np   :: print memory as text\nw   :: write hex data to memory\nx   :: execute memory\nrf  :: load memory from file\nls  :: print file index\nh   :: print this help message\nc   :: exit monitor and continue\nPlease enter hex numbers when prompted.\nIf necessary for debugging, you can break into monitor\nwith instruction BRK (0x00) and continue with 'c'\nNote: memory region E000-FFFF is used by monitor\n"
+.str_20_FA65_BLK:
+FA65 | 42 4C 4B 20 20 53 49 5A 45 20 20 4E 41 4D 45 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 00  |
+    ds "BLK  SIZE  NAME\n=======================\n"
+.str_21_FA8E_F1V:
+FA8E | F1 56 FB 20 20 20 F0 5E FB 20 20 00  |
+    ds "\F1V\FB   \F0[20FB]  "
+.str_3_FA9A_Ready:
+FA9A | 52 65 61 64 79 2E 0A 3E 20 00  |
+    ds "Ready.\n> "
+.str_2_FAA4_BREAK:
+FAA4 | 2A 2A 2A 20 42 52 45 41 4B 20 49 4E 54 4F 20 4D 4F 4E 49 54 4F 52 20 41 54 20 24 F0 48 FB 20 2A 2A 2A 0A 52 30 3D 24 F0 3E FB 20 52 31 3D 24 F0 40 FB 20 52 32 3D 24 F0 42 FB 20 52 33 3D 24 F0 44 FB 0A 53 50 3D 24 F0 46 FB 20 5B F1 4A FB F1 4B FB F1 4C FB F1 4D FB F1 4E FB F1 4F FB F1 50 FB F1 51 FB F1 52 FB F1 53 FB F1 54 FB F1 55 FB 5D 0A 00  |
+    ds "*** BREAK INTO MONITOR AT $\F0[20FB] ***\nR0=$\F0[20FB] R1=$\F0[20FB] R2=$\F0[20FB] R3=$\F0[0AFB]\nSP=$\F0[20FB] [\F1J\FB\F1K\FB\F1L\FB\F1M\FB\F1N\FB\F1O\FB\F1P\FB\F1Q\FB\F1R\FB\F1S\FB\F1T\FB\F1U\FB]\n"
+.str_9_FB17_F0:
+FB17 | F0 5E FB 20 7C 20 F1 56 FB 20 F1 57 FB 20 F1 58 FB 20 F1 59 FB 20 F1 5A FB 20 F1 5B FB 20 F1 5C FB 20 F1 5D FB 0A 00  |
+    ds "\F0[20FB] | \F1V\FB \F1W\FB \F1X\FB \F1Y\FB \F1Z\FB \F1[\FB \F1\\\FB \F1]\FB\n"
+.mem_R0:
+FB3E | 00       | BRK
+FB3F | 00       | BRK
+.mem_R1:
+FB40 | 21       | ld R0 R1
+FB41 | F0       | [wait! that's illegal!]
+.mem_R2:
+FB42 | 23       | ld R0 R3
+FB43 | F7       | [wait! that's illegal!]
+.mem_R3:
+FB44 | 00       | BRK
+FB45 | 00       | BRK
+.mem_sp:
+FB46 | FE       | [wait! that's illegal!]
+FB47 | FE       | [wait! that's illegal!]
+FB48 | 15       | [wait! that's illegal!]
+FB49 | F0       | [wait! that's illegal!]
+FB4A | 16       | [wait! that's illegal!]
+FB4B | F0       | [wait! that's illegal!]
+FB4C | 00       | BRK
+FB4D | 00       | BRK
+FB4E | 00       | BRK
+FB4F | 00       | BRK
+FB50 | 00       | BRK
+FB51 | 00       | BRK
+FB52 | 00       | BRK
+FB53 | 00       | BRK
+FB54 | 00       | BRK
+FB55 | 00       | BRK
+FB56 | 00       | BRK
+FB57 | 00       | BRK
+FB58 | 00       | BRK
+FB59 | 00       | BRK
+FB5A | 00       | BRK
+FB5B | 00       | BRK
+FB5C | 00       | BRK
+FB5D | 00       | BRK
+FB5E | 50       | 
+FB5F | FB       | [wait! that's illegal!]

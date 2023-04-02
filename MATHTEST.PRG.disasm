@@ -1,0 +1,66 @@
+2000 | A7       | push pc
+2001 | 97       | pop R3
+2002 | A5 00 20 | cmp R3 $2000
+2005 | 9C 0F 20 | jp eq .lab_0_200F            ; ($200F)
+2008 | 2B       | ld R2 R3
+2009 | E2 7C 02 | add R2 $027C
+200C | 98 08 00 | jp PrintStr                  ; ($0008)
+.lab_0_200F
+200F | 12 5D 20 | ld R2 .str_1_205D_Glitch     ; ($205D)
+2012 | 99 08 00 | call PrintStr                ; ($0008)
+2015 | 12 A8 22 | ld R2 $22A8
+2018 | 13 07 00 | ld R3 $0007
+201B | 99 30 00 | call ReadStr                 ; ($0030)
+201E | B4 A8 22 | ld R0 [$22A8]
+2021 | A2 59 00 | cmp R0 $0059
+2024 | 9C 40 20 | jp eq .go                    ; ($2040)
+2027 | A2 79 00 | cmp R0 $0079
+202A | 9C 40 20 | jp eq .go                    ; ($2040)
+202D | A2 59 0A | cmp R0 $0A59
+2030 | 9C 40 20 | jp eq .go                    ; ($2040)
+2033 | A2 79 0A | cmp R0 $0A79
+2036 | 9C 40 20 | jp eq .go                    ; ($2040)
+2039 | 12 5A 22 | ld R2 .str_2_225A_Aborted    ; ($225A)
+203C | 99 08 00 | call PrintStr                ; ($0008)
+203F | 05       | ret
+.go
+2040 | 06 66    | int $66                      ; (unknown)
+.loop
+2042 | 06 64    | int $64                      ; (unknown)
+2044 | 99 09 30 | call $3009
+2047 | 06 65    | int $65                      ; (unknown)
+2049 | A2 02 00 | cmp R0 $0002
+204C | 9C 56 20 | jp eq .exit                  ; ($2056)
+204F | A2 01 00 | cmp R0 $0001
+2052 | 9C 42 20 | jp eq .loop                  ; ($2042)
+2055 | 05       | ret
+.exit
+2056 | 12 64 22 | ld R2 .str_3_2264_Test       ; ($2264)
+2059 | 99 08 00 | call PrintStr                ; ($0008)
+205C | 05       | ret
+.str_1_205D_Glitch
+205D | 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 4D 61 74 68 20 43 6F 70 72 6F 63 65 73 73 6F 72 0A 54 65 73 74 69 6E 67 20 53 6F 66 74 77 61 72 65 3A 20 46 75 6E 63 74 69 6F 6E 20 53 51 52 54 0A 0A 54 68 69 73 20 70 72 6F 67 72 61 6D 20 77 69 6C 6C 20 74 65 73 74 20 74 68 65 20 53 51 52 54 20 66 75 6E 63 74 69 6F 6E 20 6F 66 20 74 68 65 20 6D 61 74 68 20 6D 6F 64 75 6C 65 2E 0A 54 68 69 73 20 66 75 6E 63 74 69 6F 6E 2C 20 65 78 65 63 75 74 61 62 6C 65 20 77 69 74 68 20 43 41 4C 4C 20 30 78 33 30 30 39 2C 20 73 68 6F 75 6C 64 20 63 6F 6D 70 75 74 65 20 74 68 65 0A 69 6E 74 65 67 65 72 20 70 61 72 74 20 6F 66 20 73 71 72 74 28 52 30 29 20 61 6E 64 20 72 65 74 75 72 6E 20 69 74 20 69 6E 20 52 30 20 28 70 72 65 73 65 72 76 69 6E 67 20 52 31 2D 52 33 29 2E 0A 0A 4D 61 74 68 20 6D 6F 64 75 6C 65 20 72 65 73 75 6C 74 73 20 77 69 6C 6C 20 62 65 20 63 6F 6D 70 61 72 65 64 20 77 69 74 68 20 74 68 65 20 63 6F 70 72 6F 63 65 73 73 6F 72 2E 0A 4E 6F 74 65 20 2D 20 69 66 20 6D 61 74 68 20 6D 6F 64 75 6C 65 20 69 73 20 6E 6F 74 20 6C 6F 61 64 65 64 2C 20 74 68 69 73 20 74 65 73 74 20 6D 69 67 68 74 20 63 72 61 73 68 20 74 68 65 20 6D 61 63 68 69 6E 65 21 0A 52 65 70 6F 72 74 20 61 6E 79 20 62 75 67 73 20 74 6F 20 61 64 6D 69 6E 69 73 74 72 61 74 6F 72 3A 20 61 78 2E 61 72 77 65 6E 40 67 6C 69 74 63 68 6C 61 62 73 72 65 73 65 61 72 63 68 2E 69 6E 74 65 72 6E 61 6C 0A 0A 43 6F 6E 74 69 6E 75 65 20 77 69 74 68 20 72 75 6E 6E 69 6E 67 20 74 68 65 20 74 65 73 74 20 28 59 2F 4E 29 3A 20 00  |
+    ds "Glitch Research Laboratory Math Coprocessor\nTesting Software: Function SQRT\n\nThis program will test the SQRT function of the math module.\nThis function, executable with CALL 0x3009, should compute the\ninteger part of sqrt(R0) and return it in R0 (preserving R1-R3).\n\nMath module results will be compared with the coprocessor.\nNote - if math module is not loaded, this test might crash the machine!\nReport any bugs to administrator: ax.arwen@glitchlabsresearch.internal\n\nContinue with running the test (Y/N): "
+.str_2_225A_Aborted
+225A | 41 62 6F 72 74 65 64 2E 0A 00  |
+    ds "Aborted.\n"
+.str_3_2264_Test
+2264 | 54 65 73 74 20 77 61 73 20 75 6E 73 75 63 63 65 73 73 66 75 6C 2E 0A 00  |
+    ds "Test was unsuccessful.\n"
+.str_0_227C_Please
+227C | 50 6C 65 61 73 65 20 6C 6F 61 64 20 74 68 69 73 20 70 72 6F 67 72 61 6D 20 61 74 20 61 64 64 72 65 73 73 20 24 32 30 30 30 2E 0A 00  |
+    ds "Please load this program at address $2000.\n"
+22A8 | 5F       | 
+22A9 | 5F       | 
+22AA | 5F       | 
+22AB | 5F       | 
+22AC | 5F       | 
+22AD | 5F       | 
+22AE | 5F       | 
+22AF | 5F       | 
+22B0 | 00       | BRK
+22B1 | 5F       | 
+22B2 | B6 9D B4 | ld R2 [$B49D]
+22B5 | D7       | 
+22B6 | A8       | inc R00
+22B7 | A0       | [wait! that's illegal!]

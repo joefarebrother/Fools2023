@@ -1,0 +1,503 @@
+2000 | A7       | push pc
+2001 | 97       | pop R3
+2002 | 2B       | ld R2 R3
+2003 | E2 93 00 | add R2 $0093
+2006 | 93       | push R3
+2007 | 99 08 00 | call PrintStr                ; ($0008)
+200A | 97       | pop R3
+200B | A5 00 20 | cmp R3 $2000
+200E | 9C 18 20 | jp eq Start                  ; ($2018)
+2011 | 2B       | ld R2 R3
+2012 | E2 CE 00 | add R2 $00CE
+2015 | 98 08 00 | jp PrintStr                  ; ($0008)
+Start:
+2018 | 12 44 21 | ld R2 .mem_pw                ; ($2144)
+201B | 11 12 00 | ld R1 $0012
+201E | 10 00 00 | ld R0 $0000
+2021 | 99 40 00 | call MemSet                  ; ($0040)
+2024 | 12 FC 20 | ld R2 .str_enter_pw          ; ($20FC)
+2027 | 99 08 00 | call PrintStr                ; ($0008)
+202A | 12 44 21 | ld R2 .mem_pw                ; ($2144)
+202D | 13 0F 00 | ld R3 $000F
+2030 | 99 30 00 | call ReadStr                 ; ($0030)
+2033 | 12 44 21 | ld R2 .mem_pw                ; ($2144)
+2036 | 99 38 00 | call StrTrim                 ; ($0038)
+2039 | 12 44 21 | ld R2 .mem_pw                ; ($2144)
+203C | 10 C0 9F | ld R0 $9FC0
+.lab_2_203F:
+203F | 56       | 
+2040 | AA       | inc R2
+2041 | A3 00 00 | cmp R1 $0000
+2044 | 0E       | 
+2045 | D9       | 
+2046 | 0E       | 
+2047 | 31       | add R0 R1
+2048 | 9C 4E 20 | jp eq .lab_1_204E            ; ($204E)
+204B | 98 3F 20 | jp .lab_2_203F               ; ($203F)
+.lab_1_204E:
+204E | BC 56 21 | ld [$2156] R0
+2051 | 13 60 21 | ld R3 $2160
+2054 | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+2057 | 11 00 02 | ld R1 $0200
+205A | 99 28 00 | call MemCpy                  ; ($0028)
+205D | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+2060 | 13 00 01 | ld R3 $0100
+.lab_4_2063:
+2063 | 99 86 20 | call .lab_3_2086             ; ($2086)
+2066 | 24       | ld R1 R0
+2067 | 52       | 
+2068 | D9       | 
+2069 | 78       | ld [R2] R0
+206A | AA       | inc R2
+206B | AA       | inc R2
+206C | AF       | dec R3
+206D | A5 00 00 | cmp R3 $0000
+2070 | 9D 63 20 | jp ne .lab_4_2063            ; ($2063)
+2073 | 12 1F 21 | ld R2 .str_3_211F_HERE       ; ($211F)
+2076 | 99 08 00 | call PrintStr                ; ($0008)
+2079 | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+207C | 99 08 00 | call PrintStr                ; ($0008)
+207F | 12 3F 21 | ld R2 .str_5_213F            ; ($213F)
+2082 | 99 08 00 | call PrintStr                ; ($0008)
+2085 | 05       | ret
+.lab_3_2086:
+2086 | B4 56 21 | ld R0 [$2156]
+2089 | 01 A7 41 | mul R0 $41A7
+208C | CF 55 55 | 
+208F | BC 56 21 | ld [$2156] R0
+2092 | 05       | ret
+.str_0_2093_GLITCH:
+2093 | 47 4C 49 54 43 48 20 52 45 53 45 41 52 43 48 20 4C 41 42 4F 52 41 54 4F 52 59 20 53 45 4C 46 2D 43 4F 4E 54 41 49 4E 45 44 20 45 4E 43 52 59 50 54 49 4F 4E 20 54 4F 4F 4C 0A 00  |
+    ds "GLITCH RESEARCH LABORATORY SELF-CONTAINED ENCRYPTION TOOL\n"
+.str_1_20CE_PLEASE:
+20CE | 50 4C 45 41 53 45 20 4C 4F 41 44 20 4D 45 20 41 54 20 41 44 44 52 45 53 53 20 24 32 30 30 30 2E 2E 2E 20 28 45 58 49 54 49 4E 47 29 0A 00  |
+    ds "PLEASE LOAD ME AT ADDRESS $2000... (EXITING)\n"
+.str_enter_pw:
+20FC | 50 4C 45 41 53 45 20 45 4E 54 45 52 20 45 4E 43 52 59 50 54 49 4F 4E 20 50 41 53 53 57 4F 52 44 3A 20 00  |
+    ds "PLEASE ENTER ENCRYPTION PASSWORD: "
+.str_3_211F_HERE:
+211F | 48 45 52 45 20 49 53 20 54 48 45 20 45 4E 43 52 59 50 54 45 44 20 44 4F 43 55 4D 45 4E 54 3A 20 0A 2D 2D 0A 00  |
+    ds "HERE IS THE ENCRYPTED DOCUMENT: \n--\n"
+.mem_pw:
+2144 | 5F       | 
+2145 | 5F       | 
+2146 | 5F       | 
+2147 | 5F       | 
+2148 | 5F       | 
+2149 | 5F       | 
+214A | 5F       | 
+214B | 5F       | 
+214C | 5F       | 
+214D | 5F       | 
+214E | 5F       | 
+214F | 5F       | 
+2150 | 5F       | 
+2151 | 5F       | 
+2152 | 5F       | 
+2153 | 5F       | 
+2154 | 00       | BRK
+2155 | 00       | BRK
+2156 | 5F       | 
+2157 | 5F       | 
+2158 | 33       | add R0 R3
+2159 | 33       | add R0 R3
+215A | 33       | add R0 R3
+215B | 33       | add R0 R3
+215C | 33       | add R0 R3
+215D | 33       | add R0 R3
+215E | 33       | add R0 R3
+215F | 33       | add R0 R3
+2160 | FB       | [wait! that's illegal!]
+2161 | 72       | ld [R0] R2
+2162 | 3A       | add R2 R2
+2163 | 22       | ld R0 R2
+2164 | 21       | ld R0 R1
+2165 | 4B       | 
+2166 | 6A       | 
+2167 | C2       | [wait! that's illegal!]
+2168 | 28       | ld R2 R0
+2169 | E6       | [wait! that's illegal!]
+216A | E4       | [wait! that's illegal!]
+216B | C1       | [wait! that's illegal!]
+216C | A7       | push pc
+216D | 25       | ld R1 R1
+216E | B6 E0 98 | ld R2 [$98E0]
+2171 | B2 0A E0 | 
+2174 | 9B AB C1 | jp gt $C1AB
+2177 | 84       | 
+2178 | B8 2D 8F | 
+217B | D8       | 
+217C | 7E       | ld [R3] R2
+217D | 07       | 
+217E | 3A       | add R2 R2
+217F | CB       | call R2
+2180 | C9       | call R0
+2181 | F0       | [wait! that's illegal!]
+2182 | F5       | [wait! that's illegal!]
+2183 | 38       | add R2 R0
+2184 | 51       | 
+2185 | 43       | 
+2186 | ED       | [wait! that's illegal!]
+2187 | 52       | 
+2188 | F8       | [wait! that's illegal!]
+2189 | 44       | 
+218A | E4       | [wait! that's illegal!]
+218B | C2       | [wait! that's illegal!]
+218C | 50       | 
+218D | 22       | ld R0 R2
+218E | 27       | ld R1 R3
+218F | 2A       | ld R2 R2
+2190 | 65       | 
+2191 | 44       | 
+2192 | 81       | 
+2193 | 79       | ld [R2] R1
+2194 | C2       | [wait! that's illegal!]
+2195 | 6C       | 
+2196 | B4 AF D9 | ld R0 [$D9AF]
+2199 | 9D 7C 74 | jp ne $747C
+219C | B3 58 EA | 
+219F | CD 69 E2 | 
+21A2 | A2 DF E7 | cmp R0 $E7DF
+21A5 | CA       | call R1
+21A6 | C4       | [wait! that's illegal!]
+21A7 | 65       | 
+21A8 | E0 E8 F3 | add R0 $F3E8
+21AB | BE EE 97 | ld [$97EE] R2
+21AE | 68       | 
+21AF | AD       | dec R1
+21B0 | 61       | 
+21B1 | 0E       | 
+21B2 | 27       | ld R1 R3
+21B3 | 78       | ld [R2] R0
+21B4 | 32       | add R0 R2
+21B5 | 86       | 
+21B6 | 6D       | 
+21B7 | 5C       | 
+21B8 | 02       | 
+21B9 | C2       | [wait! that's illegal!]
+21BA | 6E       | 
+21BB | D1       | 
+21BC | DF       | 
+21BD | 93       | push R3
+21BE | 14       | [wait! that's illegal!]
+21BF | 4D       | 
+21C0 | CB       | call R2
+21C1 | 1A       | [wait! that's illegal!]
+21C2 | 90       | push R0
+21C3 | F4       | [wait! that's illegal!]
+21C4 | 20       | ld R0 R0
+21C5 | 95       | pop R1
+21C6 | C0       | [wait! that's illegal!]
+21C7 | D3       | 
+21C8 | 1D       | [wait! that's illegal!]
+21C9 | E8       | [wait! that's illegal!]
+21CA | 73       | ld [R0] R3
+21CB | 2B       | ld R2 R3
+21CC | DB       | 
+21CD | AF       | dec R3
+21CE | AE       | dec R2
+21CF | 74       | ld [R1] R0
+21D0 | 7A       | ld [R2] R2
+21D1 | 1D       | [wait! that's illegal!]
+21D2 | 50       | 
+21D3 | 4A       | 
+21D4 | A6       | push sp
+21D5 | 9D 56 CC | jp ne $CC56
+21D8 | B5 5D 07 | ld R1 [$075D]
+21DB | D1       | 
+21DC | 04       | 
+21DD | A7       | push pc
+21DE | 16       | [wait! that's illegal!]
+21DF | 5C       | 
+21E0 | 1D       | [wait! that's illegal!]
+21E1 | 40       | 
+21E2 | 4E       | 
+21E3 | 65       | 
+21E4 | 51       | 
+21E5 | F2       | [wait! that's illegal!]
+21E6 | 68       | 
+21E7 | 0A       | 
+21E8 | 4A       | 
+21E9 | B3 56 56 | 
+21EC | C1       | [wait! that's illegal!]
+21ED | 51       | 
+21EE | 1F       | [wait! that's illegal!]
+21EF | 0F       | 
+21F0 | C2       | [wait! that's illegal!]
+21F1 | 7D       | ld [R3] R1
+21F2 | 4B       | 
+21F3 | 29       | ld R2 R1
+21F4 | 5B       | 
+21F5 | 58       | 
+21F6 | 1D       | [wait! that's illegal!]
+21F7 | 2F       | ld R3 R3
+21F8 | FF       | [wait! that's illegal!]
+21F9 | 66       | 
+21FA | C0       | [wait! that's illegal!]
+21FB | 3C       | add R3 R0
+21FC | BB BB 34 | 
+21FF | 93       | push R3
+2200 | 30       | add R0 R0
+2201 | E6       | [wait! that's illegal!]
+2202 | 34       | add R1 R0
+2203 | B7 8D D4 | ld R3 [$D48D]
+2206 | 4A       | 
+2207 | A3 D7 88 | cmp R1 $88D7
+220A | 00       | BRK
+220B | 72       | ld [R0] R2
+220C | BA 13 0C | 
+220F | 4D       | 
+2210 | 97       | pop R3
+2211 | 46       | 
+2212 | E0 BB 07 | add R0 $07BB
+2215 | A6       | push sp
+2216 | EF       | [wait! that's illegal!]
+2217 | FA       | [wait! that's illegal!]
+2218 | 12 0A FE | ld R2 $FE0A
+221B | 56       | 
+221C | E9       | [wait! that's illegal!]
+221D | 14       | [wait! that's illegal!]
+221E | 2B       | ld R2 R3
+221F | DA       | 
+2220 | 64       | 
+2221 | 3C       | add R3 R0
+2222 | FE       | [wait! that's illegal!]
+2223 | C5       | jp R0
+2224 | 3C       | add R3 R0
+2225 | A3 50 02 | cmp R1 $0250
+2228 | 20       | ld R0 R0
+2229 | B7 20 05 | ld R3 [$0520]
+222C | 3D       | add R3 R1
+222D | DB       | 
+222E | F1       | [wait! that's illegal!]
+222F | 8A       | 
+2230 | 81       | 
+2231 | 41       | 
+2232 | 4C       | 
+2233 | 24       | ld R1 R0
+2234 | 52       | 
+2235 | 38       | add R2 R0
+2236 | 8F       | 
+2237 | B9 7E 2E | 
+223A | 6F       | 
+223B | 76       | ld [R1] R2
+223C | 1C       | [wait! that's illegal!]
+223D | 3F       | add R3 R3
+223E | 97       | pop R3
+223F | 87       | 
+2240 | 16       | [wait! that's illegal!]
+2241 | D5       | 
+2242 | D3       | 
+2243 | C9       | call R0
+2244 | 70       | ld [R0] R0
+2245 | 92       | push R2
+2246 | D7       | 
+2247 | D2       | 
+2248 | 47       | 
+2249 | 59       | 
+224A | E6       | [wait! that's illegal!]
+224B | 87       | 
+224C | 12 2C E0 | ld R2 $E02C
+224F | A5 6C 17 | cmp R3 $176C
+2252 | 9C BE EE | jp eq $EEBE
+2255 | E4       | [wait! that's illegal!]
+2256 | D4       | 
+2257 | 50       | 
+2258 | EA       | [wait! that's illegal!]
+2259 | 94       | pop R0
+225A | 57       | 
+225B | 91       | push R1
+225C | 4F       | 
+225D | B1 57 AA | 
+2260 | 46       | 
+2261 | E9       | [wait! that's illegal!]
+2262 | 86       | 
+2263 | 76       | ld [R1] R2
+2264 | D3       | 
+2265 | F8       | [wait! that's illegal!]
+2266 | B9 A5 8C | 
+2269 | 9C 57 56 | jp eq $5657
+226C | 0A       | 
+226D | 72       | ld [R0] R2
+226E | 48       | 
+226F | C8       | jp R3
+2270 | 14       | [wait! that's illegal!]
+2271 | B6 8B F2 | ld R2 [$F28B]
+2274 | 48       | 
+2275 | 3C       | add R3 R0
+2276 | 4D       | 
+2277 | B5 3A 48 | ld R1 [$483A]
+227A | 07       | 
+227B | A6       | push sp
+227C | F2       | [wait! that's illegal!]
+227D | 8E       | 
+227E | A3 0B 39 | cmp R1 $390B
+2281 | 02       | 
+2282 | 75       | ld [R1] R1
+2283 | 9B C8 DC | jp gt $DCC8
+2286 | 6F       | 
+2287 | 0A       | 
+2288 | 75       | ld [R1] R1
+2289 | 00       | BRK
+228A | 52       | 
+228B | 6D       | 
+228C | BF 77 89 | ld [$8977] R3
+228F | 2F       | ld R3 R3
+2290 | CE B0 27 | 
+2293 | EF       | [wait! that's illegal!]
+2294 | 42       | 
+2295 | 1E       | [wait! that's illegal!]
+2296 | 36       | add R1 R2
+2297 | E1 37 C6 | add R1 $C637
+229A | F7       | [wait! that's illegal!]
+229B | 77       | ld [R1] R3
+229C | 34       | add R1 R0
+229D | 1D       | [wait! that's illegal!]
+229E | 6A       | 
+229F | D3       | 
+22A0 | A7       | push pc
+22A1 | 48       | 
+22A2 | 6A       | 
+22A3 | C1       | [wait! that's illegal!]
+22A4 | 7D       | ld [R3] R1
+22A5 | E7       | [wait! that's illegal!]
+22A6 | 76       | ld [R1] R2
+22A7 | 8C       | 
+22A8 | 62       | 
+22A9 | 8F       | 
+22AA | 62       | 
+22AB | 8C       | 
+22AC | 5C       | 
+22AD | E4       | [wait! that's illegal!]
+22AE | F1       | [wait! that's illegal!]
+22AF | F3       | [wait! that's illegal!]
+22B0 | FD       | [wait! that's illegal!]
+22B1 | 5F       | 
+22B2 | B6 9D B4 | ld R2 [$B49D]
+22B5 | D7       | 
+22B6 | A8       | inc R0
+22B7 | A0       | [wait! that's illegal!]
+22B8 | CD DE 8B | 
+22BB | 72       | ld [R0] R2
+22BC | 73       | ld [R0] R3
+22BD | E4       | [wait! that's illegal!]
+22BE | FA       | [wait! that's illegal!]
+22BF | E7       | [wait! that's illegal!]
+22C0 | 33       | add R0 R3
+22C1 | 8F       | 
+22C2 | 11 1E AF | ld R1 $AF1E
+22C5 | D3       | 
+22C6 | 40       | 
+22C7 | A7       | push pc
+22C8 | 86       | 
+22C9 | 26       | ld R1 R2
+22CA | F3       | [wait! that's illegal!]
+22CB | 77       | ld [R1] R3
+22CC | 4C       | 
+22CD | 6E       | 
+22CE | 2D       | ld R3 R1
+22CF | 2D       | ld R3 R1
+22D0 | A4 03 C2 | cmp R2 $C203
+22D3 | 74       | ld [R1] R0
+22D4 | 2E       | ld R3 R2
+22D5 | B3 DD 85 | 
+22D8 | 29       | ld R2 R1
+22D9 | 41       | 
+22DA | 90       | push R0
+22DB | C3       | [wait! that's illegal!]
+22DC | C7       | jp R2
+22DD | 3A       | add R2 R2
+22DE | 96       | pop R2
+22DF | B9 8E 35 | 
+22E2 | CF 37 C0 | 
+22E5 | C8       | jp R3
+22E6 | FF       | [wait! that's illegal!]
+22E7 | D5       | 
+22E8 | 8B       | 
+22E9 | 9F A1 D9 | 
+22EC | 0F       | 
+22ED | 8E       | 
+22EE | 8E       | 
+22EF | C6       | jp R1
+22F0 | 11 C1 C0 | ld R1 $C0C1
+22F3 | C9       | call R0
+22F4 | 9E 5B 9C | 
+22F7 | A1 2D C6 | 
+22FA | 4B       | 
+22FB | F5       | [wait! that's illegal!]
+22FC | 34       | add R1 R0
+22FD | 65       | 
+22FE | B4 CC AC | ld R0 [$ACCC]
+2301 | 88       | 
+2302 | BF 49 43 | ld [$4349] R3
+2305 | 77       | ld [R1] R3
+2306 | AC       | dec R0
+2307 | 8F       | 
+2308 | 61       | 
+2309 | 71       | ld [R0] R1
+230A | 8E       | 
+230B | 59       | 
+230C | 7F       | ld [R3] R3
+230D | 78       | ld [R2] R0
+230E | D9       | 
+230F | 73       | ld [R0] R3
+2310 | 41       | 
+2311 | 90       | push R0
+2312 | 73       | ld [R0] R3
+2313 | 8B       | 
+2314 | 8E       | 
+2315 | 93       | push R3
+2316 | 3F       | add R3 R3
+2317 | 6E       | 
+2318 | DD       | 
+2319 | 2E       | ld R3 R2
+231A | 37       | add R1 R3
+231B | E8       | [wait! that's illegal!]
+231C | 72       | ld [R0] R2
+231D | 43       | 
+231E | A1 F3 A9 | 
+2321 | FE       | [wait! that's illegal!]
+2322 | 7F       | ld [R3] R3
+2323 | 98 F3 A5 | jp $A5F3
+2326 | 98 43 E5 | jp $E543
+2329 | 60       | 
+232A | B9 5D BD | 
+232D | BA 3F AE | 
+2330 | 71       | ld [R0] R1
+2331 | F6       | [wait! that's illegal!]
+2332 | ED       | [wait! that's illegal!]
+2333 | C1       | [wait! that's illegal!]
+2334 | FE       | [wait! that's illegal!]
+2335 | 8F       | 
+2336 | 2D       | ld R3 R1
+2337 | 15       | [wait! that's illegal!]
+2338 | D9       | 
+2339 | C6       | jp R1
+233A | F7       | [wait! that's illegal!]
+233B | 57       | 
+233C | 83       | 
+233D | 57       | 
+233E | 7E       | ld [R3] R2
+233F | 10 B6 C3 | ld R0 $C3B6
+2342 | 76       | ld [R1] R2
+2343 | 29       | ld R2 R1
+2344 | B1 10 12 | 
+2347 | 1E       | [wait! that's illegal!]
+2348 | EA       | [wait! that's illegal!]
+2349 | A1 15 81 | 
+234C | 9C 22 5F | jp eq $5F22
+234F | 8A       | 
+2350 | F3       | [wait! that's illegal!]
+2351 | FF       | [wait! that's illegal!]
+2352 | 1C       | [wait! that's illegal!]
+2353 | 37       | add R1 R3
+2354 | 4E       | 
+2355 | 57       | 
+2356 | 1B       | [wait! that's illegal!]
+2357 | 26       | ld R1 R2
+2358 | 64       | 
+2359 | B7 CA 7C | ld R3 [$7CCA]
+235C | C8       | jp R3
+235D | 57       | 
+235E | D9       | 
+235F | 57       | 
