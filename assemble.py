@@ -13,15 +13,17 @@ dw 0000
 
 todo db
 """
+import sys
 
 kwds = set()
 
 opcode = {}
 for code,op in known_opcodes.items():
+    op=op.lower()
     for x in op.split(" "):
-        if "$XXXX" not in x and "$XX" not in x:
+        if "$xxxx" not in x and "$xx" not in x:
             kwds.add(x)
-    opcode[op] = [code]
+    opcode[op]=[code]
 kwds.add("nop")
 opcode["dw"]=[]
 opcode["nop"]=[0x20]
@@ -33,8 +35,8 @@ def assemble(fname,offset=0x2000):
 
     for ln,line in enumerate(lines):
         line=line.replace("$","0x")
-        line=line.replace("z","zz")
         line=line.replace(".","zx")
+        line=line.lower()
         try:
             if (comment:=line.find(";"))>=0:
                 line=line[:comment]
@@ -59,12 +61,12 @@ def assemble(fname,offset=0x2000):
                             modps.append(p)
                         elif p[0]=="[":
                             assert p[-1]=="]"
-                            modps.append("[$XXXX]")
+                            modps.append("[$xxxx]")
                             args.append(p[1:-1])
                         else:
-                            modps.append("$XXXX")
+                            modps.append("$xxxx")
                             args.append(p)
-                    print(ps,modps)
+                    #print(ps,modps,file=sys.stderr)
                     i = " ".join(modps)
                     if i not in opcode:
                         raise Exception(f"don't recognise {i}")
@@ -72,7 +74,7 @@ def assemble(fname,offset=0x2000):
                     opc = opcode[i][0]
                     offset+=op_len(opc)+1
         except Exception as e:
-            print(f"failed at line {ln}:{repr(line)}")
+            print(f"failed at line {ln}:{repr(line)}",file=sys.stderr)
             raise e
     bytesout=[]
     for instr,data in instrs:
@@ -85,4 +87,16 @@ def assemble(fname,offset=0x2000):
     return bytesout
 
 if __name__=="__main__":
-    print(assemble("sqrt.prg"),0x3000)
+    if len(sys.argv)>1:
+        fname = sys.argv[1]
+        offset=0x3009
+        if len(sys.argv)>2:
+            offset = int(sys.argv,16)
+        s = assemble(fname,offset)
+        for x in s:
+            print(f"{x:0{2}X}",end="")
+        print()
+    else:
+        print("Usage: python3 assemble.py filename [hexoffset [OPTIONS]]")
+
+    #print(assemble("sqrt.prg"),0x3000)
