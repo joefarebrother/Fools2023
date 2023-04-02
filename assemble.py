@@ -13,78 +13,90 @@ dw 0000
 
 todo db
 """
+import sys
 
 kwds = set()
 
 opcode = {}
-for code, op in known_opcodes.items():
+for code,op in known_opcodes.items():
+    op=op.lower()
     for x in op.split(" "):
-        if "$XXXX" not in x and "$XX" not in x:
+        if "$xxxx" not in x and "$xx" not in x:
             kwds.add(x)
-    opcode[op] = [code]
+    opcode[op]=[code]
 kwds.add("nop")
-opcode["dw"] = []
-opcode["nop"] = [0x20]
+opcode["dw"]=[]
+opcode["nop"]=[0x20]
 
-
-def assemble(fname, offset=0x2000):
+def assemble(fname,offset=0x2000):
     lines = list(open(fname))
     labs = {}
     instrs = []
 
-    for ln, line in enumerate(lines):
-        line = line.replace("$", "0x")
-        line = line.replace("z", "zz")
-        line = line.replace(".", "zx")
+    for ln,line in enumerate(lines):
+        line=line.replace("$","0x")
+        line=line.replace(".","zx")
+        line=line.lower()
         try:
-            if (comment := line.find(";")) >= 0:
-                line = line[:comment]
+            if (comment:=line.find(";"))>=0:
+                line=line[:comment]
             ps = line.split()
-            if len(ps) > 0:
-                if ps[0][-1] == ":":
+            if len(ps)>0:
+                if ps[0][-1]==":":
                     newlabname = ps.pop(0)[:-1]
                     assert newlabname not in labs
                     labs[newlabname] = offset
                     if newlabname.startswith("zx"):
                         labs[newlabname[2:]] = offset
-            if len(ps) > 0:
-                if ps[0] == "dw":
-                    n = int("".join(ps[1:]), 16)
-                    instrs.append(("dw", [str(n)]))
-                    offset += 2
+            if len(ps)>0:
+                if ps[0]=="dw":
+                    n = int("".join(ps[1:]),16)
+                    instrs.append(("dw",[str(n)]))
+                    offset+=2
                 else:
                     args = []
                     modps = []
                     for p in ps:
                         if p in kwds:
                             modps.append(p)
-                        elif p[0] == "[":
-                            assert p[-1] == "]"
-                            modps.append("[$XXXX]")
+                        elif p[0]=="[":
+                            assert p[-1]=="]"
+                            modps.append("[$xxxx]")
                             args.append(p[1:-1])
                         else:
-                            modps.append("$XXXX")
+                            modps.append("$xxxx")
                             args.append(p)
-                    print(ps, modps)
+                    #print(ps,modps,file=sys.stderr)
                     i = " ".join(modps)
                     if i not in opcode:
                         raise Exception(f"don't recognise {i}")
-                    instrs.append((i, args))
+                    instrs.append((i,args))
                     opc = opcode[i][0]
-                    offset += op_len(opc)+1
+                    offset+=op_len(opc)+1
         except Exception as e:
-            print(f"failed at line {ln}:{repr(line)}")
+            print(f"failed at line {ln}:{repr(line)}",file=sys.stderr)
             raise e
-    bytesout = []
-    for instr, data in instrs:
+    bytesout=[]
+    for instr,data in instrs:
         for op in opcode[instr]:
             bytesout.append(op)
         for x in data:
-            n = eval(x, labs)
-            bytesout.append(n & 255)
-            bytesout.append(n >> 8)
+            n = eval(x,labs)
+            bytesout.append(n&255)
+            bytesout.append(n>>8)
     return bytesout
 
+if __name__=="__main__":
+    if len(sys.argv)>1:
+        fname = sys.argv[1]
+        offset=0x3009
+        if len(sys.argv)>2:
+            offset = int(sys.argv,16)
+        s = assemble(fname,offset)
+        for x in s:
+            print(f"{x:0{2}X}",end="")
+        print()
+    else:
+        print("Usage: python3 assemble.py filename [hexoffset [OPTIONS]]")
 
-if __name__ == "__main__":
-    print(assemble("sqrt.prg"), 0x3009)
+    #print(assemble("sqrt.prg"),0x3000)
