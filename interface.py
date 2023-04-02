@@ -118,7 +118,9 @@ def read_mem_raw(addr, lines=5):
     return raw.splitlines()
 
 
-def read_mem(addr, lines=None, nbytes=None, pretty_dump=None):
+def read_mem(addr, lines=None, nbytes=None, pretty_dump=None, return_dump=False):
+    if return_dump:
+        pretty_dump = True
     if lines is not None and nbytes is not None:
         raise Exception("Don't use both lines and nbytes")
     if nbytes is not None:
@@ -134,6 +136,8 @@ def read_mem(addr, lines=None, nbytes=None, pretty_dump=None):
             nbytes = lines*8
 
     assert lines is not None and nbytes is not None
+
+    dump = ""
 
     raw = read_mem_raw(addr, lines)
     if pretty_dump:
@@ -156,6 +160,9 @@ def read_mem(addr, lines=None, nbytes=None, pretty_dump=None):
                 chrs += "."
         if pretty_dump:
             print(f"{addr} | {memline.strip()} | {chrs}")
+            dump += f"{addr} | {memline.strip()} | {chrs}\n"
+    if return_dump:
+        return bytes(raw_bytes)[:nbytes], dump
     return bytes(raw_bytes)[:nbytes]
 
 
@@ -192,6 +199,10 @@ def exec_data(code, addr=0x2000):
     return exec_mem(addr)
 
 
+def exec_asm(code, addr=0x2000):
+    return exec_data(assemble_inline(code, addr), addr)
+
+
 file_data = """
 BLK  SIZE  NAME
 =======================
@@ -207,6 +218,7 @@ def filesize(filename):
         _blk, size, name = rec.split()
         if name == filename:
             return fromhex(size)
+    # return 0x0300
     raise Exception("File not found", filename)
 
 
@@ -337,3 +349,8 @@ def connect_serv3_with_console():
 
     connect_serv3_corrupt(payload, payload_addr)
     send(console + b"\n")
+
+
+def read_block(blk):
+        exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret")
+        return read_mem(0x3000, nbytes=0x400)
