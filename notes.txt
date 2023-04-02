@@ -31,5 +31,7 @@ e seems to now take no args but took 2 before?
 0602 = read input byte into r0 
 0601 = write byte r0
 
-seen: 0666, 0664, 0665
+seen: 0666, 0664, 0665 - in math
+04 used in ls command and rf command. interacts with filesystem?
+
 

@@ -4,6 +4,7 @@ import select
 import builtins
 import re
 import string
+from assemble import assemble_inline
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

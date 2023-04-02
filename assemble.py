@@ -75,7 +75,7 @@ def assemble_code(lines, offset=0x2000):
                             modps.append("[$xxxx]")
                             args.append(p[1:-1])
                         else:
-                            modps.append("$xxxx")
+                            modps.append("$xxxx" if "int" not in modps else "$xx")
                             args.append(p)
                     # print(ps,modps,file=sys.stderr)
                     i = " ".join(modps)
@@ -94,7 +94,8 @@ def assemble_code(lines, offset=0x2000):
         for x in data:
             n = eval(x, labs)
             bytesout.append(n & 255)
-            bytesout.append(n >> 8)
+            if "int" not in instr:
+                bytesout.append(n >> 8)
     return bytesout
 
 

@@ -113,7 +113,7 @@ Start:
 2163 | 22       | ld R0 R2
 2164 | 21       | ld R0 R1
 2165 | 4B       | 
-2166 | 6A       | 
+2166 | 6A       | ldb [R2] R2
 2167 | C2       | [wait! that's illegal!]
 2168 | 28       | ld R2 R0
 2169 | E6       | [wait! that's illegal!]
@@ -122,10 +122,10 @@ Start:
 216C | A7       | push pc
 216D | 25       | ld R1 R1
 216E | B6 E0 98 | ld R2 [$98E0]
-2171 | B2 0A E0 | 
+2171 | B2 0A E0 | ldb R2 [$E00A]
 2174 | 9B AB C1 | jp gt $C1AB
 2177 | 84       | 
-2178 | B8 2D 8F | 
+2178 | B8 2D 8F | ldb [$8F2D] R0
 217B | D8       | 
 217C | 7E       | ld [R3] R2
 217D | 07       | 
@@ -147,35 +147,35 @@ Start:
 218D | 22       | ld R0 R2
 218E | 27       | ld R1 R3
 218F | 2A       | ld R2 R2
-2190 | 65       | 
+2190 | 65       | ldb [R1] R1
 2191 | 44       | 
 2192 | 81       | 
 2193 | 79       | ld [R2] R1
 2194 | C2       | [wait! that's illegal!]
-2195 | 6C       | 
+2195 | 6C       | ldb [R3] R0
 2196 | B4 AF D9 | ld R0 [$D9AF]
 2199 | 9D 7C 74 | jp ne $747C
-219C | B3 58 EA | 
+219C | B3 58 EA | ldb R3 [$EA58]
 219F | CD 69 E2 | 
 21A2 | A2 DF E7 | cmp R0 $E7DF
 21A5 | CA       | call R1
 21A6 | C4       | [wait! that's illegal!]
-21A7 | 65       | 
+21A7 | 65       | ldb [R1] R1
 21A8 | E0 E8 F3 | add R0 $F3E8
 21AB | BE EE 97 | ld [$97EE] R2
-21AE | 68       | 
+21AE | 68       | ldb [R2] R0
 21AF | AD       | dec R1
-21B0 | 61       | 
+21B0 | 61       | ldb [R0] R1
 21B1 | 0E       | 
 21B2 | 27       | ld R1 R3
 21B3 | 78       | ld [R2] R0
 21B4 | 32       | add R0 R2
 21B5 | 86       | 
-21B6 | 6D       | 
+21B6 | 6D       | ldb [R3] R1
 21B7 | 5C       | 
 21B8 | 02       | 
 21B9 | C2       | [wait! that's illegal!]
-21BA | 6E       | 
+21BA | 6E       | ldb [R3] R2
 21BB | D1       | 
 21BC | DF       | 
 21BD | 93       | push R3
@@ -212,13 +212,13 @@ Start:
 21E0 | 1D       | [wait! that's illegal!]
 21E1 | 40       | 
 21E2 | 4E       | 
-21E3 | 65       | 
+21E3 | 65       | ldb [R1] R1
 21E4 | 51       | 
 21E5 | F2       | [wait! that's illegal!]
-21E6 | 68       | 
-21E7 | 0A       | 
+21E6 | 68       | ldb [R2] R0
+21E7 | 0A       | ld R0 sp
 21E8 | 4A       | 
-21E9 | B3 56 56 | 
+21E9 | B3 56 56 | ldb R3 [$5656]
 21EC | C1       | [wait! that's illegal!]
 21ED | 51       | 
 21EE | 1F       | [wait! that's illegal!]
@@ -232,10 +232,10 @@ Start:
 21F6 | 1D       | [wait! that's illegal!]
 21F7 | 2F       | ld R3 R3
 21F8 | FF       | [wait! that's illegal!]
-21F9 | 66       | 
+21F9 | 66       | ldb [R1] R2
 21FA | C0       | [wait! that's illegal!]
 21FB | 3C       | add R3 R0
-21FC | BB BB 34 | 
+21FC | BB BB 34 | ldb [$34BB] R3
 21FF | 93       | push R3
 2200 | 30       | add R0 R0
 2201 | E6       | [wait! that's illegal!]
@@ -245,7 +245,7 @@ Start:
 2207 | A3 D7 88 | cmp R1 $88D7
 220A | 00       | BRK
 220B | 72       | ld [R0] R2
-220C | BA 13 0C | 
+220C | BA 13 0C | ldb [$0C13] R2
 220F | 4D       | 
 2210 | 97       | pop R3
 2211 | 46       | 
@@ -259,7 +259,7 @@ Start:
 221D | 14       | [wait! that's illegal!]
 221E | 2B       | ld R2 R3
 221F | DA       | 
-2220 | 64       | 
+2220 | 64       | ldb [R1] R0
 2221 | 3C       | add R3 R0
 2222 | FE       | [wait! that's illegal!]
 2223 | C5       | jp R0
@@ -278,8 +278,8 @@ Start:
 2234 | 52       | 
 2235 | 38       | add R2 R0
 2236 | 8F       | 
-2237 | B9 7E 2E | 
-223A | 6F       | 
+2237 | B9 7E 2E | ldb [$2E7E] R1
+223A | 6F       | ldb [R3] R3
 223B | 76       | ld [R1] R2
 223C | 1C       | [wait! that's illegal!]
 223D | 3F       | add R3 R3
@@ -308,16 +308,16 @@ Start:
 225A | 57       | 
 225B | 91       | push R1
 225C | 4F       | 
-225D | B1 57 AA | 
+225D | B1 57 AA | ldb R1 [$AA57]
 2260 | 46       | 
 2261 | E9       | [wait! that's illegal!]
 2262 | 86       | 
 2263 | 76       | ld [R1] R2
 2264 | D3       | 
 2265 | F8       | [wait! that's illegal!]
-2266 | B9 A5 8C | 
+2266 | B9 A5 8C | ldb [$8CA5] R1
 2269 | 9C 57 56 | jp eq $5657
-226C | 0A       | 
+226C | 0A       | ld R0 sp
 226D | 72       | ld [R0] R2
 226E | 48       | 
 226F | C8       | jp R3
@@ -335,12 +335,12 @@ Start:
 2281 | 02       | 
 2282 | 75       | ld [R1] R1
 2283 | 9B C8 DC | jp gt $DCC8
-2286 | 6F       | 
-2287 | 0A       | 
+2286 | 6F       | ldb [R3] R3
+2287 | 0A       | ld R0 sp
 2288 | 75       | ld [R1] R1
 2289 | 00       | BRK
 228A | 52       | 
-228B | 6D       | 
+228B | 6D       | ldb [R3] R1
 228C | BF 77 89 | ld [$8977] R3
 228F | 2F       | ld R3 R3
 2290 | CE B0 27 | 
@@ -353,19 +353,19 @@ Start:
 229B | 77       | ld [R1] R3
 229C | 34       | add R1 R0
 229D | 1D       | [wait! that's illegal!]
-229E | 6A       | 
+229E | 6A       | ldb [R2] R2
 229F | D3       | 
 22A0 | A7       | push pc
 22A1 | 48       | 
-22A2 | 6A       | 
+22A2 | 6A       | ldb [R2] R2
 22A3 | C1       | [wait! that's illegal!]
 22A4 | 7D       | ld [R3] R1
 22A5 | E7       | [wait! that's illegal!]
 22A6 | 76       | ld [R1] R2
 22A7 | 8C       | 
-22A8 | 62       | 
+22A8 | 62       | ldb [R0] R2
 22A9 | 8F       | 
-22AA | 62       | 
+22AA | 62       | ldb [R0] R2
 22AB | 8C       | 
 22AC | 5C       | 
 22AD | E4       | [wait! that's illegal!]
@@ -394,13 +394,13 @@ Start:
 22CA | F3       | [wait! that's illegal!]
 22CB | 77       | ld [R1] R3
 22CC | 4C       | 
-22CD | 6E       | 
+22CD | 6E       | ldb [R3] R2
 22CE | 2D       | ld R3 R1
 22CF | 2D       | ld R3 R1
 22D0 | A4 03 C2 | cmp R2 $C203
 22D3 | 74       | ld [R1] R0
 22D4 | 2E       | ld R3 R2
-22D5 | B3 DD 85 | 
+22D5 | B3 DD 85 | ldb R3 [$85DD]
 22D8 | 29       | ld R2 R1
 22D9 | 41       | 
 22DA | 90       | push R0
@@ -408,7 +408,7 @@ Start:
 22DC | C7       | jp R2
 22DD | 3A       | add R2 R2
 22DE | 96       | pop R2
-22DF | B9 8E 35 | 
+22DF | B9 8E 35 | ldb [$358E] R1
 22E2 | CF 37 C0 | 
 22E5 | C8       | jp R3
 22E6 | FF       | [wait! that's illegal!]
@@ -426,14 +426,14 @@ Start:
 22FA | 4B       | 
 22FB | F5       | [wait! that's illegal!]
 22FC | 34       | add R1 R0
-22FD | 65       | 
+22FD | 65       | ldb [R1] R1
 22FE | B4 CC AC | ld R0 [$ACCC]
 2301 | 88       | 
 2302 | BF 49 43 | ld [$4349] R3
 2305 | 77       | ld [R1] R3
 2306 | AC       | dec R0
 2307 | 8F       | 
-2308 | 61       | 
+2308 | 61       | ldb [R0] R1
 2309 | 71       | ld [R0] R1
 230A | 8E       | 
 230B | 59       | 
@@ -448,7 +448,7 @@ Start:
 2314 | 8E       | 
 2315 | 93       | push R3
 2316 | 3F       | add R3 R3
-2317 | 6E       | 
+2317 | 6E       | ldb [R3] R2
 2318 | DD       | 
 2319 | 2E       | ld R3 R2
 231A | 37       | add R1 R3
@@ -460,9 +460,9 @@ Start:
 2322 | 7F       | ld [R3] R3
 2323 | 98 F3 A5 | jp $A5F3
 2326 | 98 43 E5 | jp $E543
-2329 | 60       | 
-232A | B9 5D BD | 
-232D | BA 3F AE | 
+2329 | 60       | ldb [R0] R0
+232A | B9 5D BD | ldb [$BD5D] R1
+232D | BA 3F AE | ldb [$AE3F] R2
 2330 | 71       | ld [R0] R1
 2331 | F6       | [wait! that's illegal!]
 2332 | ED       | [wait! that's illegal!]
@@ -481,7 +481,7 @@ Start:
 233F | 10 B6 C3 | ld R0 $C3B6
 2342 | 76       | ld [R1] R2
 2343 | 29       | ld R2 R1
-2344 | B1 10 12 | 
+2344 | B1 10 12 | ldb R1 [$1210]
 2347 | 1E       | [wait! that's illegal!]
 2348 | EA       | [wait! that's illegal!]
 2349 | A1 15 81 | 
@@ -495,7 +495,7 @@ Start:
 2355 | 57       | 
 2356 | 1B       | [wait! that's illegal!]
 2357 | 26       | ld R1 R2
-2358 | 64       | 
+2358 | 64       | ldb [R1] R0
 2359 | B7 CA 7C | ld R3 [$7CCA]
 235C | C8       | jp R3
 235D | 57       | 
