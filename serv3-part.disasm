@@ -1,0 +1,557 @@
+F000 | 09 00 FF | ld sp $FF00
+F003 | 06 05    | int $05                      ; (unknown)
+F005 | BC 00 FE | ld [$FE00] R0
+F008 | BC 51 F7 | ld [$F751] R0
+F00B | 12 24 F1 | ld R2 $F124
+F00E | 99 08 30 | call $3008
+F011 | 00       | BRK
+F012 | 12 3F F7 | ld R2 $F73F
+F015 | 99 38 00 | call StrTrim                 ; ($0038)
+F018 | 00       | BRK
+F019 | 06 03    | int $03                      ; (halt)
+F01B | 98 33 F0 | jp .lab_0_F033               ; ($F033)
+F01E | 12 98 08 | ld R2 $0898
+F021 | 00       | BRK
+F022 | 12 AA F1 | ld R2 .str_0_F1AA_nomenag    ; ($F1AA)
+F025 | 99 08 00 | call PrintStr                ; ($0008)
+F028 | F7       | [wait! that's illegal!]
+F029 | A2 51 00 | cmp R0 $0051
+F02C | 9C 92 F0 | jp eq .lab_1_F092            ; ($F092)
+F02F | A2 A2 0A | cmp R0 $0AA2
+F032 | 00       | BRK
+.lab_0_F033:
+F033 | 9C 6F F0 | jp eq .lab_2_F06F            ; ($F06F)
+.lab_3_F036:
+F036 | A2 00 53 | cmp R0 $5300
+F039 | F7       | [wait! that's illegal!]
+F03A | E3 D0 FF | add R3 $FFD0
+F03D | A5 03 00 | cmp R3 $0003
+F040 | 99 08 00 | call PrintStr                ; ($0008)
+F043 | 98 36 F0 | jp .lab_3_F036               ; ($F036)
+F046 | 12 9A 36 | ld R2 $369A
+F049 | F0       | [wait! that's illegal!]
+F04A | B4 4F F7 | ld R0 [$F74F]
+F04D | B5 00 FE | ld R1 [$FE00]
+F050 | 02       | 
+F051 | FE       | [wait! that's illegal!]
+F052 | 81       | 
+F053 | 9D D5 F0 | jp ne .lab_4_F0D5            ; ($F0D5)
+F056 | 05       | ret
+F057 | 06 A5    | int $A5                      ; (unknown)
+F059 | 00       | BRK
+F05A | 00       | BRK
+F05B | 9C B8 F0 | jp eq .lab_5_F0B8            ; ($F0B8)
+F05E | AA       | inc R2
+F05F | AF       | dec R3
+F060 | B4 4F F7 | ld R0 [$F74F]
+F063 | B5 00 FE | ld R1 [$FE00]
+F066 | 81       | 
+F067 | 9D 81 9D | jp ne $9D81
+F06A | D5       | 
+F06B | F0       | [wait! that's illegal!]
+F06C | 05       | ret
+F06D | 12 DD F0 | ld R2 $F0DD
+F070 | 20       | ld R0 R0
+F071 | 73       | ld [R0] R3
+F072 | 74       | ld [R1] R0
+F073 | 61       | ldb [R0] R1
+F074 | 63       | ldb [R0] R3
+F075 | 6B       | ldb [R2] R3
+F076 | 20       | ld R0 R0
+F077 | 73       | ld [R0] R3
+F078 | 64       | ldb [R1] R0
+F079 | 65       | ldb [R1] R1
+F07A | 74       | ld [R1] R0
+F07B | 65       | ldb [R1] R1
+F07C | 63       | ldb [R0] R3
+F07D | 74       | ld [R1] R0
+F07E | 65       | ldb [R1] R1
+F07F | 64       | ldb [R1] R0
+F080 | F1       | [wait! that's illegal!]
+F081 | 01 FE F1 | mul R0 $F1FE
+F084 | 02       | 
+F085 | FE       | [wait! that's illegal!]
+F086 | F1       | [wait! that's illegal!]
+F087 | 03       | 
+F088 | F1       | [wait! that's illegal!]
+F089 | 50       | ld R0 [R0]
+F08A | F7       | [wait! that's illegal!]
+F08B | F1       | [wait! that's illegal!]
+F08C | 51       | ld R0 [R1]
+F08D | F7       | [wait! that's illegal!]
+F08E | F1       | [wait! that's illegal!]
+F08F | 52       | ld R0 [R2]
+F090 | 65       | ldb [R1] R1
+F091 | 64       | ldb [R1] R0
+.lab_1_F092:
+F092 | 0A       | ld R0 sp
+F093 | 00       | BRK
+F094 | 57       | ld R1 [R3]
+F095 | 65       | ldb [R1] R1
+F096 | 6C       | ldb [R3] R0
+F097 | 63       | ldb [R0] R3
+F098 | 6C       | ldb [R3] R0
+F099 | 69       | ldb [R2] R1
+F09A | 74       | ld [R1] R0
+F09B | 63       | ldb [R0] R3
+F09C | 68       | ldb [R2] R0
+F09D | 20       | ld R0 R0
+F09E | 52       | ld R0 [R2]
+F09F | 65       | ldb [R1] R1
+F0A0 | 61       | ldb [R0] R1
+F0A1 | 62       | ldb [R0] R2
+F0A2 | 20       | ld R0 R0
+F0A3 | 49       | ldb R2 [R1]
+F0A4 | 6E       | ldb [R3] R2
+F0A5 | 66       | ldb [R1] R2
+F0A6 | 6F       | ldb [R3] R3
+F0A7 | 72       | ld [R0] R2
+F0A8 | 65       | ldb [R1] R1
+F0A9 | 72       | ld [R0] R2
+F0AA | 76       | ld [R1] R2
+F0AB | 65       | ldb [R1] R1
+F0AC | 72       | ld [R0] R2
+F0AD | 20       | ld R0 R0
+F0AE | 28       | ld R2 R0
+F0AF | 47       | ldb R1 [R3]
+F0B0 | 29       | ld R2 R1
+F0B1 | 0A       | ld R0 sp
+F0B2 | 45       | ldb R1 [R1]
+F0B3 | 6E       | ldb [R3] R2
+F0B4 | 74       | ld [R1] R0
+F0B5 | 65       | ldb [R1] R1
+F0B6 | 72       | ld [R0] R2
+F0B7 | 20       | ld R0 R0
+.lab_5_F0B8:
+F0B8 | 65       | ldb [R1] R1
+F0B9 | 20       | ld R0 R0
+F0BA | 66       | ldb [R1] R2
+F0BB | 6F       | ldb [R3] R3
+F0BC | 72       | ld [R0] R2
+F0BD | 20       | ld R0 R0
+F0BE | 6F       | ldb [R3] R3
+F0BF | 75       | ld [R1] R1
+F0C0 | 73       | ld [R0] R3
+F0C1 | 20       | ld R0 R0
+F0C2 | 28       | ld R2 R0
+F0C3 | 6D       | ldb [R3] R1
+F0C4 | 61       | ldb [R0] R1
+F0C5 | 78       | ld [R2] R0
+F0C6 | 20       | ld R0 R0
+F0C7 | 31       | add R0 R1
+F0C8 | 74       | ld [R1] R0
+F0C9 | 65       | ldb [R1] R1
+F0CA | 72       | ld [R0] R2
+F0CB | 73       | ld [R0] R3
+F0CC | 29       | ld R2 R1
+F0CD | 3A       | add R2 R2
+F0CE | 20       | ld R0 R0
+F0CF | 00       | BRK
+F0D0 | 57       | ld R1 [R3]
+F0D1 | 65       | ldb [R1] R1
+F0D2 | 6C       | ldb [R3] R0
+F0D3 | 63       | ldb [R0] R3
+F0D4 | 6F       | ldb [R3] R3
+.lab_4_F0D5:
+F0D5 | 6D       | ldb [R3] R1
+F0D6 | 65       | ldb [R1] R1
+F0D7 | 2C       | ld R3 R0
+F0D8 | 65       | ldb [R1] R1
+F0D9 | 63       | ldb [R0] R3
+F0DA | 74       | ld [R1] R0
+F0DB | 69       | ldb [R2] R1
+F0DC | 6F       | ldb [R3] R3
+F0DD | 6E       | ldb [R3] R2
+F0DE | 20       | ld R0 R0
+F0DF | 6F       | ldb [R3] R3
+F0E0 | 3A       | add R2 R2
+F0E1 | 0A       | ld R0 sp
+F0E2 | 28       | ld R2 R0
+F0E3 | 31       | add R0 R1
+F0E4 | 29       | ld R2 R1
+F0E5 | 20       | ld R0 R0
+F0E6 | 41       | ldb R0 [R1]
+F0E7 | 62       | ldb [R0] R2
+F0E8 | 47       | ldb R1 [R3]
+F0E9 | 6C       | ldb [R3] R0
+F0EA | 69       | ldb [R2] R1
+F0EB | 74       | ld [R1] R0
+F0EC | 63       | ldb [R0] R3
+F0ED | 68       | ldb [R2] R0
+F0EE | 20       | ld R0 R0
+F0EF | 52       | ld R0 [R2]
+F0F0 | 4C       | ldb R3 [R0]
+F0F1 | 61       | ldb [R0] R1
+F0F2 | 62       | ldb [R0] R2
+F0F3 | 6F       | ldb [R3] R3
+F0F4 | 72       | ld [R0] R2
+F0F5 | 61       | ldb [R0] R1
+F0F6 | 74       | ld [R1] R0
+F0F7 | 6F       | ldb [R3] R3
+F0F8 | 62       | ldb [R0] R2
+F0F9 | 6F       | ldb [R3] R3
+F0FA | 75       | ld [R1] R1
+F0FB | 74       | ld [R1] R0
+F0FC | 20       | ld R0 R0
+F0FD | 74       | ld [R1] R0
+F0FE | 68       | ldb [R2] R0
+F0FF | 65       | ldb [R1] R1
+F100 | 73       | ld [R0] R3
+F101 | 74       | ld [R1] R0
+F102 | 20       | ld R0 R0
+F103 | 73       | ld [R0] R3
+F104 | 65       | ldb [R1] R1
+F105 | 72       | ld [R0] R2
+F106 | 76       | ld [R1] R2
+F107 | 65       | ldb [R1] R1
+F108 | 62       | ldb [R0] R2
+F109 | 6F       | ldb [R3] R3
+F10A | 75       | ld [R1] R1
+F10B | 74       | ld [R1] R0
+F10C | 20       | ld R0 R0
+F10D | 74       | ld [R1] R0
+F10E | 68       | ldb [R2] R0
+F10F | 65       | ldb [R1] R1
+F110 | 69       | ldb [R2] R1
+F111 | 6D       | ldb [R3] R1
+F112 | 75       | ld [R1] R1
+F113 | 6C       | ldb [R3] R0
+F114 | 61       | ldb [R0] R1
+F115 | 74       | ld [R1] R0
+F116 | 69       | ldb [R2] R1
+F117 | 6F       | ldb [R3] R3
+F118 | 6D       | ldb [R3] R1
+F119 | 0A       | ld R0 sp
+F11A | 0A       | ld R0 sp
+F11B | 45       | ldb R1 [R1]
+F11C | 6E       | ldb [R3] R2
+F11D | 74       | ld [R1] R0
+F11E | 65       | ldb [R1] R1
+F11F | 72       | ld [R0] R2
+F120 | 62       | ldb [R0] R2
+F121 | 65       | ldb [R1] R1
+F122 | 72       | ld [R0] R2
+F123 | 20       | ld R0 R0
+F124 | 6F       | ldb [R3] R3
+F125 | 66       | ldb [R1] R2
+F126 | 20       | ld R0 R0
+F127 | 74       | ld [R1] R0
+F128 | 20       | ld R0 R0
+F129 | 79       | ld [R2] R1
+F12A | 6F       | ldb [R3] R3
+F12B | 75       | ld [R1] R1
+F12C | 20       | ld R0 R0
+F12D | 77       | ld [R1] R3
+F12E | 69       | ldb [R2] R1
+F12F | 73       | ld [R0] R3
+F130 | 77       | ld [R1] R3
+F131 | 2C       | ld R3 R0
+F132 | 20       | ld R0 R0
+F133 | 6F       | ldb [R3] R3
+F134 | 72       | ld [R0] R2
+F135 | 20       | ld R0 R0
+F136 | 27       | ld R1 R3
+F137 | 71       | ld [R0] R1
+F138 | 76       | ld [R1] R2
+F139 | 65       | ldb [R1] R1
+F13A | 3A       | add R2 R2
+F13B | 20       | ld R0 R0
+F13C | 00       | BRK
+F13D | 54       | ld R1 [R0]
+F13E | 68       | ldb [R2] R0
+F13F | 61       | ldb [R0] R1
+F140 | 48       | ldb R2 [R0]
+F141 | 61       | ldb [R0] R1
+F142 | 76       | ld [R1] R2
+F143 | 65       | ldb [R1] R1
+F144 | 20       | ld R0 R0
+F145 | 61       | ldb [R0] R1
+F146 | 20       | ld R0 R0
+F147 | 6E       | ldb [R3] R2
+F148 | 0A       | ld R0 sp
+F149 | 00       | BRK
+F14A | 9A F2 B9 | jp lt $B9F2
+F14D | F2       | [wait! that's illegal!]
+F14E | 9A F3 20 | jp lt $20F3
+F151 | 74       | ld [R1] R0
+F152 | 79       | ld [R2] R1
+F153 | 70       | ld [R0] R0
+F154 | 65       | ldb [R1] R1
+F155 | 20       | ld R0 R0
+F156 | 31       | add R0 R1
+F157 | 2C       | ld R3 R0
+F158 | 20       | ld R0 R0
+F159 | 64       | ldb [R1] R0
+F15A | 75       | ld [R1] R1
+F15B | 6D       | ldb [R3] R1
+F15C | 6D       | ldb [R3] R1
+F15D | 79       | ld [R2] R1
+F15E | 21       | ld R0 R1
+F15F | 0A       | ld R0 sp
+F160 | 0A       | ld R0 sp
+F161 | 47       | ldb R1 [R3]
+F162 | 6C       | ldb [R3] R0
+F163 | 69       | ldb [R2] R1
+F164 | 74       | ld [R1] R0
+F165 | 63       | ldb [R0] R3
+F166 | 68       | ldb [R2] R0
+F167 | 20       | ld R0 R0
+F168 | 20       | ld R0 R0
+F169 | 4C       | ldb R3 [R0]
+F16A | 61       | ldb [R0] R1
+F16B | 62       | ldb [R0] R2
+F16C | 6F       | ldb [R3] R3
+F16D | 72       | ld [R0] R2
+F16E | 61       | ldb [R0] R1
+F16F | 74       | ld [R1] R0
+F170 | 68       | ldb [R2] R0
+F171 | 65       | ldb [R1] R1
+F172 | 20       | ld R0 R0
+F173 | 6C       | ldb [R3] R0
+F174 | 65       | ldb [R1] R1
+F175 | 61       | ldb [R0] R1
+F176 | 64       | ldb [R1] R0
+F177 | 69       | ldb [R2] R1
+F178 | 68       | ldb [R2] R0
+F179 | 6F       | ldb [R3] R3
+F17A | 6C       | ldb [R3] R0
+F17B | 6F       | ldb [R3] R3
+F17C | 67       | ldb [R1] R3
+F17D | 79       | ld [R2] R1
+F17E | 20       | ld R0 R0
+F17F | 72       | ld [R0] R2
+F180 | 66       | ldb [R1] R2
+F181 | 61       | ldb [R0] R1
+F182 | 63       | ldb [R0] R3
+F183 | 69       | ldb [R2] R1
+F184 | 6C       | ldb [R3] R0
+F185 | 69       | ldb [R2] R1
+F186 | 74       | ld [R1] R0
+F187 | 79       | ld [R2] R1
+F188 | 6F       | ldb [R3] R3
+F189 | 66       | ldb [R1] R2
+F18A | 20       | ld R0 R0
+F18B | 47       | ldb R1 [R3]
+F18C | 6C       | ldb [R3] R0
+F18D | 69       | ldb [R2] R1
+F18E | 74       | ld [R1] R0
+F18F | 63       | ldb [R0] R3
+F190 | 73       | ld [R0] R3
+F191 | 2E       | ld R3 R2
+F192 | 20       | ld R0 R0
+F193 | 57       | ld R1 [R3]
+F194 | 65       | ldb [R1] R1
+F195 | 20       | ld R0 R0
+F196 | 73       | ld [R0] R3
+F197 | 70       | ld [R0] R0
+F198 | 20       | ld R0 R0
+F199 | 69       | ldb [R2] R1
+F19A | 6E       | ldb [R3] R2
+F19B | 20       | ld R0 R0
+F19C | 72       | ld [R0] R2
+F19D | 65       | ldb [R1] R1
+F19E | 73       | ld [R0] R3
+F19F | 65       | ldb [R1] R1
+F1A0 | 76       | ld [R1] R2
+F1A1 | 61       | ldb [R0] R1
+F1A2 | 72       | ld [R0] R2
+F1A3 | 69       | ldb [R2] R1
+F1A4 | 6F       | ldb [R3] R3
+F1A5 | 75       | ld [R1] R1
+F1A6 | 73       | ld [R0] R3
+F1A7 | 20       | ld R0 R0
+F1A8 | 68       | ldb [R2] R0
+F1A9 | 65       | ldb [R1] R1
+.str_0_F1AA_nomenag:
+F1AA | 6E 6F 6D 65 6E 61 67 20 69 6E 20 47 6C 69 6E 64 73 20 61 6E 64 20 66 0A 74 68 65 20 73 75 67 20 61 72 65 61 73 2E 0A 0A 47 4C 56 4D 20 69 6E 6F 76 61 74 69 76 65 63 68 69 6E 65 20 61 72 72 65 2C 20 64 65 73 69 62 72 69 6E 67 0A 74 68 66 20 5A 38 30 20 61 73 72 6F 67 72 61 6D 6D 69 65 20 6D 6F 64 65 72 6E 54 68 65 20 73 69 6D 70 6E 73 74 72 75 63 74 69 66 20 74 68 65 20 47 4C 63 65 73 20 70 72 6F 64 0A 6F 66 20 6F 75 72 20 73 20 61 6E 64 20 73 69 74 6C 79 20 73 70 65 65 76 65 6C 6F 70 6D 65 6E 74 77 61 72 65 0A 72 65 6F 72 20 6F 75 72 20 72 0A 57 6F 72 6B 20 6F 6E 4D 20 61 72 63 68 69 74 73 20 73 74 69 6C 6C 20 20 61 6E 64 20 61 6C 6C 6E 74 61 74 69 6F 6E 0A 61 72 65 20 73 74 72 69 66 69 64 65 6E 74 69 61 20 66 75 72 74 68 65 72 0A 00  |
+    ds "nomenag in Glinds and f\nthe sug areas.\n\nGLVM inovativechine arre, desibring\nthf Z80 asrogrammie modernThe simpnstructif the GLces prod\nof our s and sitly speevelopmentware\nreor our r\nWork onM archits still  and allntation\nare strifidentia further\n"
+F2A2 | 0A       | ld R0 sp
+F2A3 | 2D       | ld R3 R1
+F2A4 | 2D       | ld R3 R1
+F2A5 | 2D       | ld R3 R1
+F2A6 | 2D       | ld R3 R1
+F2A7 | 2D       | ld R3 R1
+F2A8 | 53       | ld R0 [R3]
+F2A9 | 69       | ldb [R2] R1
+F2AA | 6D       | ldb [R3] R1
+F2AB | 75       | ld [R1] R1
+F2AC | 6C       | ldb [R3] R0
+F2AD | 61       | ldb [R0] R1
+F2AE | 74       | ld [R1] R0
+F2AF | 69       | ldb [R2] R1
+F2B0 | 61       | ldb [R0] R1
+F2B1 | 6D       | ldb [R3] R1
+F2B2 | 20       | ld R0 R0
+F2B3 | 69       | ldb [R2] R1
+F2B4 | 73       | ld [R0] R3
+F2B5 | 20       | ld R0 R0
+F2B6 | 74       | ld [R1] R0
+F2B7 | 68       | ldb [R2] R0
+F2B8 | 74       | ld [R1] R0
+F2B9 | 20       | ld R0 R0
+F2BA | 6F       | ldb [R3] R3
+F2BB | 6E       | ldb [R3] R2
+F2BC | 67       | ldb [R1] R3
+F2BD | 6F       | ldb [R3] R3
+F2BE | 69       | ldb [R2] R1
+F2BF | 6E       | ldb [R3] R2
+F2C0 | 74       | ld [R1] R0
+F2C1 | 20       | ld R0 R0
+F2C2 | 6F       | ldb [R3] R3
+F2C3 | 66       | ldb [R1] R2
+F2C4 | 20       | ld R0 R0
+F2C5 | 47       | ldb R1 [R3]
+F2C6 | 6C       | ldb [R3] R0
+F2C7 | 69       | ldb [R2] R1
+F2C8 | 61       | ldb [R0] R1
+F2C9 | 72       | ld [R0] R2
+F2CA | 63       | ldb [R0] R3
+F2CB | 68       | ldb [R2] R0
+F2CC | 20       | ld R0 R0
+F2CD | 4C       | ldb R3 [R0]
+F2CE | 61       | ldb [R0] R1
+F2CF | 62       | ldb [R0] R2
+F2D0 | 20       | ld R0 R0
+F2D1 | 49       | ldb R2 [R1]
+F2D2 | 74       | ld [R1] R0
+F2D3 | 20       | ld R0 R0
+F2D4 | 61       | ldb [R0] R1
+F2D5 | 6C       | ldb [R3] R0
+F2D6 | 6C       | ldb [R3] R0
+F2D7 | 6F       | ldb [R3] R3
+F2D8 | 78       | ld [R2] R0
+F2D9 | 61       | ldb [R0] R1
+F2DA | 6D       | ldb [R3] R1
+F2DB | 69       | ldb [R2] R1
+F2DC | 6E       | ldb [R3] R2
+F2DD | 61       | ldb [R0] R1
+F2DE | 74       | ld [R1] R0
+F2DF | 69       | ldb [R2] R1
+F2E0 | 68       | ldb [R2] R0
+F2E1 | 61       | ldb [R0] R1
+F2E2 | 76       | ld [R1] R2
+F2E3 | 69       | ldb [R2] R1
+F2E4 | 6F       | ldb [R3] R3
+F2E5 | 72       | ld [R0] R2
+F2E6 | 20       | ld R0 R0
+F2E7 | 6F       | ldb [R3] R3
+F2E8 | 6F       | ldb [R3] R3
+F2E9 | 75       | ld [R1] R1
+F2EA | 73       | ld [R0] R3
+F2EB | 20       | ld R0 R0
+F2EC | 67       | ldb [R1] R3
+F2ED | 6C       | ldb [R3] R0
+F2EE | 69       | ldb [R2] R1
+F2EF | 74       | ld [R1] R0
+F2F0 | 73       | ld [R0] R3
+F2F1 | 2C       | ld R3 R0
+F2F2 | 20       | ld R0 R0
+F2F3 | 73       | ld [R0] R3
+F2F4 | 75       | ld [R1] R1
+F2F5 | 63       | ldb [R0] R3
+F2F6 | 68       | ldb [R2] R0
+F2F7 | 20       | ld R0 R0
+F2F8 | 6E       | ldb [R3] R2
+F2F9 | 67       | ldb [R1] R3
+F2FA | 6E       | ldb [R3] R2
+F2FB | 6F       | ldb [R3] R3
+F2FC | 2E       | ld R3 R2
+F2FD | 2C       | ld R3 R0
+F2FE | 20       | ld R0 R0
+F2FF | 77       | ld [R1] R3
+F300 | 75       | ld [R1] R1
+F301 | 6E       | ldb [R3] R2
+F302 | 6E       | ldb [R3] R2
+F303 | 69       | ldb [R2] R1
+F304 | 6E       | ldb [R3] R2
+F305 | 67       | ldb [R1] R3
+F306 | 20       | ld R0 R0
+F307 | 74       | ld [R1] R0
+F308 | 6F       | ldb [R3] R3
+F309 | 66       | ldb [R1] R2
+F30A | 20       | ld R0 R0
+F30B | 70       | ld [R0] R0
+F30C | 72       | ld [R0] R2
+F30D | 6F       | ldb [R3] R3
+F30E | 6C       | ldb [R3] R0
+F30F | 6F       | ldb [R3] R3
+F310 | 6F       | ldb [R3] R3
+F311 | 73       | ld [R0] R3
+F312 | 75       | ld [R1] R1
+F313 | 72       | ld [R0] R2
+F314 | 65       | ldb [R1] R1
+F315 | 20       | ld R0 R0
+F316 | 74       | ld [R1] R0
+F317 | 6F       | ldb [R3] R3
+F318 | 73       | ld [R0] R3
+F319 | 20       | ld R0 R0
+F31A | 6F       | ldb [R3] R3
+F31B | 72       | ld [R0] R2
+F31C | 20       | ld R0 R0
+F31D | 63       | ldb [R0] R3
+F31E | 6F       | ldb [R3] R3
+F31F | 72       | ld [R0] R2
+F320 | 0A       | ld R0 sp
+F321 | 50       | ld R0 [R0]
+F322 | 61       | ldb [R0] R1
+F323 | 72       | ld [R0] R2
+F324 | 74       | ld [R1] R0
+F325 | 69       | ldb [R2] R1
+F326 | 63       | ldb [R0] R3
+F327 | 69       | ldb [R2] R1
+F328 | 65       | ldb [R1] R1
+F329 | 20       | ld R0 R0
+F32A | 61       | ldb [R0] R1
+F32B | 62       | ldb [R0] R2
+F32C | 6C       | ldb [R3] R0
+F32D | 65       | ldb [R1] R1
+F32E | 20       | ld R0 R0
+F32F | 74       | ld [R1] R0
+F330 | 61       | ldb [R0] R1
+F331 | 67       | ldb [R1] R3
+F332 | 61       | ldb [R0] R1
+F333 | 69       | ldb [R2] R1
+F334 | 6E       | ldb [R3] R2
+F335 | 73       | ld [R0] R3
+F336 | 74       | ld [R1] R0
+F337 | 20       | ld R0 R0
+F338 | 73       | ld [R0] R3
+F339 | 20       | ld R0 R0
+F33A | 69       | ldb [R2] R1
+F33B | 6E       | ldb [R3] R2
+F33C | 20       | ld R0 R0
+F33D | 61       | ldb [R0] R1
+F33E | 6E       | ldb [R3] R2
+F33F | 20       | ld R0 R0
+F340 | 0A       | ld R0 sp
+F341 | 65       | ldb [R1] R1
+F342 | 6E       | ldb [R3] R2
+F343 | 76       | ld [R1] R2
+F344 | 69       | ldb [R2] R1
+F345 | 72       | ld [R0] R2
+F346 | 6F       | ldb [R3] R3
+F347 | 6E       | ldb [R3] R2
+F348 | 6D       | ldb [R3] R1
+F349 | 69       | ldb [R2] R1
+F34A | 6C       | ldb [R3] R0
+F34B | 61       | ldb [R0] R1
+F34C | 72       | ld [R0] R2
+F34D | 20       | ld R0 R0
+F34E | 74       | ld [R1] R0
+F34F | 6F       | ldb [R3] R3
+F350 | 20       | ld R0 R0
+F351 | 74       | ld [R1] R0
+F352 | 75       | ld [R1] R1
+F353 | 72       | ld [R0] R2
+F354 | 6E       | ldb [R3] R2
+F355 | 2D       | ld R3 R1
+F356 | 62       | ldb [R0] R2
+F357 | 61       | ldb [R0] R1
+F358 | 74       | ld [R1] R0
+F359 | 65       | ldb [R1] R1
+F35A | 67       | ldb [R1] R3
+F35B | 79       | ld [R2] R1
+F35C | 20       | ld R0 R0
+F35D | 67       | ldb [R1] R3
+F35E | 61       | ldb [R0] R1
+F35F | 6D       | ldb [R3] R1

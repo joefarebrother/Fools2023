@@ -1,0 +1,282 @@
+EFFF | 00       | BRK
+F000 | 09 00 FF | ld sp $FF00
+F003 | 06 05    | int $05                      ; (unknown)
+F005 | BC 00 FE | ld [$FE00] R0
+F008 | BC 4F F7 | ld [$F74F] R0
+F00B | 06 05    | int $05                      ; (unknown)
+F00D | BC 02 FE | ld [$FE02] R0
+F010 | BC 51 F7 | ld [$F751] R0
+F013 | 12 24 F1 | ld R2 .str_0_F124_Welcome    ; ($F124)
+F016 | 99 08 00 | call PrintStr                ; ($0008)
+F019 | 12 3F F7 | ld R2 .str_3_F73F            ; ($F73F)
+F01C | 13 0F 00 | ld R3 $000F
+F01F | 99 30 00 | call ReadStr                 ; ($0030)
+F022 | 12 3F F7 | ld R2 .str_3_F73F            ; ($F73F)
+F025 | 99 38 00 | call StrTrim                 ; ($0038)
+F028 | 99 36 F0 | call .lab_0_F036             ; ($F036)
+F02B | 12 75 F2 | ld R2 .str_1_F275_Thank      ; ($F275)
+F02E | 99 08 00 | call PrintStr                ; ($0008)
+F031 | 06 03    | int $03                      ; (halt)
+.lab_1_F033:
+F033 | 98 33 F0 | jp .lab_1_F033               ; ($F033)
+.lab_0_F036:
+F036 | 12 98 F1 | ld R2 .str_2_F198_n          ; ($F198)
+F039 | 99 08 00 | call PrintStr                ; ($0008)
+F03C | 12 3F F7 | ld R2 .str_3_F73F            ; ($F73F)
+F03F | 99 08 00 | call PrintStr                ; ($0008)
+F042 | 12 AA F1 | ld R2 .str_4_F1AA_n          ; ($F1AA)
+F045 | 99 08 00 | call PrintStr                ; ($0008)
+F048 | 12 53 F7 | ld R2 $F753
+F04B | 99 A7 F0 | call .lab_2_F0A7             ; ($F0A7)
+F04E | B0 53 F7 | ldb R0 [$F753]
+F051 | A2 51 00 | cmp R0 $0051
+F054 | 9C 92 F0 | jp eq .lab_3_F092            ; ($F092)
+F057 | A2 71 00 | cmp R0 $0071
+F05A | 9C 92 F0 | jp eq .lab_3_F092            ; ($F092)
+F05D | B0 54 F7 | ldb R0 [$F754]
+F060 | A2 0A 00 | cmp R0 $000A
+F063 | 9C 6F F0 | jp eq .lab_5_F06F            ; ($F06F)
+F066 | A2 00 00 | cmp R0 $0000
+F069 | 9C 6F F0 | jp eq .lab_5_F06F            ; ($F06F)
+F06C | 98 86 F0 | jp .lab_7_F086               ; ($F086)
+.lab_5_F06F:
+F06F | B3 53 F7 | ldb R3 [$F753]
+F072 | E3 D0 FF | add R3 $FFD0
+F075 | A5 03 00 | cmp R3 $0003
+F078 | 9B 86 F0 | jp gt .lab_7_F086            ; ($F086)
+F07B | 3F       | add R3 R3
+F07C | E3 92 F2 | add R3 $F292
+F07F | 5B       | ld R2 [R3]
+F080 | 99 08 00 | call PrintStr                ; ($0008)
+F083 | 98 36 F0 | jp .lab_0_F036               ; ($F036)
+.lab_7_F086:
+F086 | 12 9A F2 | ld R2 .str_5_F29A_Please     ; ($F29A)
+F089 | 99 08 00 | call PrintStr                ; ($0008)
+F08C | 13 00 10 | ld R3 $1000
+F08F | 98 36 F0 | jp .lab_0_F036               ; ($F036)
+.lab_3_F092:
+F092 | B4 4F F7 | ld R0 [$F74F]
+F095 | B5 00 FE | ld R1 [$FE00]
+F098 | 81       | 
+F099 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F09C | B4 51 F7 | ld R0 [$F751]
+F09F | B5 02 FE | ld R1 [$FE02]
+F0A2 | 81       | 
+F0A3 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F0A6 | 05       | ret
+.lab_2_F0A7:
+F0A7 | 06 02    | int $02                      ; (in)
+F0A9 | 68       | ldb [R2] R0
+F0AA | A2 0A 00 | cmp R0 $000A
+F0AD | 9C BB F0 | jp eq .lab_13_F0BB           ; ($F0BB)
+F0B0 | A5 00 00 | cmp R3 $0000
+F0B3 | 9C B8 F0 | jp eq .lab_14_F0B8           ; ($F0B8)
+F0B6 | AA       | inc R2
+F0B7 | AF       | dec R3
+.lab_14_F0B8:
+F0B8 | 98 A7 F0 | jp .lab_2_F0A7               ; ($F0A7)
+.lab_13_F0BB:
+F0BB | AA       | inc R2
+F0BC | 10 00 00 | ld R0 $0000
+F0BF | 68       | ldb [R2] R0
+F0C0 | B4 4F F7 | ld R0 [$F74F]
+F0C3 | B5 00 FE | ld R1 [$FE00]
+F0C6 | 81       | 
+F0C7 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F0CA | B4 51 F7 | ld R0 [$F751]
+F0CD | B5 02 FE | ld R1 [$FE02]
+F0D0 | 81       | 
+F0D1 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F0D4 | 05       | ret
+.lab_11_F0D5:
+F0D5 | 12 DD F0 | ld R2 .str_6_F0DD_stack      ; ($F0DD)
+F0D8 | 99 08 00 | call PrintStr                ; ($0008)
+F0DB | 06 03    | int $03                      ; (halt)
+.str_6_F0DD_stack:
+F0DD | 2A 2A 2A 20 73 74 61 63 6B 20 73 6D 61 73 68 69 6E 67 20 64 65 74 65 63 74 65 64 20 2A 2A 2A 20 F1 00 FE F1 01 FE F1 02 FE F1 03 FE 20 21 3D 20 F1 4F F7 F1 50 F7 F1 51 F7 F1 52 F7 20 2D 20 68 61 6C 74 65 64 0A 00  |
+    ds "*** stack smashing detected *** \F1[$FE00]\F1[$FE01]\F1[$FE02]\F1[$FE03] != \F1[$F74F]\F1[$F750]\F1[$F751]\F1[$F752] - halted\n"
+.str_0_F124_Welcome:
+F124 | 57 65 6C 63 6F 6D 65 20 74 6F 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 20 49 6E 66 6F 72 6D 61 74 69 6F 6E 20 53 65 72 76 65 72 20 28 47 52 4C 49 4E 46 53 52 56 29 0A 45 6E 74 65 72 20 79 6F 75 72 20 6E 61 6D 65 20 66 6F 72 20 6F 75 72 20 72 65 63 6F 72 64 73 20 28 6D 61 78 20 31 35 20 63 68 61 72 61 63 74 65 72 73 29 3A 20 00  |
+    ds "Welcome to Glitch Research Lab Information Server (GRLINFSRV)\nEnter your name for our records (max 15 characters): "
+.str_2_F198_n:
+F198 | 0A 2D 2D 2D 2D 2D 0A 0A 57 65 6C 63 6F 6D 65 2C 20 00  |
+    ds "\n-----\n\nWelcome, "
+.str_4_F1AA_n:
+F1AA | 21 0A 0A 53 65 6C 65 63 74 69 6F 6E 20 6F 66 20 74 6F 70 69 63 73 3A 0A 28 31 29 20 41 62 6F 75 74 20 74 68 65 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 0A 28 32 29 20 41 62 6F 75 74 20 74 68 65 20 47 4C 56 4D 20 74 65 73 74 20 73 65 72 76 65 72 73 0A 28 33 29 20 41 62 6F 75 74 20 74 68 65 20 46 69 67 68 74 20 53 69 6D 75 6C 61 74 69 6F 6E 20 50 72 6F 67 72 61 6D 0A 0A 45 6E 74 65 72 20 74 68 65 20 6E 75 6D 62 65 72 20 6F 66 20 74 68 65 20 74 6F 70 69 63 20 79 6F 75 20 77 69 73 68 20 74 6F 20 76 69 65 77 2C 20 6F 72 20 27 71 27 20 74 6F 20 6C 65 61 76 65 3A 20 00  |
+    ds "!\n\nSelection of topics:\n(1) About the Glitch Research Laboratory\n(2) About the GLVM test servers\n(3) About the Fight Simulation Program\n\nEnter the number of the topic you wish to view, or 'q' to leave: "
+.str_1_F275_Thank:
+F275 | 54 68 61 6E 6B 20 79 6F 75 2E 20 48 61 76 65 20 61 20 6E 69 63 65 20 64 61 79 21 0A 00  |
+    ds "Thank you. Have a nice day!\n"
+F292 | 9A F2 B9 | jp lt $B9F2
+F295 | F2       | [wait! that's illegal!]
+F296 | 9A F3 42 | jp lt $42F3
+F299 | F5       | [wait! that's illegal!]
+.str_5_F29A_Please:
+F29A | 50 6C 65 61 73 65 20 74 79 70 65 20 31 2C 20 32 20 6F 72 20 33 2C 20 64 75 6D 6D 79 21 0A 00  |
+    ds "Please type 1, 2 or 3, dummy!\n"
+F2B9 | 0A       | ld R0 sp
+F2BA | 2D       | ld R3 R1
+F2BB | 2D       | ld R3 R1
+F2BC | 2D       | ld R3 R1
+F2BD | 2D       | ld R3 R1
+F2BE | 2D       | ld R3 R1
+F2BF | 0A       | ld R0 sp
+F2C0 | 0A       | ld R0 sp
+F2C1 | 47       | ldb R1 [R3]
+F2C2 | 6C       | ldb [R3] R0
+F2C3 | 69       | ldb [R2] R1
+F2C4 | 74       | ld [R1] R0
+F2C5 | 63       | ldb [R0] R3
+F2C6 | 68       | ldb [R2] R0
+F2C7 | 20       | ld R0 R0
+F2C8 | 52       | ld R0 [R2]
+F2C9 | 65       | ldb [R1] R1
+F2CA | 73       | ld [R0] R3
+F2CB | 65       | ldb [R1] R1
+F2CC | 61       | ldb [R0] R1
+F2CD | 72       | ld [R0] R2
+F2CE | 63       | ldb [R0] R3
+F2CF | 68       | ldb [R2] R0
+F2D0 | 20       | ld R0 R0
+F2D1 | 4C       | ldb R3 [R0]
+F2D2 | 61       | ldb [R0] R1
+F2D3 | 62       | ldb [R0] R2
+F2D4 | 6F       | ldb [R3] R3
+F2D5 | 72       | ld [R0] R2
+F2D6 | 61       | ldb [R0] R1
+F2D7 | 74       | ld [R1] R0
+F2D8 | 6F       | ldb [R3] R3
+F2D9 | 72       | ld [R0] R2
+F2DA | 79       | ld [R2] R1
+F2DB | 20       | ld R0 R0
+F2DC | 69       | ldb [R2] R1
+F2DD | 73       | ld [R0] R3
+F2DE | 20       | ld R0 R0
+F2DF | 74       | ld [R1] R0
+F2E0 | 68       | ldb [R2] R0
+F2E1 | 65       | ldb [R1] R1
+F2E2 | 20       | ld R0 R0
+F2E3 | 6C       | ldb [R3] R0
+F2E4 | 65       | ldb [R1] R1
+F2E5 | 61       | ldb [R0] R1
+F2E6 | 64       | ldb [R1] R0
+F2E7 | 69       | ldb [R2] R1
+F2E8 | 6E       | ldb [R3] R2
+F2E9 | 67       | ldb [R1] R3
+F2EA | 20       | ld R0 R0
+F2EB | 67       | ldb [R1] R3
+F2EC | 6C       | ldb [R3] R0
+F2ED | 69       | ldb [R2] R1
+F2EE | 74       | ld [R1] R0
+F2EF | 63       | ldb [R0] R3
+F2F0 | 68       | ldb [R2] R0
+F2F1 | 6F       | ldb [R3] R3
+F2F2 | 6C       | ldb [R3] R0
+F2F3 | 6F       | ldb [R3] R3
+F2F4 | 67       | ldb [R1] R3
+F2F5 | 79       | ld [R2] R1
+F2F6 | 20       | ld R0 R0
+F2F7 | 72       | ld [R0] R2
+F2F8 | 65       | ldb [R1] R1
+F2F9 | 73       | ld [R0] R3
+F2FA | 65       | ldb [R1] R1
+F2FB | 61       | ldb [R0] R1
+F2FC | 72       | ld [R0] R2
+F2FD | 63       | ldb [R0] R3
+F2FE | 68       | ldb [R2] R0
+F2FF | 0A       | ld R0 sp
+F300 | 66       | ldb [R1] R2
+F301 | 61       | ldb [R0] R1
+F302 | 63       | ldb [R0] R3
+F303 | 69       | ldb [R2] R1
+F304 | 6C       | ldb [R3] R0
+F305 | 69       | ldb [R2] R1
+F306 | 74       | ld [R1] R0
+F307 | 79       | ld [R2] R1
+F308 | 20       | ld R0 R0
+F309 | 69       | ldb [R2] R1
+F30A | 6E       | ldb [R3] R2
+F30B | 20       | ld R0 R0
+F30C | 61       | ldb [R0] R1
+F30D | 6C       | ldb [R3] R0
+F30E | 6C       | ldb [R3] R0
+F30F | 20       | ld R0 R0
+F310 | 6F       | ldb [R3] R3
+F311 | 66       | ldb [R1] R2
+F312 | 20       | ld R0 R0
+F313 | 47       | ldb R1 [R3]
+F314 | 6C       | ldb [R3] R0
+F315 | 69       | ldb [R2] R1
+F316 | 74       | ld [R1] R0
+F317 | 63       | ldb [R0] R3
+F318 | 68       | ldb [R2] R0
+F319 | 20       | ld R0 R0
+F31A | 49       | ldb R2 [R1]
+F31B | 73       | ld [R0] R3
+F31C | 6C       | ldb [R3] R0
+F31D | 61       | ldb [R0] R1
+F31E | 6E       | ldb [R3] R2
+F31F | 64       | ldb [R1] R0
+F320 | 73       | ld [R0] R3
+F321 | 2E       | ld R3 R2
+F322 | 20       | ld R0 R0
+F323 | 57       | ld R1 [R3]
+F324 | 65       | ldb [R1] R1
+F325 | 20       | ld R0 R0
+F326 | 73       | ld [R0] R3
+F327 | 70       | ld [R0] R0
+F328 | 65       | ldb [R1] R1
+F329 | 63       | ldb [R0] R3
+F32A | 69       | ldb [R2] R1
+F32B | 61       | ldb [R0] R1
+F32C | 6C       | ldb [R3] R0
+F32D | 69       | ldb [R2] R1
+F32E | 7A       | ld [R2] R2
+F32F | 65       | ldb [R1] R1
+F330 | 20       | ld R0 R0
+F331 | 69       | ldb [R2] R1
+F332 | 6E       | ldb [R3] R2
+F333 | 20       | ld R0 R0
+F334 | 72       | ld [R0] R2
+F335 | 65       | ldb [R1] R1
+F336 | 73       | ld [R0] R3
+F337 | 65       | ldb [R1] R1
+F338 | 61       | ldb [R0] R1
+F339 | 72       | ld [R0] R2
+F33A | 63       | ldb [R0] R3
+F33B | 68       | ldb [R2] R0
+F33C | 20       | ld R0 R0
+F33D | 6F       | ldb [R3] R3
+F33E | 66       | ldb [R1] R2
+F33F | 0A       | ld R0 sp
+F340 | 76       | ld [R1] R2
+F341 | 61       | ldb [R0] R1
+F342 | 72       | ld [R0] R2
+F343 | 69       | ldb [R2] R1
+F344 | 6F       | ldb [R3] R3
+F345 | 75       | ld [R1] R1
+F346 | 73       | ld [R0] R3
+F347 | 20       | ld R0 R0
+F348 | 67       | ldb [R1] R3
+F349 | 6C       | ldb [R3] R0
+F34A | 69       | ldb [R2] R1
+F34B | 74       | ld [R1] R0
+F34C | 63       | ldb [R0] R3
+F34D | 68       | ldb [R2] R0
+F34E | 20       | ld R0 R0
+F34F | 70       | ld [R0] R0
+F350 | 68       | ldb [R2] R0
+F351 | 65       | ldb [R1] R1
+F352 | 6E       | ldb [R3] R2
+F353 | 6F       | ldb [R3] R3
+F354 | 6D       | ldb [R3] R1
+F355 | 65       | ldb [R1] R1
+F356 | 6E       | ldb [R3] R2
+F357 | 61       | ldb [R0] R1
+F358 | 20       | ld R0 R0
+F359 | 65       | ldb [R1] R1
+F35A | 78       | ld [R2] R0
+F35B | 69       | ldb [R2] R1
+F35C | 73       | ld [R0] R3
+F35D | 74       | ld [R1] R0
+F35E | 69       | ldb [R2] R1

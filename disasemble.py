@@ -73,7 +73,8 @@ known_syscalls = {
     0x01: "out",
     0x02: "in",
     0x03: "halt",
-    0x04: "load_blk"
+    0x04: "load_blk",
+    0x05: "rand",
 }
 
 op_lens = {6: 1}
