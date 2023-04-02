@@ -25,7 +25,7 @@ out = ""
 echoing = True
 
 
-def read_all_poss(timeout=2, subsequent_timeout=1, expected_end="Ready.\n> "):
+def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
     global out, con
     if not con:
         raise ConnectionClosedException("Connection closed")
@@ -163,7 +163,13 @@ def print_mem(addr):
 
 
 def write_mem(addr, data):
-    res = send(f"w\n{hex(addr)}\n{hex(data)}.\n")
+    data = hex(data)
+    data_ = ""
+    for i, c in enumerate(data):
+        data_ += c
+        if i % 64 == 0:
+            data_ += "\n"
+    res = send(f"w\n{hex(addr)}\n{data_}.\n")
     res = expect_prompt_and_ready_suffix('> Which address? > Enter hex data. End with dot "." + newline:\n', res)
     assert res == "Loaded.\n", res
 
