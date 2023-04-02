@@ -1,4 +1,4 @@
-# pylint:disable=global-statement
+# pylint:disable=global-statement,redefined-outer-name
 
 encrypted_data_dump = r"""
 1160 | FB 72 3A 22 21 4B 6A C2 | .r:"!Kj.

@@ -1,3 +1,4 @@
+# pylint:disable=wildcard-import,unused-wildcard-import,pointless-string-statement,redefined-outer-name
 from disasemble import *
 
 """
@@ -92,7 +93,7 @@ def assemble_code(lines, offset=0x2000):
         for op in opcode[instr]:
             bytesout.append(op)
         for x in data:
-            n = eval(x, labs)
+            n = eval(x, labs)  # pylint:disable=eval-used
             bytesout.append(n & 255)
             if "int" not in instr:
                 bytesout.append(n >> 8)

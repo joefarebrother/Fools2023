@@ -34,4 +34,19 @@ e seems to now take no args but took 2 before?
 seen: 0666, 0664, 0665 - in math
 04 used in ls command and rf command. interacts with filesystem?
 
+decrypted thing:
 
+REPORT: MARCH
+
+Fight Simulation Program - BLOCKED
+Still debating what the exact premise of the project should be; bimonthly curated box of snacks is currently winning
+
+Buffer overflow on Information Server - PENDING
+Stack cookies were implemented, which should mitigate the issue while we work on its resolution
+
+Missingno in Fight Simulation - PENDING
+Skill issues are preventing progression. We are able to reach Super Glitch, but haven't figured out the correct movement yet
+
+FOOLS2023_{XXXXXXXXX}
+
+buffer overflow, you say? hmmm...

@@ -1,4 +1,4 @@
-# pylint: disable=global-statement,invalid-name
+# pylint: disable=global-statement,invalid-name,unused-import
 import socket
 import select
 import builtins
