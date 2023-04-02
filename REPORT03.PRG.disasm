@@ -24,81 +24,82 @@ Start:
 2036 | 99 38 00 | call StrTrim                 ; ($0038)
 2039 | 12 44 21 | ld R2 .mem_pw                ; ($2144)
 203C | 10 C0 9F | ld R0 $9FC0
-.lab_2_203F:
-203F | 56       | 
+.loop1:
+203F | 56       | ld R1 [R2]
 2040 | AA       | inc R2
 2041 | A3 00 00 | cmp R1 $0000
-2044 | 0E       | 
-2045 | D9       | 
-2046 | 0E       | 
+2044 | 0E       | shl R0
+2045 | D9       | xor R0 R1
+2046 | 0E       | shl R0
 2047 | 31       | add R0 R1
-2048 | 9C 4E 20 | jp eq .lab_1_204E            ; ($204E)
-204B | 98 3F 20 | jp .lab_2_203F               ; ($203F)
-.lab_1_204E:
-204E | BC 56 21 | ld [$2156] R0
-2051 | 13 60 21 | ld R3 $2160
-2054 | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+2048 | 9C 4E 20 | jp eq .loop1_exit            ; ($204E)
+204B | 98 3F 20 | jp .loop1                    ; ($203F)
+.loop1_exit:
+204E | BC 56 21 | ld [.mem_X] R0               ; ($2156)
+2051 | 13 60 21 | ld R3 .mem_encrypted         ; ($2160)
+2054 | 12 60 23 | ld R2 .mem_output            ; ($2360)
 2057 | 11 00 02 | ld R1 $0200
 205A | 99 28 00 | call MemCpy                  ; ($0028)
-205D | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+205D | 12 60 23 | ld R2 .mem_output            ; ($2360)
 2060 | 13 00 01 | ld R3 $0100
-.lab_4_2063:
-2063 | 99 86 20 | call .lab_3_2086             ; ($2086)
+.loop2:
+2063 | 99 86 20 | call Next_X                  ; ($2086)
 2066 | 24       | ld R1 R0
-2067 | 52       | 
-2068 | D9       | 
+2067 | 52       | ld R0 [R2]
+2068 | D9       | xor R0 R1
 2069 | 78       | ld [R2] R0
 206A | AA       | inc R2
 206B | AA       | inc R2
 206C | AF       | dec R3
 206D | A5 00 00 | cmp R3 $0000
-2070 | 9D 63 20 | jp ne .lab_4_2063            ; ($2063)
-2073 | 12 1F 21 | ld R2 .str_3_211F_HERE       ; ($211F)
+2070 | 9D 63 20 | jp ne .loop2                 ; ($2063)
+2073 | 12 1F 21 | ld R2 .str_here_is_doc       ; ($211F)
 2076 | 99 08 00 | call PrintStr                ; ($0008)
-2079 | 12 60 23 | ld R2 .str_4_2360            ; ($2360)
+2079 | 12 60 23 | ld R2 .mem_output            ; ($2360)
 207C | 99 08 00 | call PrintStr                ; ($0008)
 207F | 12 3F 21 | ld R2 .str_5_213F            ; ($213F)
 2082 | 99 08 00 | call PrintStr                ; ($0008)
 2085 | 05       | ret
-.lab_3_2086:
-2086 | B4 56 21 | ld R0 [$2156]
+Next_X:
+2086 | B4 56 21 | ld R0 [.mem_X]               ; ($2156)
 2089 | 01 A7 41 | mul R0 $41A7
-208C | CF 55 55 | 
-208F | BC 56 21 | ld [$2156] R0
+208C | CF 55 55 | xor R0 $5555
+208F | BC 56 21 | ld [.mem_X] R0               ; ($2156)
 2092 | 05       | ret
-.str_0_2093_GLITCH:
+.str_intro:
 2093 | 47 4C 49 54 43 48 20 52 45 53 45 41 52 43 48 20 4C 41 42 4F 52 41 54 4F 52 59 20 53 45 4C 46 2D 43 4F 4E 54 41 49 4E 45 44 20 45 4E 43 52 59 50 54 49 4F 4E 20 54 4F 4F 4C 0A 00  |
     ds "GLITCH RESEARCH LABORATORY SELF-CONTAINED ENCRYPTION TOOL\n"
-.str_1_20CE_PLEASE:
+.str_wrong_addr:
 20CE | 50 4C 45 41 53 45 20 4C 4F 41 44 20 4D 45 20 41 54 20 41 44 44 52 45 53 53 20 24 32 30 30 30 2E 2E 2E 20 28 45 58 49 54 49 4E 47 29 0A 00  |
     ds "PLEASE LOAD ME AT ADDRESS $2000... (EXITING)\n"
 .str_enter_pw:
 20FC | 50 4C 45 41 53 45 20 45 4E 54 45 52 20 45 4E 43 52 59 50 54 49 4F 4E 20 50 41 53 53 57 4F 52 44 3A 20 00  |
     ds "PLEASE ENTER ENCRYPTION PASSWORD: "
-.str_3_211F_HERE:
+.str_here_is_doc:
 211F | 48 45 52 45 20 49 53 20 54 48 45 20 45 4E 43 52 59 50 54 45 44 20 44 4F 43 55 4D 45 4E 54 3A 20 0A 2D 2D 0A 00  |
     ds "HERE IS THE ENCRYPTED DOCUMENT: \n--\n"
 .mem_pw:
-2144 | 5F       | 
-2145 | 5F       | 
-2146 | 5F       | 
-2147 | 5F       | 
-2148 | 5F       | 
-2149 | 5F       | 
-214A | 5F       | 
-214B | 5F       | 
-214C | 5F       | 
-214D | 5F       | 
-214E | 5F       | 
-214F | 5F       | 
-2150 | 5F       | 
-2151 | 5F       | 
-2152 | 5F       | 
-2153 | 5F       | 
+2144 | 5F       | ld R3 [R3]
+2145 | 5F       | ld R3 [R3]
+2146 | 5F       | ld R3 [R3]
+2147 | 5F       | ld R3 [R3]
+2148 | 5F       | ld R3 [R3]
+2149 | 5F       | ld R3 [R3]
+214A | 5F       | ld R3 [R3]
+214B | 5F       | ld R3 [R3]
+214C | 5F       | ld R3 [R3]
+214D | 5F       | ld R3 [R3]
+214E | 5F       | ld R3 [R3]
+214F | 5F       | ld R3 [R3]
+2150 | 5F       | ld R3 [R3]
+2151 | 5F       | ld R3 [R3]
+2152 | 5F       | ld R3 [R3]
+2153 | 5F       | ld R3 [R3]
 2154 | 00       | BRK
 2155 | 00       | BRK
-2156 | 5F       | 
-2157 | 5F       | 
+.mem_X:
+2156 | 5F       | ld R3 [R3]
+2157 | 5F       | ld R3 [R3]
 2158 | 33       | add R0 R3
 2159 | 33       | add R0 R3
 215A | 33       | add R0 R3
@@ -107,12 +108,13 @@ Start:
 215D | 33       | add R0 R3
 215E | 33       | add R0 R3
 215F | 33       | add R0 R3
+.mem_encrypted:
 2160 | FB       | [wait! that's illegal!]
 2161 | 72       | ld [R0] R2
 2162 | 3A       | add R2 R2
 2163 | 22       | ld R0 R2
 2164 | 21       | ld R0 R1
-2165 | 4B       | 
+2165 | 4B       | ldb R2 [R3]
 2166 | 6A       | ldb [R2] R2
 2167 | C2       | [wait! that's illegal!]
 2168 | 28       | ld R2 R0
@@ -126,7 +128,7 @@ Start:
 2174 | 9B AB C1 | jp gt $C1AB
 2177 | 84       | 
 2178 | B8 2D 8F | ldb [$8F2D] R0
-217B | D8       | 
+217B | D8       | xor R0 R0
 217C | 7E       | ld [R3] R2
 217D | 07       | 
 217E | 3A       | add R2 R2
@@ -135,20 +137,20 @@ Start:
 2181 | F0       | [wait! that's illegal!]
 2182 | F5       | [wait! that's illegal!]
 2183 | 38       | add R2 R0
-2184 | 51       | 
-2185 | 43       | 
+2184 | 51       | ld R0 [R1]
+2185 | 43       | ldb R0 [R3]
 2186 | ED       | [wait! that's illegal!]
-2187 | 52       | 
+2187 | 52       | ld R0 [R2]
 2188 | F8       | [wait! that's illegal!]
-2189 | 44       | 
+2189 | 44       | ldb R1 [R0]
 218A | E4       | [wait! that's illegal!]
 218B | C2       | [wait! that's illegal!]
-218C | 50       | 
+218C | 50       | ld R0 [R0]
 218D | 22       | ld R0 R2
 218E | 27       | ld R1 R3
 218F | 2A       | ld R2 R2
 2190 | 65       | ldb [R1] R1
-2191 | 44       | 
+2191 | 44       | ldb R1 [R0]
 2192 | 81       | 
 2193 | 79       | ld [R2] R1
 2194 | C2       | [wait! that's illegal!]
@@ -156,7 +158,7 @@ Start:
 2196 | B4 AF D9 | ld R0 [$D9AF]
 2199 | 9D 7C 74 | jp ne $747C
 219C | B3 58 EA | ldb R3 [$EA58]
-219F | CD 69 E2 | 
+219F | CD 69 E2 | and R0 $E269
 21A2 | A2 DF E7 | cmp R0 $E7DF
 21A5 | CA       | call R1
 21A6 | C4       | [wait! that's illegal!]
@@ -166,13 +168,13 @@ Start:
 21AE | 68       | ldb [R2] R0
 21AF | AD       | dec R1
 21B0 | 61       | ldb [R0] R1
-21B1 | 0E       | 
+21B1 | 0E       | shl R0
 21B2 | 27       | ld R1 R3
 21B3 | 78       | ld [R2] R0
 21B4 | 32       | add R0 R2
 21B5 | 86       | 
 21B6 | 6D       | ldb [R3] R1
-21B7 | 5C       | 
+21B7 | 5C       | ld R3 [R0]
 21B8 | 02       | 
 21B9 | C2       | [wait! that's illegal!]
 21BA | 6E       | ldb [R3] R2
@@ -180,7 +182,7 @@ Start:
 21BC | DF       | 
 21BD | 93       | push R3
 21BE | 14       | [wait! that's illegal!]
-21BF | 4D       | 
+21BF | 4D       | ldb R3 [R1]
 21C0 | CB       | call R2
 21C1 | 1A       | [wait! that's illegal!]
 21C2 | 90       | push R0
@@ -193,14 +195,14 @@ Start:
 21C9 | E8       | [wait! that's illegal!]
 21CA | 73       | ld [R0] R3
 21CB | 2B       | ld R2 R3
-21CC | DB       | 
+21CC | DB       | xor R0 R3
 21CD | AF       | dec R3
 21CE | AE       | dec R2
 21CF | 74       | ld [R1] R0
 21D0 | 7A       | ld [R2] R2
 21D1 | 1D       | [wait! that's illegal!]
-21D2 | 50       | 
-21D3 | 4A       | 
+21D2 | 50       | ld R0 [R0]
+21D3 | 4A       | ldb R2 [R2]
 21D4 | A6       | push sp
 21D5 | 9D 56 CC | jp ne $CC56
 21D8 | B5 5D 07 | ld R1 [$075D]
@@ -208,27 +210,27 @@ Start:
 21DC | 04       | 
 21DD | A7       | push pc
 21DE | 16       | [wait! that's illegal!]
-21DF | 5C       | 
+21DF | 5C       | ld R3 [R0]
 21E0 | 1D       | [wait! that's illegal!]
-21E1 | 40       | 
-21E2 | 4E       | 
+21E1 | 40       | ldb R0 [R0]
+21E2 | 4E       | ldb R3 [R2]
 21E3 | 65       | ldb [R1] R1
-21E4 | 51       | 
+21E4 | 51       | ld R0 [R1]
 21E5 | F2       | [wait! that's illegal!]
 21E6 | 68       | ldb [R2] R0
 21E7 | 0A       | ld R0 sp
-21E8 | 4A       | 
+21E8 | 4A       | ldb R2 [R2]
 21E9 | B3 56 56 | ldb R3 [$5656]
 21EC | C1       | [wait! that's illegal!]
-21ED | 51       | 
+21ED | 51       | ld R0 [R1]
 21EE | 1F       | [wait! that's illegal!]
 21EF | 0F       | 
 21F0 | C2       | [wait! that's illegal!]
 21F1 | 7D       | ld [R3] R1
-21F2 | 4B       | 
+21F2 | 4B       | ldb R2 [R3]
 21F3 | 29       | ld R2 R1
-21F4 | 5B       | 
-21F5 | 58       | 
+21F4 | 5B       | ld R2 [R3]
+21F5 | 58       | ld R2 [R0]
 21F6 | 1D       | [wait! that's illegal!]
 21F7 | 2F       | ld R3 R3
 21F8 | FF       | [wait! that's illegal!]
@@ -241,24 +243,24 @@ Start:
 2201 | E6       | [wait! that's illegal!]
 2202 | 34       | add R1 R0
 2203 | B7 8D D4 | ld R3 [$D48D]
-2206 | 4A       | 
+2206 | 4A       | ldb R2 [R2]
 2207 | A3 D7 88 | cmp R1 $88D7
 220A | 00       | BRK
 220B | 72       | ld [R0] R2
 220C | BA 13 0C | ldb [$0C13] R2
-220F | 4D       | 
+220F | 4D       | ldb R3 [R1]
 2210 | 97       | pop R3
-2211 | 46       | 
+2211 | 46       | ldb R1 [R2]
 2212 | E0 BB 07 | add R0 $07BB
 2215 | A6       | push sp
 2216 | EF       | [wait! that's illegal!]
 2217 | FA       | [wait! that's illegal!]
 2218 | 12 0A FE | ld R2 $FE0A
-221B | 56       | 
+221B | 56       | ld R1 [R2]
 221C | E9       | [wait! that's illegal!]
 221D | 14       | [wait! that's illegal!]
 221E | 2B       | ld R2 R3
-221F | DA       | 
+221F | DA       | xor R0 R2
 2220 | 64       | ldb [R1] R0
 2221 | 3C       | add R3 R0
 2222 | FE       | [wait! that's illegal!]
@@ -268,14 +270,14 @@ Start:
 2228 | 20       | ld R0 R0
 2229 | B7 20 05 | ld R3 [$0520]
 222C | 3D       | add R3 R1
-222D | DB       | 
+222D | DB       | xor R0 R3
 222E | F1       | [wait! that's illegal!]
 222F | 8A       | 
 2230 | 81       | 
-2231 | 41       | 
-2232 | 4C       | 
+2231 | 41       | ldb R0 [R1]
+2232 | 4C       | ldb R3 [R0]
 2233 | 24       | ld R1 R0
-2234 | 52       | 
+2234 | 52       | ld R0 [R2]
 2235 | 38       | add R2 R0
 2236 | 8F       | 
 2237 | B9 7E 2E | ldb [$2E7E] R1
@@ -293,8 +295,8 @@ Start:
 2245 | 92       | push R2
 2246 | D7       | 
 2247 | D2       | 
-2248 | 47       | 
-2249 | 59       | 
+2248 | 47       | ldb R1 [R3]
+2249 | 59       | ld R2 [R1]
 224A | E6       | [wait! that's illegal!]
 224B | 87       | 
 224C | 12 2C E0 | ld R2 $E02C
@@ -302,14 +304,14 @@ Start:
 2252 | 9C BE EE | jp eq $EEBE
 2255 | E4       | [wait! that's illegal!]
 2256 | D4       | 
-2257 | 50       | 
+2257 | 50       | ld R0 [R0]
 2258 | EA       | [wait! that's illegal!]
 2259 | 94       | pop R0
-225A | 57       | 
+225A | 57       | ld R1 [R3]
 225B | 91       | push R1
-225C | 4F       | 
+225C | 4F       | ldb R3 [R3]
 225D | B1 57 AA | ldb R1 [$AA57]
-2260 | 46       | 
+2260 | 46       | ldb R1 [R2]
 2261 | E9       | [wait! that's illegal!]
 2262 | 86       | 
 2263 | 76       | ld [R1] R2
@@ -319,13 +321,13 @@ Start:
 2269 | 9C 57 56 | jp eq $5657
 226C | 0A       | ld R0 sp
 226D | 72       | ld [R0] R2
-226E | 48       | 
+226E | 48       | ldb R2 [R0]
 226F | C8       | jp R3
 2270 | 14       | [wait! that's illegal!]
 2271 | B6 8B F2 | ld R2 [$F28B]
-2274 | 48       | 
+2274 | 48       | ldb R2 [R0]
 2275 | 3C       | add R3 R0
-2276 | 4D       | 
+2276 | 4D       | ldb R3 [R1]
 2277 | B5 3A 48 | ld R1 [$483A]
 227A | 07       | 
 227B | A6       | push sp
@@ -339,13 +341,13 @@ Start:
 2287 | 0A       | ld R0 sp
 2288 | 75       | ld [R1] R1
 2289 | 00       | BRK
-228A | 52       | 
+228A | 52       | ld R0 [R2]
 228B | 6D       | ldb [R3] R1
 228C | BF 77 89 | ld [$8977] R3
 228F | 2F       | ld R3 R3
-2290 | CE B0 27 | 
+2290 | CE B0 27 | or R0 $27B0
 2293 | EF       | [wait! that's illegal!]
-2294 | 42       | 
+2294 | 42       | ldb R0 [R2]
 2295 | 1E       | [wait! that's illegal!]
 2296 | 36       | add R1 R2
 2297 | E1 37 C6 | add R1 $C637
@@ -356,7 +358,7 @@ Start:
 229E | 6A       | ldb [R2] R2
 229F | D3       | 
 22A0 | A7       | push pc
-22A1 | 48       | 
+22A1 | 48       | ldb R2 [R0]
 22A2 | 6A       | ldb [R2] R2
 22A3 | C1       | [wait! that's illegal!]
 22A4 | 7D       | ld [R3] R1
@@ -367,17 +369,17 @@ Start:
 22A9 | 8F       | 
 22AA | 62       | ldb [R0] R2
 22AB | 8C       | 
-22AC | 5C       | 
+22AC | 5C       | ld R3 [R0]
 22AD | E4       | [wait! that's illegal!]
 22AE | F1       | [wait! that's illegal!]
 22AF | F3       | [wait! that's illegal!]
 22B0 | FD       | [wait! that's illegal!]
-22B1 | 5F       | 
+22B1 | 5F       | ld R3 [R3]
 22B2 | B6 9D B4 | ld R2 [$B49D]
 22B5 | D7       | 
 22B6 | A8       | inc R0
 22B7 | A0       | [wait! that's illegal!]
-22B8 | CD DE 8B | 
+22B8 | CD DE 8B | and R0 $8BDE
 22BB | 72       | ld [R0] R2
 22BC | 73       | ld [R0] R3
 22BD | E4       | [wait! that's illegal!]
@@ -387,13 +389,13 @@ Start:
 22C1 | 8F       | 
 22C2 | 11 1E AF | ld R1 $AF1E
 22C5 | D3       | 
-22C6 | 40       | 
+22C6 | 40       | ldb R0 [R0]
 22C7 | A7       | push pc
 22C8 | 86       | 
 22C9 | 26       | ld R1 R2
 22CA | F3       | [wait! that's illegal!]
 22CB | 77       | ld [R1] R3
-22CC | 4C       | 
+22CC | 4C       | ldb R3 [R0]
 22CD | 6E       | ldb [R3] R2
 22CE | 2D       | ld R3 R1
 22CF | 2D       | ld R3 R1
@@ -402,14 +404,14 @@ Start:
 22D4 | 2E       | ld R3 R2
 22D5 | B3 DD 85 | ldb R3 [$85DD]
 22D8 | 29       | ld R2 R1
-22D9 | 41       | 
+22D9 | 41       | ldb R0 [R1]
 22DA | 90       | push R0
 22DB | C3       | [wait! that's illegal!]
 22DC | C7       | jp R2
 22DD | 3A       | add R2 R2
 22DE | 96       | pop R2
 22DF | B9 8E 35 | ldb [$358E] R1
-22E2 | CF 37 C0 | 
+22E2 | CF 37 C0 | xor R0 $C037
 22E5 | C8       | jp R3
 22E6 | FF       | [wait! that's illegal!]
 22E7 | D5       | 
@@ -423,7 +425,7 @@ Start:
 22F3 | C9       | call R0
 22F4 | 9E 5B 9C | 
 22F7 | A1 2D C6 | 
-22FA | 4B       | 
+22FA | 4B       | ldb R2 [R3]
 22FB | F5       | [wait! that's illegal!]
 22FC | 34       | add R1 R0
 22FD | 65       | ldb [R1] R1
@@ -436,12 +438,12 @@ Start:
 2308 | 61       | ldb [R0] R1
 2309 | 71       | ld [R0] R1
 230A | 8E       | 
-230B | 59       | 
+230B | 59       | ld R2 [R1]
 230C | 7F       | ld [R3] R3
 230D | 78       | ld [R2] R0
-230E | D9       | 
+230E | D9       | xor R0 R1
 230F | 73       | ld [R0] R3
-2310 | 41       | 
+2310 | 41       | ldb R0 [R1]
 2311 | 90       | push R0
 2312 | 73       | ld [R0] R3
 2313 | 8B       | 
@@ -454,7 +456,7 @@ Start:
 231A | 37       | add R1 R3
 231B | E8       | [wait! that's illegal!]
 231C | 72       | ld [R0] R2
-231D | 43       | 
+231D | 43       | ldb R0 [R3]
 231E | A1 F3 A9 | 
 2321 | FE       | [wait! that's illegal!]
 2322 | 7F       | ld [R3] R3
@@ -471,12 +473,12 @@ Start:
 2335 | 8F       | 
 2336 | 2D       | ld R3 R1
 2337 | 15       | [wait! that's illegal!]
-2338 | D9       | 
+2338 | D9       | xor R0 R1
 2339 | C6       | jp R1
 233A | F7       | [wait! that's illegal!]
-233B | 57       | 
+233B | 57       | ld R1 [R3]
 233C | 83       | 
-233D | 57       | 
+233D | 57       | ld R1 [R3]
 233E | 7E       | ld [R3] R2
 233F | 10 B6 C3 | ld R0 $C3B6
 2342 | 76       | ld [R1] R2
@@ -491,13 +493,527 @@ Start:
 2351 | FF       | [wait! that's illegal!]
 2352 | 1C       | [wait! that's illegal!]
 2353 | 37       | add R1 R3
-2354 | 4E       | 
-2355 | 57       | 
+2354 | 4E       | ldb R3 [R2]
+2355 | 57       | ld R1 [R3]
 2356 | 1B       | [wait! that's illegal!]
 2357 | 26       | ld R1 R2
 2358 | 64       | ldb [R1] R0
 2359 | B7 CA 7C | ld R3 [$7CCA]
 235C | C8       | jp R3
-235D | 57       | 
-235E | D9       | 
-235F | 57       | 
+235D | 57       | ld R1 [R3]
+235E | D9       | xor R0 R1
+235F | 57       | ld R1 [R3]
+.mem_output:
+2360 | 00  |
+    ds ""
+2361 | 00       | BRK
+2362 | 00       | BRK
+2363 | 00       | BRK
+2364 | 00       | BRK
+2365 | 00       | BRK
+2366 | 00       | BRK
+2367 | 00       | BRK
+2368 | 00       | BRK
+2369 | 00       | BRK
+236A | 00       | BRK
+236B | 00       | BRK
+236C | 00       | BRK
+236D | 00       | BRK
+236E | 00       | BRK
+236F | 00       | BRK
+2370 | 00       | BRK
+2371 | 00       | BRK
+2372 | 00       | BRK
+2373 | 00       | BRK
+2374 | 00       | BRK
+2375 | 00       | BRK
+2376 | 00       | BRK
+2377 | 00       | BRK
+2378 | 00       | BRK
+2379 | 00       | BRK
+237A | 00       | BRK
+237B | 00       | BRK
+237C | 00       | BRK
+237D | 00       | BRK
+237E | 00       | BRK
+237F | 00       | BRK
+2380 | 00       | BRK
+2381 | 00       | BRK
+2382 | 00       | BRK
+2383 | 00       | BRK
+2384 | 00       | BRK
+2385 | 00       | BRK
+2386 | 00       | BRK
+2387 | 00       | BRK
+2388 | 00       | BRK
+2389 | 00       | BRK
+238A | 00       | BRK
+238B | 00       | BRK
+238C | 00       | BRK
+238D | 00       | BRK
+238E | 00       | BRK
+238F | 00       | BRK
+2390 | 00       | BRK
+2391 | 00       | BRK
+2392 | 00       | BRK
+2393 | 00       | BRK
+2394 | 00       | BRK
+2395 | 00       | BRK
+2396 | 00       | BRK
+2397 | 00       | BRK
+2398 | 00       | BRK
+2399 | 00       | BRK
+239A | 00       | BRK
+239B | 00       | BRK
+239C | 00       | BRK
+239D | 00       | BRK
+239E | 00       | BRK
+239F | 00       | BRK
+23A0 | 00       | BRK
+23A1 | 00       | BRK
+23A2 | 00       | BRK
+23A3 | 00       | BRK
+23A4 | 00       | BRK
+23A5 | 00       | BRK
+23A6 | 00       | BRK
+23A7 | 00       | BRK
+23A8 | 00       | BRK
+23A9 | 00       | BRK
+23AA | 00       | BRK
+23AB | 00       | BRK
+23AC | 00       | BRK
+23AD | 00       | BRK
+23AE | 00       | BRK
+23AF | 00       | BRK
+23B0 | 00       | BRK
+23B1 | 00       | BRK
+23B2 | 00       | BRK
+23B3 | 00       | BRK
+23B4 | 00       | BRK
+23B5 | 00       | BRK
+23B6 | 00       | BRK
+23B7 | 00       | BRK
+23B8 | 00       | BRK
+23B9 | 00       | BRK
+23BA | 00       | BRK
+23BB | 00       | BRK
+23BC | 00       | BRK
+23BD | 00       | BRK
+23BE | 00       | BRK
+23BF | 00       | BRK
+23C0 | 00       | BRK
+23C1 | 00       | BRK
+23C2 | 00       | BRK
+23C3 | 00       | BRK
+23C4 | 00       | BRK
+23C5 | 00       | BRK
+23C6 | 00       | BRK
+23C7 | 00       | BRK
+23C8 | 00       | BRK
+23C9 | 00       | BRK
+23CA | 00       | BRK
+23CB | 00       | BRK
+23CC | 00       | BRK
+23CD | 00       | BRK
+23CE | 00       | BRK
+23CF | 00       | BRK
+23D0 | 00       | BRK
+23D1 | 00       | BRK
+23D2 | 00       | BRK
+23D3 | 00       | BRK
+23D4 | 00       | BRK
+23D5 | 00       | BRK
+23D6 | 00       | BRK
+23D7 | 00       | BRK
+23D8 | 00       | BRK
+23D9 | 00       | BRK
+23DA | 00       | BRK
+23DB | 00       | BRK
+23DC | 00       | BRK
+23DD | 00       | BRK
+23DE | 00       | BRK
+23DF | 00       | BRK
+23E0 | 00       | BRK
+23E1 | 00       | BRK
+23E2 | 00       | BRK
+23E3 | 00       | BRK
+23E4 | 00       | BRK
+23E5 | 00       | BRK
+23E6 | 00       | BRK
+23E7 | 00       | BRK
+23E8 | 00       | BRK
+23E9 | 00       | BRK
+23EA | 00       | BRK
+23EB | 00       | BRK
+23EC | 00       | BRK
+23ED | 00       | BRK
+23EE | 00       | BRK
+23EF | 00       | BRK
+23F0 | 00       | BRK
+23F1 | 00       | BRK
+23F2 | 00       | BRK
+23F3 | 00       | BRK
+23F4 | 00       | BRK
+23F5 | 00       | BRK
+23F6 | 00       | BRK
+23F7 | 00       | BRK
+23F8 | 00       | BRK
+23F9 | 00       | BRK
+23FA | 00       | BRK
+23FB | 00       | BRK
+23FC | 00       | BRK
+23FD | 00       | BRK
+23FE | 00       | BRK
+23FF | 00       | BRK
+2400 | 00       | BRK
+2401 | 00       | BRK
+2402 | 00       | BRK
+2403 | 00       | BRK
+2404 | 00       | BRK
+2405 | 00       | BRK
+2406 | 00       | BRK
+2407 | 00       | BRK
+2408 | 00       | BRK
+2409 | 00       | BRK
+240A | 00       | BRK
+240B | 00       | BRK
+240C | 00       | BRK
+240D | 00       | BRK
+240E | 00       | BRK
+240F | 00       | BRK
+2410 | 00       | BRK
+2411 | 00       | BRK
+2412 | 00       | BRK
+2413 | 00       | BRK
+2414 | 00       | BRK
+2415 | 00       | BRK
+2416 | 00       | BRK
+2417 | 00       | BRK
+2418 | 00       | BRK
+2419 | 00       | BRK
+241A | 00       | BRK
+241B | 00       | BRK
+241C | 00       | BRK
+241D | 00       | BRK
+241E | 00       | BRK
+241F | 00       | BRK
+2420 | 00       | BRK
+2421 | 00       | BRK
+2422 | 00       | BRK
+2423 | 00       | BRK
+2424 | 00       | BRK
+2425 | 00       | BRK
+2426 | 00       | BRK
+2427 | 00       | BRK
+2428 | 00       | BRK
+2429 | 00       | BRK
+242A | 00       | BRK
+242B | 00       | BRK
+242C | 00       | BRK
+242D | 00       | BRK
+242E | 00       | BRK
+242F | 00       | BRK
+2430 | 00       | BRK
+2431 | 00       | BRK
+2432 | 00       | BRK
+2433 | 00       | BRK
+2434 | 00       | BRK
+2435 | 00       | BRK
+2436 | 00       | BRK
+2437 | 00       | BRK
+2438 | 00       | BRK
+2439 | 00       | BRK
+243A | 00       | BRK
+243B | 00       | BRK
+243C | 00       | BRK
+243D | 00       | BRK
+243E | 00       | BRK
+243F | 00       | BRK
+2440 | 00       | BRK
+2441 | 00       | BRK
+2442 | 00       | BRK
+2443 | 00       | BRK
+2444 | 00       | BRK
+2445 | 00       | BRK
+2446 | 00       | BRK
+2447 | 00       | BRK
+2448 | 00       | BRK
+2449 | 00       | BRK
+244A | 00       | BRK
+244B | 00       | BRK
+244C | 00       | BRK
+244D | 00       | BRK
+244E | 00       | BRK
+244F | 00       | BRK
+2450 | 00       | BRK
+2451 | 00       | BRK
+2452 | 00       | BRK
+2453 | 00       | BRK
+2454 | 00       | BRK
+2455 | 00       | BRK
+2456 | 00       | BRK
+2457 | 00       | BRK
+2458 | 00       | BRK
+2459 | 00       | BRK
+245A | 00       | BRK
+245B | 00       | BRK
+245C | 00       | BRK
+245D | 00       | BRK
+245E | 00       | BRK
+245F | 00       | BRK
+2460 | 00       | BRK
+2461 | 00       | BRK
+2462 | 00       | BRK
+2463 | 00       | BRK
+2464 | 00       | BRK
+2465 | 00       | BRK
+2466 | 00       | BRK
+2467 | 00       | BRK
+2468 | 00       | BRK
+2469 | 00       | BRK
+246A | 00       | BRK
+246B | 00       | BRK
+246C | 00       | BRK
+246D | 00       | BRK
+246E | 00       | BRK
+246F | 00       | BRK
+2470 | 00       | BRK
+2471 | 00       | BRK
+2472 | 00       | BRK
+2473 | 00       | BRK
+2474 | 00       | BRK
+2475 | 00       | BRK
+2476 | 00       | BRK
+2477 | 00       | BRK
+2478 | 00       | BRK
+2479 | 00       | BRK
+247A | 00       | BRK
+247B | 00       | BRK
+247C | 00       | BRK
+247D | 00       | BRK
+247E | 00       | BRK
+247F | 00       | BRK
+2480 | 00       | BRK
+2481 | 00       | BRK
+2482 | 00       | BRK
+2483 | 00       | BRK
+2484 | 00       | BRK
+2485 | 00       | BRK
+2486 | 00       | BRK
+2487 | 00       | BRK
+2488 | 00       | BRK
+2489 | 00       | BRK
+248A | 00       | BRK
+248B | 00       | BRK
+248C | 00       | BRK
+248D | 00       | BRK
+248E | 00       | BRK
+248F | 00       | BRK
+2490 | 00       | BRK
+2491 | 00       | BRK
+2492 | 00       | BRK
+2493 | 00       | BRK
+2494 | 00       | BRK
+2495 | 00       | BRK
+2496 | 00       | BRK
+2497 | 00       | BRK
+2498 | 00       | BRK
+2499 | 00       | BRK
+249A | 00       | BRK
+249B | 00       | BRK
+249C | 00       | BRK
+249D | 00       | BRK
+249E | 00       | BRK
+249F | 00       | BRK
+24A0 | 00       | BRK
+24A1 | 00       | BRK
+24A2 | 00       | BRK
+24A3 | 00       | BRK
+24A4 | 00       | BRK
+24A5 | 00       | BRK
+24A6 | 00       | BRK
+24A7 | 00       | BRK
+24A8 | 00       | BRK
+24A9 | 00       | BRK
+24AA | 00       | BRK
+24AB | 00       | BRK
+24AC | 00       | BRK
+24AD | 00       | BRK
+24AE | 00       | BRK
+24AF | 00       | BRK
+24B0 | 00       | BRK
+24B1 | 00       | BRK
+24B2 | 00       | BRK
+24B3 | 00       | BRK
+24B4 | 00       | BRK
+24B5 | 00       | BRK
+24B6 | 00       | BRK
+24B7 | 00       | BRK
+24B8 | 00       | BRK
+24B9 | 00       | BRK
+24BA | 00       | BRK
+24BB | 00       | BRK
+24BC | 00       | BRK
+24BD | 00       | BRK
+24BE | 00       | BRK
+24BF | 00       | BRK
+24C0 | 00       | BRK
+24C1 | 00       | BRK
+24C2 | 00       | BRK
+24C3 | 00       | BRK
+24C4 | 00       | BRK
+24C5 | 00       | BRK
+24C6 | 00       | BRK
+24C7 | 00       | BRK
+24C8 | 00       | BRK
+24C9 | 00       | BRK
+24CA | 00       | BRK
+24CB | 00       | BRK
+24CC | 00       | BRK
+24CD | 00       | BRK
+24CE | 00       | BRK
+24CF | 00       | BRK
+24D0 | 00       | BRK
+24D1 | 00       | BRK
+24D2 | 00       | BRK
+24D3 | 00       | BRK
+24D4 | 00       | BRK
+24D5 | 00       | BRK
+24D6 | 00       | BRK
+24D7 | 00       | BRK
+24D8 | 00       | BRK
+24D9 | 00       | BRK
+24DA | 00       | BRK
+24DB | 00       | BRK
+24DC | 00       | BRK
+24DD | 00       | BRK
+24DE | 00       | BRK
+24DF | 00       | BRK
+24E0 | 00       | BRK
+24E1 | 00       | BRK
+24E2 | 00       | BRK
+24E3 | 00       | BRK
+24E4 | 00       | BRK
+24E5 | 00       | BRK
+24E6 | 00       | BRK
+24E7 | 00       | BRK
+24E8 | 00       | BRK
+24E9 | 00       | BRK
+24EA | 00       | BRK
+24EB | 00       | BRK
+24EC | 00       | BRK
+24ED | 00       | BRK
+24EE | 00       | BRK
+24EF | 00       | BRK
+24F0 | 00       | BRK
+24F1 | 00       | BRK
+24F2 | 00       | BRK
+24F3 | 00       | BRK
+24F4 | 00       | BRK
+24F5 | 00       | BRK
+24F6 | 00       | BRK
+24F7 | 00       | BRK
+24F8 | 00       | BRK
+24F9 | 00       | BRK
+24FA | 00       | BRK
+24FB | 00       | BRK
+24FC | 00       | BRK
+24FD | 00       | BRK
+24FE | 00       | BRK
+24FF | 00       | BRK
+2500 | 00       | BRK
+2501 | 00       | BRK
+2502 | 00       | BRK
+2503 | 00       | BRK
+2504 | 00       | BRK
+2505 | 00       | BRK
+2506 | 00       | BRK
+2507 | 00       | BRK
+2508 | 00       | BRK
+2509 | 00       | BRK
+250A | 00       | BRK
+250B | 00       | BRK
+250C | 00       | BRK
+250D | 00       | BRK
+250E | 00       | BRK
+250F | 00       | BRK
+2510 | 00       | BRK
+2511 | 00       | BRK
+2512 | 00       | BRK
+2513 | 00       | BRK
+2514 | 00       | BRK
+2515 | 00       | BRK
+2516 | 00       | BRK
+2517 | 00       | BRK
+2518 | 00       | BRK
+2519 | 00       | BRK
+251A | 00       | BRK
+251B | 00       | BRK
+251C | 00       | BRK
+251D | 00       | BRK
+251E | 00       | BRK
+251F | 00       | BRK
+2520 | 00       | BRK
+2521 | 00       | BRK
+2522 | 00       | BRK
+2523 | 00       | BRK
+2524 | 00       | BRK
+2525 | 00       | BRK
+2526 | 00       | BRK
+2527 | 00       | BRK
+2528 | 00       | BRK
+2529 | 00       | BRK
+252A | 00       | BRK
+252B | 00       | BRK
+252C | 00       | BRK
+252D | 00       | BRK
+252E | 00       | BRK
+252F | 00       | BRK
+2530 | 00       | BRK
+2531 | 00       | BRK
+2532 | 00       | BRK
+2533 | 00       | BRK
+2534 | 00       | BRK
+2535 | 00       | BRK
+2536 | 00       | BRK
+2537 | 00       | BRK
+2538 | 00       | BRK
+2539 | 00       | BRK
+253A | 00       | BRK
+253B | 00       | BRK
+253C | 00       | BRK
+253D | 00       | BRK
+253E | 00       | BRK
+253F | 00       | BRK
+2540 | 00       | BRK
+2541 | 00       | BRK
+2542 | 00       | BRK
+2543 | 00       | BRK
+2544 | 00       | BRK
+2545 | 00       | BRK
+2546 | 00       | BRK
+2547 | 00       | BRK
+2548 | 00       | BRK
+2549 | 00       | BRK
+254A | 00       | BRK
+254B | 00       | BRK
+254C | 00       | BRK
+254D | 00       | BRK
+254E | 00       | BRK
+254F | 00       | BRK
+2550 | 00       | BRK
+2551 | 00       | BRK
+2552 | 00       | BRK
+2553 | 00       | BRK
+2554 | 00       | BRK
+2555 | 00       | BRK
+2556 | 00       | BRK
+2557 | 00       | BRK
+2558 | 00       | BRK
+2559 | 00       | BRK
+255A | 00       | BRK
+255B | 00       | BRK
+255C | 00       | BRK
+255D | 00       | BRK
+255E | 00       | BRK
+255F | 00       | BRK

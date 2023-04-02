@@ -27,6 +27,7 @@ known_opcodes_pre = {
     0x06: 'int $XX',
     0x09: 'ld sp $XXXX',
     0x0A: 'ld R0 sp',
+    0x0E: 'shl R0',
     0x10: 'ld $R $XXXX',
     0x20: 'ld $RB $RA',
     0x30: 'add $RB $RA',
@@ -51,9 +52,14 @@ known_opcodes_pre = {
     0xB4: 'ld $R [$XXXX]',
     0xB8: 'ldb [$XXXX] $R',
     0xBC: 'ld [$XXXX] $R',
+    0xD8: 'xor R0 $R',
+    0xDC: 'swap R0',
     0xE0: 'add $R $XXXX',
     0xC5: 'jp $R',
     0xC9: 'call $R',
+    0xCD: 'and R0 $XXXX',
+    0xCE: 'or R0 $XXXX',
+    0xCF: 'xor R0 $XXXX',
 }
 
 known_opcodes = {}

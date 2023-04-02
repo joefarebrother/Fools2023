@@ -49,3 +49,13 @@ MATH:2056:.exit
 REPORT:2018:Start
 REPORT:20FC:.str_enter_pw
 REPORT:2144:.mem_pw
+REPORT:2160:.mem_encrypted
+REPORT:2360:.mem_output
+REPORT:2093:.str_intro
+REPORT:20CE:.str_wrong_addr
+REPORT:211F:.str_here_is_doc
+REPORT:203F:.loop1 
+REPORT:204E:.loop1_exit
+REPORT:2156:.mem_X
+REPORT:2086:Next_X
+REPORT:2063:.loop2
