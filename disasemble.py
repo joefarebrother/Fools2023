@@ -142,12 +142,31 @@ def process_string(mem, pc):
     return pc, the_escaped_str
 
 
-def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0x360):
+def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
     dump = open(fname)
     out = []
     jump_locs = []
     str_locs = []
     str_vals = {}
+    tables = {}
+
+    labels = {}
+
+    for line in open("labels.sym"):
+        ctx, addr, lab = line.split(":", 2)
+        if fname.startswith(ctx):
+            lab = lab.strip()
+            addri = int(addr, 16)
+            labels[addri] = lab.strip()
+            if lab.startswith(".str"):
+                str_locs.append(addri)
+            if lab.startswith(".table_") and lab.count("_") >= 2:
+                _tab, ln, rest = lab.split("_", 2)
+                try:
+                    ln = int(ln)
+                    tables[addri] = (ln, rest)
+                except ValueError:
+                    print("Warning: Bad table", lab, file=sys.stderr)
 
     mem = []
     for line in dump:
@@ -164,6 +183,23 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0x360):
         line = ""
         line += tohex(prog_offset + pc, 4) + " | "
 
+        if pc+prog_offset in tables:
+            addri = pc+prog_offset
+            ln, rest = tables[pc+prog_offset]
+            for i in range(ln):
+                word = mem[pc+1]*0x100+mem[pc]
+                if rest.startswith("str_"):
+                    str_locs.append(word)
+                    if word not in labels:
+                        labname = f".{rest}_{i}"
+                        labels[word] = labname
+
+                line += f"{tohex(mem[pc])} {tohex(mem[pc])} | dw ${tohex(word, 4)}"
+                out.append(line)
+                pc += 2
+                line = tohex(prog_offset + pc, 4) + " | "
+            continue
+
         if pc+prog_offset in str_locs:
             npc, str_val = process_string(mem, pc)
             str_vals[pc+prog_offset] = str_val
@@ -177,6 +213,7 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0x360):
             pc = npc
             out.append(line)
             continue
+
         op = mem[pc]
         opl = op_len(op)
         assert opl+pc <= len(mem)
@@ -232,13 +269,6 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0x360):
         pc += 1 + opl
         out.append(line)
 
-    labels = {}
-
-    for line in open("labels.sym"):
-        ctx, addr, lab = line.split(":", 2)
-        if fname.startswith(ctx):
-            labels[int(addr, 16)] = lab.strip()
-
     for i, loc in enumerate(jump_locs):
         if loc not in labels:
             lab = f".lab_{i}_{tohex(loc)}"
@@ -281,5 +311,5 @@ if __name__ == "__main__":
         exit()
     filename = sys.argv[1]
     offset = int(sys.argv[2], 16) if argc >= 3 else 0x2000
-    max_size = int(sys.argv[3], 16) if argc >= 4 else 0x360
+    max_size = int(sys.argv[3], 16) if argc >= 4 else 0
     disasm(filename, offset, max_size)

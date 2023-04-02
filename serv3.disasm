@@ -4,8 +4,8 @@ F003 | 06 05    | int $05                      ; (rand)
 F005 | BC 00 FE | ld [.mem_rand_backup] R0     ; ($FE00)
 F008 | BC 4F F7 | ld [.mem_rand_after_buf] R0  ; ($F74F)
 F00B | 06 05    | int $05                      ; (rand)
-F00D | BC 02 FE | ld [$FE02] R0
-F010 | BC 51 F7 | ld [$F751] R0
+F00D | BC 02 FE | ld [.mem_rand_backup+2] R0   ; ($FE02)
+F010 | BC 51 F7 | ld [.mem_rand_after_buf+2] R0 ; ($F751)
 F013 | 12 24 F1 | ld R2 .str_name_prompt       ; ($F124)
 F016 | 99 08 00 | call PrintStr                ; ($0008)
 F019 | 12 3F F7 | ld R2 .name_buf              ; ($F73F)
@@ -20,263 +20,2344 @@ F031 | 06 03    | int $03                      ; (halt)
 infloop:
 F033 | 98 33 F0 | jp infloop                   ; ($F033)
 Main:
-F036 | 12 98 F1 | ld R2 .str_2_F198_n          ; ($F198)
+F036 | 12 98 F1 | ld R2 .str_dashes_welcome    ; ($F198)
 F039 | 99 08 00 | call PrintStr                ; ($0008)
 F03C | 12 3F F7 | ld R2 .name_buf              ; ($F73F)
 F03F | 99 08 00 | call PrintStr                ; ($0008)
-F042 | 12 AA F1 | ld R2 .str_4_F1AA_n          ; ($F1AA)
+F042 | 12 AA F1 | ld R2 .str_selection         ; ($F1AA)
 F045 | 99 08 00 | call PrintStr                ; ($0008)
-F048 | 12 53 F7 | ld R2 $F753
-F04B | 99 A7 F0 | call .lab_2_F0A7             ; ($F0A7)
-F04E | B0 53 F7 | ldb R0 [$F753]
+F048 | 12 53 F7 | ld R2 .mem_inp_buf           ; ($F753)
+F04B | 99 A7 F0 | call .read_inp               ; ($F0A7)
+F04E | B0 53 F7 | ldb R0 [.mem_inp_buf]        ; ($F753)
 F051 | A2 51 00 | cmp R0 $0051
-F054 | 9C 92 F0 | jp eq .lab_3_F092            ; ($F092)
+F054 | 9C 92 F0 | jp eq .quit                  ; ($F092)
 F057 | A2 71 00 | cmp R0 $0071
-F05A | 9C 92 F0 | jp eq .lab_3_F092            ; ($F092)
-F05D | B0 54 F7 | ldb R0 [$F754]
+F05A | 9C 92 F0 | jp eq .quit                  ; ($F092)
+F05D | B0 54 F7 | ldb R0 [.mem_inp_buf+1]      ; ($F754)
 F060 | A2 0A 00 | cmp R0 $000A
-F063 | 9C 6F F0 | jp eq .lab_5_F06F            ; ($F06F)
+F063 | 9C 6F F0 | jp eq .proc_cmd              ; ($F06F)
 F066 | A2 00 00 | cmp R0 $0000
-F069 | 9C 6F F0 | jp eq .lab_5_F06F            ; ($F06F)
-F06C | 98 86 F0 | jp .lab_7_F086               ; ($F086)
-.lab_5_F06F:
-F06F | B3 53 F7 | ldb R3 [$F753]
+F069 | 9C 6F F0 | jp eq .proc_cmd              ; ($F06F)
+F06C | 98 86 F0 | jp .invalid_cmd              ; ($F086)
+.proc_cmd:
+F06F | B3 53 F7 | ldb R3 [.mem_inp_buf]        ; ($F753)
 F072 | E3 D0 FF | add R3 $FFD0
 F075 | A5 03 00 | cmp R3 $0003
-F078 | 9B 86 F0 | jp gt .lab_7_F086            ; ($F086)
+F078 | 9B 86 F0 | jp gt .invalid_cmd           ; ($F086)
 F07B | 3F       | add R3 R3
-F07C | E3 92 F2 | add R3 $F292
+F07C | E3 92 F2 | add R3 .table_4_str_entries  ; ($F292)
 F07F | 5B       | ld R2 [R3]
 F080 | 99 08 00 | call PrintStr                ; ($0008)
 F083 | 98 36 F0 | jp Main                      ; ($F036)
-.lab_7_F086:
-F086 | 12 9A F2 | ld R2 .str_5_F29A_Please     ; ($F29A)
+.invalid_cmd:
+F086 | 12 9A F2 | ld R2 .str_please_type_123_dummy ; ($F29A)
 F089 | 99 08 00 | call PrintStr                ; ($0008)
 F08C | 13 00 10 | ld R3 $1000
 F08F | 98 36 F0 | jp Main                      ; ($F036)
-.lab_3_F092:
+.quit:
 F092 | B4 4F F7 | ld R0 [.mem_rand_after_buf]  ; ($F74F)
 F095 | B5 00 FE | ld R1 [.mem_rand_backup]     ; ($FE00)
-F098 | 81       | 
-F099 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
-F09C | B4 51 F7 | ld R0 [$F751]
-F09F | B5 02 FE | ld R1 [$FE02]
-F0A2 | 81       | 
-F0A3 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F098 | 81       | cmp R0 R1
+F099 | 9D D5 F0 | jp ne .check_failed          ; ($F0D5)
+F09C | B4 51 F7 | ld R0 [.mem_rand_after_buf+2] ; ($F751)
+F09F | B5 02 FE | ld R1 [.mem_rand_backup+2]   ; ($FE02)
+F0A2 | 81       | cmp R0 R1
+F0A3 | 9D D5 F0 | jp ne .check_failed          ; ($F0D5)
 F0A6 | 05       | ret
-.lab_2_F0A7:
+.read_inp:
 F0A7 | 06 02    | int $02                      ; (in)
 F0A9 | 68       | ldb [R2] R0
 F0AA | A2 0A 00 | cmp R0 $000A
-F0AD | 9C BB F0 | jp eq .lab_13_F0BB           ; ($F0BB)
+F0AD | 9C BB F0 | jp eq .check_corruption      ; ($F0BB)
 F0B0 | A5 00 00 | cmp R3 $0000
-F0B3 | 9C B8 F0 | jp eq .lab_14_F0B8           ; ($F0B8)
+F0B3 | 9C B8 F0 | jp eq .read_inp_skip_incr    ; ($F0B8)
 F0B6 | AA       | inc R2
 F0B7 | AF       | dec R3
-.lab_14_F0B8:
-F0B8 | 98 A7 F0 | jp .lab_2_F0A7               ; ($F0A7)
-.lab_13_F0BB:
+.read_inp_skip_incr:
+F0B8 | 98 A7 F0 | jp .read_inp                 ; ($F0A7)
+.check_corruption:
 F0BB | AA       | inc R2
 F0BC | 10 00 00 | ld R0 $0000
 F0BF | 68       | ldb [R2] R0
 F0C0 | B4 4F F7 | ld R0 [.mem_rand_after_buf]  ; ($F74F)
 F0C3 | B5 00 FE | ld R1 [.mem_rand_backup]     ; ($FE00)
-F0C6 | 81       | 
-F0C7 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
-F0CA | B4 51 F7 | ld R0 [$F751]
-F0CD | B5 02 FE | ld R1 [$FE02]
-F0D0 | 81       | 
-F0D1 | 9D D5 F0 | jp ne .lab_11_F0D5           ; ($F0D5)
+F0C6 | 81       | cmp R0 R1
+F0C7 | 9D D5 F0 | jp ne .check_failed          ; ($F0D5)
+F0CA | B4 51 F7 | ld R0 [.mem_rand_after_buf+2] ; ($F751)
+F0CD | B5 02 FE | ld R1 [.mem_rand_backup+2]   ; ($FE02)
+F0D0 | 81       | cmp R0 R1
+F0D1 | 9D D5 F0 | jp ne .check_failed          ; ($F0D5)
 F0D4 | 05       | ret
-.lab_11_F0D5:
-F0D5 | 12 DD F0 | ld R2 .str_6_F0DD_stack      ; ($F0DD)
+.check_failed:
+F0D5 | 12 DD F0 | ld R2 .str_stack_smash_detected ; ($F0DD)
 F0D8 | 99 08 00 | call PrintStr                ; ($0008)
 F0DB | 06 03    | int $03                      ; (halt)
-.str_6_F0DD_stack:
+.str_stack_smash_detected:
 F0DD | 2A 2A 2A 20 73 74 61 63 6B 20 73 6D 61 73 68 69 6E 67 20 64 65 74 65 63 74 65 64 20 2A 2A 2A 20 F1 00 FE F1 01 FE F1 02 FE F1 03 FE 20 21 3D 20 F1 4F F7 F1 50 F7 F1 51 F7 F1 52 F7 20 2D 20 68 61 6C 74 65 64 0A 00  |
-    ds "*** stack smashing detected *** \F1[.mem_rand_backup]\F1[$FE01]\F1[$FE02]\F1[$FE03] != \F1[.mem_rand_after_buf]\F1[$F750]\F1[$F751]\F1[$F752] - halted\n" ; ($FE00) ; ($F74F)
+    ds "*** stack smashing detected *** \F1[.mem_rand_backup]\F1[$FE01]\F1[.mem_rand_backup+2]\F1[$FE03] != \F1[.mem_rand_after_buf]\F1[$F750]\F1[.mem_rand_after_buf+2]\F1[$F752] - halted\n" ; ($FE00) ; ($FE02) ; ($F74F) ; ($F751)
 .str_name_prompt:
 F124 | 57 65 6C 63 6F 6D 65 20 74 6F 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 20 49 6E 66 6F 72 6D 61 74 69 6F 6E 20 53 65 72 76 65 72 20 28 47 52 4C 49 4E 46 53 52 56 29 0A 45 6E 74 65 72 20 79 6F 75 72 20 6E 61 6D 65 20 66 6F 72 20 6F 75 72 20 72 65 63 6F 72 64 73 20 28 6D 61 78 20 31 35 20 63 68 61 72 61 63 74 65 72 73 29 3A 20 00  |
     ds "Welcome to Glitch Research Lab Information Server (GRLINFSRV)\nEnter your name for our records (max 15 characters): "
-.str_2_F198_n:
+.str_dashes_welcome:
 F198 | 0A 2D 2D 2D 2D 2D 0A 0A 57 65 6C 63 6F 6D 65 2C 20 00  |
     ds "\n-----\n\nWelcome, "
-.str_4_F1AA_n:
+.str_selection:
 F1AA | 21 0A 0A 53 65 6C 65 63 74 69 6F 6E 20 6F 66 20 74 6F 70 69 63 73 3A 0A 28 31 29 20 41 62 6F 75 74 20 74 68 65 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 0A 28 32 29 20 41 62 6F 75 74 20 74 68 65 20 47 4C 56 4D 20 74 65 73 74 20 73 65 72 76 65 72 73 0A 28 33 29 20 41 62 6F 75 74 20 74 68 65 20 46 69 67 68 74 20 53 69 6D 75 6C 61 74 69 6F 6E 20 50 72 6F 67 72 61 6D 0A 0A 45 6E 74 65 72 20 74 68 65 20 6E 75 6D 62 65 72 20 6F 66 20 74 68 65 20 74 6F 70 69 63 20 79 6F 75 20 77 69 73 68 20 74 6F 20 76 69 65 77 2C 20 6F 72 20 27 71 27 20 74 6F 20 6C 65 61 76 65 3A 20 00  |
     ds "!\n\nSelection of topics:\n(1) About the Glitch Research Laboratory\n(2) About the GLVM test servers\n(3) About the Fight Simulation Program\n\nEnter the number of the topic you wish to view, or 'q' to leave: "
 .str_Exit:
 F275 | 54 68 61 6E 6B 20 79 6F 75 2E 20 48 61 76 65 20 61 20 6E 69 63 65 20 64 61 79 21 0A 00  |
     ds "Thank you. Have a nice day!\n"
-F292 | 9A F2 B9 | jp lt $B9F2
-F295 | F2       | [wait! that's illegal!]
-F296 | 9A F3 42 | jp lt $42F3
-F299 | F5       | [wait! that's illegal!]
-.str_5_F29A_Please:
+.table_4_str_entries:
+F292 | 9A 9A | dw .str_please_type_123_dummy   ; ($F29A)
+F294 | B9 B9 | dw .str_entries_1               ; ($F2B9)
+F296 | 9A 9A | dw .str_entries_2               ; ($F39A)
+F298 | 42 42 | dw .str_entries_3               ; ($F542)
+.str_please_type_123_dummy:
 F29A | 50 6C 65 61 73 65 20 74 79 70 65 20 31 2C 20 32 20 6F 72 20 33 2C 20 64 75 6D 6D 79 21 0A 00  |
     ds "Please type 1, 2 or 3, dummy!\n"
-F2B9 | 0A       | ld R0 sp
-F2BA | 2D       | ld R3 R1
-F2BB | 2D       | ld R3 R1
-F2BC | 2D       | ld R3 R1
-F2BD | 2D       | ld R3 R1
-F2BE | 2D       | ld R3 R1
-F2BF | 0A       | ld R0 sp
-F2C0 | 0A       | ld R0 sp
-F2C1 | 47       | ldb R1 [R3]
-F2C2 | 6C       | ldb [R3] R0
-F2C3 | 69       | ldb [R2] R1
-F2C4 | 74       | ld [R1] R0
-F2C5 | 63       | ldb [R0] R3
-F2C6 | 68       | ldb [R2] R0
-F2C7 | 20       | ld R0 R0
-F2C8 | 52       | ld R0 [R2]
-F2C9 | 65       | ldb [R1] R1
-F2CA | 73       | ld [R0] R3
-F2CB | 65       | ldb [R1] R1
-F2CC | 61       | ldb [R0] R1
-F2CD | 72       | ld [R0] R2
-F2CE | 63       | ldb [R0] R3
-F2CF | 68       | ldb [R2] R0
-F2D0 | 20       | ld R0 R0
-F2D1 | 4C       | ldb R3 [R0]
-F2D2 | 61       | ldb [R0] R1
-F2D3 | 62       | ldb [R0] R2
-F2D4 | 6F       | ldb [R3] R3
-F2D5 | 72       | ld [R0] R2
-F2D6 | 61       | ldb [R0] R1
-F2D7 | 74       | ld [R1] R0
-F2D8 | 6F       | ldb [R3] R3
-F2D9 | 72       | ld [R0] R2
-F2DA | 79       | ld [R2] R1
-F2DB | 20       | ld R0 R0
-F2DC | 69       | ldb [R2] R1
-F2DD | 73       | ld [R0] R3
-F2DE | 20       | ld R0 R0
-F2DF | 74       | ld [R1] R0
-F2E0 | 68       | ldb [R2] R0
-F2E1 | 65       | ldb [R1] R1
-F2E2 | 20       | ld R0 R0
-F2E3 | 6C       | ldb [R3] R0
-F2E4 | 65       | ldb [R1] R1
-F2E5 | 61       | ldb [R0] R1
-F2E6 | 64       | ldb [R1] R0
-F2E7 | 69       | ldb [R2] R1
-F2E8 | 6E       | ldb [R3] R2
-F2E9 | 67       | ldb [R1] R3
-F2EA | 20       | ld R0 R0
-F2EB | 67       | ldb [R1] R3
-F2EC | 6C       | ldb [R3] R0
-F2ED | 69       | ldb [R2] R1
-F2EE | 74       | ld [R1] R0
-F2EF | 63       | ldb [R0] R3
-F2F0 | 68       | ldb [R2] R0
-F2F1 | 6F       | ldb [R3] R3
-F2F2 | 6C       | ldb [R3] R0
-F2F3 | 6F       | ldb [R3] R3
-F2F4 | 67       | ldb [R1] R3
-F2F5 | 79       | ld [R2] R1
-F2F6 | 20       | ld R0 R0
-F2F7 | 72       | ld [R0] R2
-F2F8 | 65       | ldb [R1] R1
-F2F9 | 73       | ld [R0] R3
-F2FA | 65       | ldb [R1] R1
-F2FB | 61       | ldb [R0] R1
-F2FC | 72       | ld [R0] R2
-F2FD | 63       | ldb [R0] R3
-F2FE | 68       | ldb [R2] R0
-F2FF | 0A       | ld R0 sp
-F300 | 66       | ldb [R1] R2
-F301 | 61       | ldb [R0] R1
-F302 | 63       | ldb [R0] R3
-F303 | 69       | ldb [R2] R1
-F304 | 6C       | ldb [R3] R0
-F305 | 69       | ldb [R2] R1
-F306 | 74       | ld [R1] R0
-F307 | 79       | ld [R2] R1
-F308 | 20       | ld R0 R0
-F309 | 69       | ldb [R2] R1
-F30A | 6E       | ldb [R3] R2
-F30B | 20       | ld R0 R0
-F30C | 61       | ldb [R0] R1
-F30D | 6C       | ldb [R3] R0
-F30E | 6C       | ldb [R3] R0
-F30F | 20       | ld R0 R0
-F310 | 6F       | ldb [R3] R3
-F311 | 66       | ldb [R1] R2
-F312 | 20       | ld R0 R0
-F313 | 47       | ldb R1 [R3]
-F314 | 6C       | ldb [R3] R0
-F315 | 69       | ldb [R2] R1
-F316 | 74       | ld [R1] R0
-F317 | 63       | ldb [R0] R3
-F318 | 68       | ldb [R2] R0
-F319 | 20       | ld R0 R0
-F31A | 49       | ldb R2 [R1]
-F31B | 73       | ld [R0] R3
-F31C | 6C       | ldb [R3] R0
-F31D | 61       | ldb [R0] R1
-F31E | 6E       | ldb [R3] R2
-F31F | 64       | ldb [R1] R0
-F320 | 73       | ld [R0] R3
-F321 | 2E       | ld R3 R2
-F322 | 20       | ld R0 R0
-F323 | 57       | ld R1 [R3]
-F324 | 65       | ldb [R1] R1
-F325 | 20       | ld R0 R0
-F326 | 73       | ld [R0] R3
-F327 | 70       | ld [R0] R0
-F328 | 65       | ldb [R1] R1
-F329 | 63       | ldb [R0] R3
-F32A | 69       | ldb [R2] R1
-F32B | 61       | ldb [R0] R1
-F32C | 6C       | ldb [R3] R0
-F32D | 69       | ldb [R2] R1
-F32E | 7A       | ld [R2] R2
-F32F | 65       | ldb [R1] R1
-F330 | 20       | ld R0 R0
-F331 | 69       | ldb [R2] R1
-F332 | 6E       | ldb [R3] R2
-F333 | 20       | ld R0 R0
-F334 | 72       | ld [R0] R2
-F335 | 65       | ldb [R1] R1
-F336 | 73       | ld [R0] R3
-F337 | 65       | ldb [R1] R1
-F338 | 61       | ldb [R0] R1
-F339 | 72       | ld [R0] R2
-F33A | 63       | ldb [R0] R3
-F33B | 68       | ldb [R2] R0
-F33C | 20       | ld R0 R0
-F33D | 6F       | ldb [R3] R3
-F33E | 66       | ldb [R1] R2
-F33F | 0A       | ld R0 sp
-F340 | 76       | ld [R1] R2
-F341 | 61       | ldb [R0] R1
-F342 | 72       | ld [R0] R2
-F343 | 69       | ldb [R2] R1
-F344 | 6F       | ldb [R3] R3
-F345 | 75       | ld [R1] R1
-F346 | 73       | ld [R0] R3
-F347 | 20       | ld R0 R0
-F348 | 67       | ldb [R1] R3
-F349 | 6C       | ldb [R3] R0
-F34A | 69       | ldb [R2] R1
-F34B | 74       | ld [R1] R0
-F34C | 63       | ldb [R0] R3
-F34D | 68       | ldb [R2] R0
-F34E | 20       | ld R0 R0
-F34F | 70       | ld [R0] R0
-F350 | 68       | ldb [R2] R0
-F351 | 65       | ldb [R1] R1
-F352 | 6E       | ldb [R3] R2
-F353 | 6F       | ldb [R3] R3
-F354 | 6D       | ldb [R3] R1
-F355 | 65       | ldb [R1] R1
-F356 | 6E       | ldb [R3] R2
-F357 | 61       | ldb [R0] R1
-F358 | 20       | ld R0 R0
-F359 | 65       | ldb [R1] R1
-F35A | 78       | ld [R2] R0
-F35B | 69       | ldb [R2] R1
-F35C | 73       | ld [R0] R3
-F35D | 74       | ld [R1] R0
-F35E | 69       | ldb [R2] R1
+.str_entries_1:
+F2B9 | 0A 2D 2D 2D 2D 2D 0A 0A 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 69 73 20 74 68 65 20 6C 65 61 64 69 6E 67 20 67 6C 69 74 63 68 6F 6C 6F 67 79 20 72 65 73 65 61 72 63 68 0A 66 61 63 69 6C 69 74 79 20 69 6E 20 61 6C 6C 20 6F 66 20 47 6C 69 74 63 68 20 49 73 6C 61 6E 64 73 2E 20 57 65 20 73 70 65 63 69 61 6C 69 7A 65 20 69 6E 20 72 65 73 65 61 72 63 68 20 6F 66 0A 76 61 72 69 6F 75 73 20 67 6C 69 74 63 68 20 70 68 65 6E 6F 6D 65 6E 61 20 65 78 69 73 74 69 6E 67 20 69 6E 20 47 6C 69 74 63 68 20 49 73 6C 61 6E 64 73 20 61 6E 64 20 69 6E 20 61 6C 6C 20 6F 66 0A 74 68 65 20 73 75 72 72 6F 75 6E 64 69 6E 67 20 61 72 65 61 73 2E 0A 00  |
+    ds "\n-----\n\nGlitch Research Laboratory is the leading glitchology research\nfacility in all of Glitch Islands. We specialize in research of\nvarious glitch phenomena existing in Glitch Islands and in all of\nthe surrounding areas.\n"
+.str_entries_2:
+F39A | 0A 2D 2D 2D 2D 2D 0A 0A 47 4C 56 4D 20 69 73 20 6F 75 72 20 69 6E 6E 6F 76 61 74 69 76 65 2C 20 6E 65 77 20 6D 61 63 68 69 6E 65 20 61 72 63 68 69 74 65 63 74 75 72 65 2C 20 64 65 73 69 67 6E 65 64 20 74 6F 20 62 72 69 6E 67 0A 74 68 65 20 65 61 73 65 20 6F 66 20 5A 38 30 20 61 73 73 65 6D 62 6C 79 20 70 72 6F 67 72 61 6D 6D 69 6E 67 20 74 6F 20 74 68 65 20 6D 6F 64 65 72 6E 20 77 6F 72 6C 64 2E 0A 54 68 65 20 73 69 6D 70 6C 69 66 69 65 64 20 69 6E 73 74 72 75 63 74 69 6F 6E 20 73 65 74 20 6F 66 20 74 68 65 20 47 4C 56 4D 20 65 6E 68 61 6E 63 65 73 20 70 72 6F 64 75 63 74 69 76 69 74 79 0A 6F 66 20 6F 75 72 20 65 6D 70 6C 6F 79 65 65 73 20 61 6E 64 20 73 69 67 6E 69 66 69 63 61 6E 74 6C 79 20 73 70 65 65 64 73 20 75 70 20 64 65 76 65 6C 6F 70 6D 65 6E 74 20 6F 66 20 73 6F 66 74 77 61 72 65 0A 72 65 71 75 69 72 65 64 20 66 6F 72 20 6F 75 72 20 72 65 73 65 61 72 63 68 2E 0A 57 6F 72 6B 20 6F 6E 20 74 68 65 20 47 4C 56 4D 20 61 72 63 68 69 74 65 63 74 75 72 65 20 69 73 20 73 74 69 6C 6C 20 6F 6E 67 6F 69 6E 67 2C 20 61 6E 64 20 61 6C 6C 20 69 6D 70 6C 65 6D 65 6E 74 61 74 69 6F 6E 0A 64 65 74 61 69 6C 73 20 61 72 65 20 73 74 72 69 63 74 6C 79 20 63 6F 6E 66 69 64 65 6E 74 69 61 6C 2C 20 75 6E 74 69 6C 20 66 75 72 74 68 65 72 20 6E 6F 74 69 63 65 2E 0A 00  |
+    ds "\n-----\n\nGLVM is our innovative, new machine architecture, designed to bring\nthe ease of Z80 assembly programming to the modern world.\nThe simplified instruction set of the GLVM enhances productivity\nof our employees and significantly speeds up development of software\nrequired for our research.\nWork on the GLVM architecture is still ongoing, and all implementation\ndetails are strictly confidential, until further notice.\n"
+.str_entries_3:
+F542 | 0A 2D 2D 2D 2D 2D 0A 0A 46 69 67 68 74 20 53 69 6D 75 6C 61 74 69 6F 6E 20 50 72 6F 67 72 61 6D 20 69 73 20 74 68 65 20 63 75 72 72 65 6E 74 20 6F 6E 67 6F 69 6E 67 20 70 72 6F 6A 65 63 74 20 6F 66 20 47 6C 69 74 63 68 0A 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 2E 20 49 74 20 61 6C 6C 6F 77 73 20 66 6F 72 20 65 78 61 6D 69 6E 61 74 69 6F 6E 20 6F 66 20 62 65 68 61 76 69 6F 72 20 6F 66 0A 6D 61 6C 69 63 69 6F 75 73 20 67 6C 69 74 63 68 20 61 63 74 6F 72 73 2C 20 73 75 63 68 20 61 73 20 4D 69 73 73 69 6E 67 6E 6F 2E 2C 20 77 69 74 68 6F 75 74 20 72 75 6E 6E 69 6E 67 20 74 68 65 20 72 69 73 6B 0A 6F 66 20 70 72 6F 6C 6F 6E 67 65 64 20 65 78 70 6F 73 75 72 65 20 74 6F 20 67 6C 69 74 63 68 65 73 20 6F 72 20 63 6F 72 72 75 70 74 69 6F 6E 2E 0A 50 61 72 74 69 63 69 70 61 6E 74 73 20 61 72 65 20 61 62 6C 65 20 74 6F 20 66 69 67 68 74 20 61 67 61 69 6E 73 74 20 6F 70 70 6F 6E 65 6E 74 73 20 69 6E 20 61 6E 20 69 73 6F 6C 61 74 65 64 0A 65 6E 76 69 72 6F 6E 6D 65 6E 74 2C 20 73 69 6D 69 6C 61 72 20 74 6F 20 74 79 70 69 63 61 6C 20 74 75 72 6E 2D 62 61 73 65 64 20 73 74 72 61 74 65 67 79 20 67 61 6D 65 73 2E 0A 54 68 65 20 70 72 6F 67 72 61 6D 20 69 73 20 73 74 69 6C 6C 20 69 6E 20 64 65 76 65 6C 6F 70 6D 65 6E 74 2C 20 61 6E 64 20 61 73 20 73 75 63 68 2C 20 61 6C 6C 20 64 65 74 61 69 6C 73 20 61 72 65 0A 73 74 72 69 63 74 6C 79 20 63 6F 6E 66 69 64 65 6E 74 69 61 6C 2E 0A 00  |
+    ds "\n-----\n\nFight Simulation Program is the current ongoing project of Glitch\nResearch Laboratory. It allows for examination of behavior of\nmalicious glitch actors, such as Missingno., without running the risk\nof prolonged exposure to glitches or corruption.\nParticipants are able to fight against opponents in an isolated\nenvironment, similar to typical turn-based strategy games.\nThe program is still in development, and as such, all details are\nstrictly confidential.\n"
+.str_secret_F716:
+F716 | 46 4F 4F 4C 53 32 30 32 33 5F 7B 44 6F 65 73 54 68 69 73 43 6F 75 6E 74 41 73 46 6F 72 6D 61 74 53 74 72 69 6E 67 7D 0A 00  |
+    ds "FOOLS2023_{DoesThisCountAsFormatString}\n"
+.name_buf:
+F73F | F0 3F F7 F0 41 F7 F0 43 F7 F0 4D F7 00  |
+    ds "\F0[4.name_buf]\F0[$F71]\F0[$F743]\F0[$F74D]" ; ($F73F)
+F74C | 00       | BRK
+F74D | 5F       | ld R3 [R3]
+F74E | 5F       | ld R3 [R3]
+.mem_rand_after_buf:
+F74F | 86       | cmp R1 R2
+F750 | 7E       | ld [R3] R2
+.mem_rand_after_buf+2:
+F751 | 57       | ld R1 [R3]
+F752 | 54       | ld R1 [R0]
+.mem_inp_buf:
+F753 | 5F       | ld R3 [R3]
+.mem_inp_buf+1:
+F754 | 5F       | ld R3 [R3]
+F755 | 5F       | ld R3 [R3]
+F756 | 5F       | ld R3 [R3]
+F757 | 5F       | ld R3 [R3]
+F758 | 5F       | ld R3 [R3]
+F759 | 5F       | ld R3 [R3]
+F75A | 5F       | ld R3 [R3]
+F75B | 00       | BRK
+F75C | 00       | BRK
+F75D | 00       | BRK
+F75E | 00       | BRK
+F75F | 00       | BRK
+F760 | 00       | BRK
+F761 | 00       | BRK
+F762 | 00       | BRK
+F763 | 00       | BRK
+F764 | 00       | BRK
+F765 | 00       | BRK
+F766 | 00       | BRK
+F767 | 00       | BRK
+F768 | 00       | BRK
+F769 | 00       | BRK
+F76A | 00       | BRK
+F76B | 00       | BRK
+F76C | 00       | BRK
+F76D | 00       | BRK
+F76E | 00       | BRK
+F76F | 00       | BRK
+F770 | 00       | BRK
+F771 | 00       | BRK
+F772 | 00       | BRK
+F773 | 00       | BRK
+F774 | 00       | BRK
+F775 | 00       | BRK
+F776 | 00       | BRK
+F777 | 00       | BRK
+F778 | 00       | BRK
+F779 | 00       | BRK
+F77A | 00       | BRK
+F77B | 00       | BRK
+F77C | 00       | BRK
+F77D | 00       | BRK
+F77E | 00       | BRK
+F77F | 00       | BRK
+F780 | 00       | BRK
+F781 | 00       | BRK
+F782 | 00       | BRK
+F783 | 00       | BRK
+F784 | 00       | BRK
+F785 | 00       | BRK
+F786 | 00       | BRK
+F787 | 00       | BRK
+F788 | 00       | BRK
+F789 | 00       | BRK
+F78A | 00       | BRK
+F78B | 00       | BRK
+F78C | 00       | BRK
+F78D | 00       | BRK
+F78E | 00       | BRK
+F78F | 00       | BRK
+F790 | 00       | BRK
+F791 | 00       | BRK
+F792 | 00       | BRK
+F793 | 00       | BRK
+F794 | 00       | BRK
+F795 | 00       | BRK
+F796 | 00       | BRK
+F797 | 00       | BRK
+F798 | 00       | BRK
+F799 | 00       | BRK
+F79A | 00       | BRK
+F79B | 00       | BRK
+F79C | 00       | BRK
+F79D | 00       | BRK
+F79E | 00       | BRK
+F79F | 00       | BRK
+F7A0 | 00       | BRK
+F7A1 | 00       | BRK
+F7A2 | 00       | BRK
+F7A3 | 00       | BRK
+F7A4 | 00       | BRK
+F7A5 | 00       | BRK
+F7A6 | 00       | BRK
+F7A7 | 00       | BRK
+F7A8 | 00       | BRK
+F7A9 | 00       | BRK
+F7AA | 00       | BRK
+F7AB | 00       | BRK
+F7AC | 00       | BRK
+F7AD | 00       | BRK
+F7AE | 00       | BRK
+F7AF | 00       | BRK
+F7B0 | 00       | BRK
+F7B1 | 00       | BRK
+F7B2 | 00       | BRK
+F7B3 | 00       | BRK
+F7B4 | 00       | BRK
+F7B5 | 00       | BRK
+F7B6 | 00       | BRK
+F7B7 | 00       | BRK
+F7B8 | 00       | BRK
+F7B9 | 00       | BRK
+F7BA | 00       | BRK
+F7BB | 00       | BRK
+F7BC | 00       | BRK
+F7BD | 00       | BRK
+F7BE | 00       | BRK
+F7BF | 00       | BRK
+F7C0 | 00       | BRK
+F7C1 | 00       | BRK
+F7C2 | 00       | BRK
+F7C3 | 00       | BRK
+F7C4 | 00       | BRK
+F7C5 | 00       | BRK
+F7C6 | 00       | BRK
+F7C7 | 00       | BRK
+F7C8 | 00       | BRK
+F7C9 | 00       | BRK
+F7CA | 00       | BRK
+F7CB | 00       | BRK
+F7CC | 00       | BRK
+F7CD | 00       | BRK
+F7CE | 00       | BRK
+F7CF | 00       | BRK
+F7D0 | 00       | BRK
+F7D1 | 00       | BRK
+F7D2 | 00       | BRK
+F7D3 | 00       | BRK
+F7D4 | 00       | BRK
+F7D5 | 00       | BRK
+F7D6 | 00       | BRK
+F7D7 | 00       | BRK
+F7D8 | 00       | BRK
+F7D9 | 00       | BRK
+F7DA | 00       | BRK
+F7DB | 00       | BRK
+F7DC | 00       | BRK
+F7DD | 00       | BRK
+F7DE | 00       | BRK
+F7DF | 00       | BRK
+F7E0 | 00       | BRK
+F7E1 | 00       | BRK
+F7E2 | 00       | BRK
+F7E3 | 00       | BRK
+F7E4 | 00       | BRK
+F7E5 | 00       | BRK
+F7E6 | 00       | BRK
+F7E7 | 00       | BRK
+F7E8 | 00       | BRK
+F7E9 | 00       | BRK
+F7EA | 00       | BRK
+F7EB | 00       | BRK
+F7EC | 00       | BRK
+F7ED | 00       | BRK
+F7EE | 00       | BRK
+F7EF | 00       | BRK
+F7F0 | 00       | BRK
+F7F1 | 00       | BRK
+F7F2 | 00       | BRK
+F7F3 | 00       | BRK
+F7F4 | 00       | BRK
+F7F5 | 00       | BRK
+F7F6 | 00       | BRK
+F7F7 | 00       | BRK
+F7F8 | 00       | BRK
+F7F9 | 00       | BRK
+F7FA | 00       | BRK
+F7FB | 00       | BRK
+F7FC | 00       | BRK
+F7FD | 00       | BRK
+F7FE | 00       | BRK
+F7FF | 00       | BRK
+F800 | 00       | BRK
+F801 | 00       | BRK
+F802 | 00       | BRK
+F803 | 00       | BRK
+F804 | 00       | BRK
+F805 | 00       | BRK
+F806 | 00       | BRK
+F807 | 00       | BRK
+F808 | 00       | BRK
+F809 | 00       | BRK
+F80A | 00       | BRK
+F80B | 00       | BRK
+F80C | 00       | BRK
+F80D | 00       | BRK
+F80E | 00       | BRK
+F80F | 00       | BRK
+F810 | 00       | BRK
+F811 | 00       | BRK
+F812 | 00       | BRK
+F813 | 00       | BRK
+F814 | 00       | BRK
+F815 | 00       | BRK
+F816 | 00       | BRK
+F817 | 00       | BRK
+F818 | 00       | BRK
+F819 | 00       | BRK
+F81A | 00       | BRK
+F81B | 00       | BRK
+F81C | 00       | BRK
+F81D | 00       | BRK
+F81E | 00       | BRK
+F81F | 00       | BRK
+F820 | 00       | BRK
+F821 | 00       | BRK
+F822 | 00       | BRK
+F823 | 00       | BRK
+F824 | 00       | BRK
+F825 | 00       | BRK
+F826 | 00       | BRK
+F827 | 00       | BRK
+F828 | 00       | BRK
+F829 | 00       | BRK
+F82A | 00       | BRK
+F82B | 00       | BRK
+F82C | 00       | BRK
+F82D | 00       | BRK
+F82E | 00       | BRK
+F82F | 00       | BRK
+F830 | 00       | BRK
+F831 | 00       | BRK
+F832 | 00       | BRK
+F833 | 00       | BRK
+F834 | 00       | BRK
+F835 | 00       | BRK
+F836 | 00       | BRK
+F837 | 00       | BRK
+F838 | 00       | BRK
+F839 | 00       | BRK
+F83A | 00       | BRK
+F83B | 00       | BRK
+F83C | 00       | BRK
+F83D | 00       | BRK
+F83E | 00       | BRK
+F83F | 00       | BRK
+F840 | 00       | BRK
+F841 | 00       | BRK
+F842 | 00       | BRK
+F843 | 00       | BRK
+F844 | 00       | BRK
+F845 | 00       | BRK
+F846 | 00       | BRK
+F847 | 00       | BRK
+F848 | 00       | BRK
+F849 | 00       | BRK
+F84A | 00       | BRK
+F84B | 00       | BRK
+F84C | 00       | BRK
+F84D | 00       | BRK
+F84E | 00       | BRK
+F84F | 00       | BRK
+F850 | 00       | BRK
+F851 | 00       | BRK
+F852 | 00       | BRK
+F853 | 00       | BRK
+F854 | 00       | BRK
+F855 | 00       | BRK
+F856 | 00       | BRK
+F857 | 00       | BRK
+F858 | 00       | BRK
+F859 | 00       | BRK
+F85A | 00       | BRK
+F85B | 00       | BRK
+F85C | 00       | BRK
+F85D | 00       | BRK
+F85E | 00       | BRK
+F85F | 00       | BRK
+F860 | 00       | BRK
+F861 | 00       | BRK
+F862 | 00       | BRK
+F863 | 00       | BRK
+F864 | 00       | BRK
+F865 | 00       | BRK
+F866 | 00       | BRK
+F867 | 00       | BRK
+F868 | 00       | BRK
+F869 | 00       | BRK
+F86A | 00       | BRK
+F86B | 00       | BRK
+F86C | 00       | BRK
+F86D | 00       | BRK
+F86E | 00       | BRK
+F86F | 00       | BRK
+F870 | 00       | BRK
+F871 | 00       | BRK
+F872 | 00       | BRK
+F873 | 00       | BRK
+F874 | 00       | BRK
+F875 | 00       | BRK
+F876 | 00       | BRK
+F877 | 00       | BRK
+F878 | 00       | BRK
+F879 | 00       | BRK
+F87A | 00       | BRK
+F87B | 00       | BRK
+F87C | 00       | BRK
+F87D | 00       | BRK
+F87E | 00       | BRK
+F87F | 00       | BRK
+F880 | 00       | BRK
+F881 | 00       | BRK
+F882 | 00       | BRK
+F883 | 00       | BRK
+F884 | 00       | BRK
+F885 | 00       | BRK
+F886 | 00       | BRK
+F887 | 00       | BRK
+F888 | 00       | BRK
+F889 | 00       | BRK
+F88A | 00       | BRK
+F88B | 00       | BRK
+F88C | 00       | BRK
+F88D | 00       | BRK
+F88E | 00       | BRK
+F88F | 00       | BRK
+F890 | 00       | BRK
+F891 | 00       | BRK
+F892 | 00       | BRK
+F893 | 00       | BRK
+F894 | 00       | BRK
+F895 | 00       | BRK
+F896 | 00       | BRK
+F897 | 00       | BRK
+F898 | 00       | BRK
+F899 | 00       | BRK
+F89A | 00       | BRK
+F89B | 00       | BRK
+F89C | 00       | BRK
+F89D | 00       | BRK
+F89E | 00       | BRK
+F89F | 00       | BRK
+F8A0 | 00       | BRK
+F8A1 | 00       | BRK
+F8A2 | 00       | BRK
+F8A3 | 00       | BRK
+F8A4 | 00       | BRK
+F8A5 | 00       | BRK
+F8A6 | 00       | BRK
+F8A7 | 00       | BRK
+F8A8 | 00       | BRK
+F8A9 | 00       | BRK
+F8AA | 00       | BRK
+F8AB | 00       | BRK
+F8AC | 00       | BRK
+F8AD | 00       | BRK
+F8AE | 00       | BRK
+F8AF | 00       | BRK
+F8B0 | 00       | BRK
+F8B1 | 00       | BRK
+F8B2 | 00       | BRK
+F8B3 | 00       | BRK
+F8B4 | 00       | BRK
+F8B5 | 00       | BRK
+F8B6 | 00       | BRK
+F8B7 | 00       | BRK
+F8B8 | 00       | BRK
+F8B9 | 00       | BRK
+F8BA | 00       | BRK
+F8BB | 00       | BRK
+F8BC | 00       | BRK
+F8BD | 00       | BRK
+F8BE | 00       | BRK
+F8BF | 00       | BRK
+F8C0 | 00       | BRK
+F8C1 | 00       | BRK
+F8C2 | 00       | BRK
+F8C3 | 00       | BRK
+F8C4 | 00       | BRK
+F8C5 | 00       | BRK
+F8C6 | 00       | BRK
+F8C7 | 00       | BRK
+F8C8 | 00       | BRK
+F8C9 | 00       | BRK
+F8CA | 00       | BRK
+F8CB | 00       | BRK
+F8CC | 00       | BRK
+F8CD | 00       | BRK
+F8CE | 00       | BRK
+F8CF | 00       | BRK
+F8D0 | 00       | BRK
+F8D1 | 00       | BRK
+F8D2 | 00       | BRK
+F8D3 | 00       | BRK
+F8D4 | 00       | BRK
+F8D5 | 00       | BRK
+F8D6 | 00       | BRK
+F8D7 | 00       | BRK
+F8D8 | 00       | BRK
+F8D9 | 00       | BRK
+F8DA | 00       | BRK
+F8DB | 00       | BRK
+F8DC | 00       | BRK
+F8DD | 00       | BRK
+F8DE | 00       | BRK
+F8DF | 00       | BRK
+F8E0 | 00       | BRK
+F8E1 | 00       | BRK
+F8E2 | 00       | BRK
+F8E3 | 00       | BRK
+F8E4 | 00       | BRK
+F8E5 | 00       | BRK
+F8E6 | 00       | BRK
+F8E7 | 00       | BRK
+F8E8 | 00       | BRK
+F8E9 | 00       | BRK
+F8EA | 00       | BRK
+F8EB | 00       | BRK
+F8EC | 00       | BRK
+F8ED | 00       | BRK
+F8EE | 00       | BRK
+F8EF | 00       | BRK
+F8F0 | 00       | BRK
+F8F1 | 00       | BRK
+F8F2 | 00       | BRK
+F8F3 | 00       | BRK
+F8F4 | 00       | BRK
+F8F5 | 00       | BRK
+F8F6 | 00       | BRK
+F8F7 | 00       | BRK
+F8F8 | 00       | BRK
+F8F9 | 00       | BRK
+F8FA | 00       | BRK
+F8FB | 00       | BRK
+F8FC | 00       | BRK
+F8FD | 00       | BRK
+F8FE | 00       | BRK
+F8FF | 00       | BRK
+F900 | 00       | BRK
+F901 | 00       | BRK
+F902 | 00       | BRK
+F903 | 00       | BRK
+F904 | 00       | BRK
+F905 | 00       | BRK
+F906 | 00       | BRK
+F907 | 00       | BRK
+F908 | 00       | BRK
+F909 | 00       | BRK
+F90A | 00       | BRK
+F90B | 00       | BRK
+F90C | 00       | BRK
+F90D | 00       | BRK
+F90E | 00       | BRK
+F90F | 00       | BRK
+F910 | 00       | BRK
+F911 | 00       | BRK
+F912 | 00       | BRK
+F913 | 00       | BRK
+F914 | 00       | BRK
+F915 | 00       | BRK
+F916 | 00       | BRK
+F917 | 00       | BRK
+F918 | 00       | BRK
+F919 | 00       | BRK
+F91A | 00       | BRK
+F91B | 00       | BRK
+F91C | 00       | BRK
+F91D | 00       | BRK
+F91E | 00       | BRK
+F91F | 00       | BRK
+F920 | 00       | BRK
+F921 | 00       | BRK
+F922 | 00       | BRK
+F923 | 00       | BRK
+F924 | 00       | BRK
+F925 | 00       | BRK
+F926 | 00       | BRK
+F927 | 00       | BRK
+F928 | 00       | BRK
+F929 | 00       | BRK
+F92A | 00       | BRK
+F92B | 00       | BRK
+F92C | 00       | BRK
+F92D | 00       | BRK
+F92E | 00       | BRK
+F92F | 00       | BRK
+F930 | 00       | BRK
+F931 | 00       | BRK
+F932 | 00       | BRK
+F933 | 00       | BRK
+F934 | 00       | BRK
+F935 | 00       | BRK
+F936 | 00       | BRK
+F937 | 00       | BRK
+F938 | 00       | BRK
+F939 | 00       | BRK
+F93A | 00       | BRK
+F93B | 00       | BRK
+F93C | 00       | BRK
+F93D | 00       | BRK
+F93E | 00       | BRK
+F93F | 00       | BRK
+F940 | 00       | BRK
+F941 | 00       | BRK
+F942 | 00       | BRK
+F943 | 00       | BRK
+F944 | 00       | BRK
+F945 | 00       | BRK
+F946 | 00       | BRK
+F947 | 00       | BRK
+F948 | 00       | BRK
+F949 | 00       | BRK
+F94A | 00       | BRK
+F94B | 00       | BRK
+F94C | 00       | BRK
+F94D | 00       | BRK
+F94E | 00       | BRK
+F94F | 00       | BRK
+F950 | 00       | BRK
+F951 | 00       | BRK
+F952 | 00       | BRK
+F953 | 00       | BRK
+F954 | 00       | BRK
+F955 | 00       | BRK
+F956 | 00       | BRK
+F957 | 00       | BRK
+F958 | 00       | BRK
+F959 | 00       | BRK
+F95A | 00       | BRK
+F95B | 00       | BRK
+F95C | 00       | BRK
+F95D | 00       | BRK
+F95E | 00       | BRK
+F95F | 00       | BRK
+F960 | 00       | BRK
+F961 | 00       | BRK
+F962 | 00       | BRK
+F963 | 00       | BRK
+F964 | 00       | BRK
+F965 | 00       | BRK
+F966 | 00       | BRK
+F967 | 00       | BRK
+F968 | 00       | BRK
+F969 | 00       | BRK
+F96A | 00       | BRK
+F96B | 00       | BRK
+F96C | 00       | BRK
+F96D | 00       | BRK
+F96E | 00       | BRK
+F96F | 00       | BRK
+F970 | 00       | BRK
+F971 | 00       | BRK
+F972 | 00       | BRK
+F973 | 00       | BRK
+F974 | 00       | BRK
+F975 | 00       | BRK
+F976 | 00       | BRK
+F977 | 00       | BRK
+F978 | 00       | BRK
+F979 | 00       | BRK
+F97A | 00       | BRK
+F97B | 00       | BRK
+F97C | 00       | BRK
+F97D | 00       | BRK
+F97E | 00       | BRK
+F97F | 00       | BRK
+F980 | 00       | BRK
+F981 | 00       | BRK
+F982 | 00       | BRK
+F983 | 00       | BRK
+F984 | 00       | BRK
+F985 | 00       | BRK
+F986 | 00       | BRK
+F987 | 00       | BRK
+F988 | 00       | BRK
+F989 | 00       | BRK
+F98A | 00       | BRK
+F98B | 00       | BRK
+F98C | 00       | BRK
+F98D | 00       | BRK
+F98E | 00       | BRK
+F98F | 00       | BRK
+F990 | 00       | BRK
+F991 | 00       | BRK
+F992 | 00       | BRK
+F993 | 00       | BRK
+F994 | 00       | BRK
+F995 | 00       | BRK
+F996 | 00       | BRK
+F997 | 00       | BRK
+F998 | 00       | BRK
+F999 | 00       | BRK
+F99A | 00       | BRK
+F99B | 00       | BRK
+F99C | 00       | BRK
+F99D | 00       | BRK
+F99E | 00       | BRK
+F99F | 00       | BRK
+F9A0 | 00       | BRK
+F9A1 | 00       | BRK
+F9A2 | 00       | BRK
+F9A3 | 00       | BRK
+F9A4 | 00       | BRK
+F9A5 | 00       | BRK
+F9A6 | 00       | BRK
+F9A7 | 00       | BRK
+F9A8 | 00       | BRK
+F9A9 | 00       | BRK
+F9AA | 00       | BRK
+F9AB | 00       | BRK
+F9AC | 00       | BRK
+F9AD | 00       | BRK
+F9AE | 00       | BRK
+F9AF | 00       | BRK
+F9B0 | 00       | BRK
+F9B1 | 00       | BRK
+F9B2 | 00       | BRK
+F9B3 | 00       | BRK
+F9B4 | 00       | BRK
+F9B5 | 00       | BRK
+F9B6 | 00       | BRK
+F9B7 | 00       | BRK
+F9B8 | 00       | BRK
+F9B9 | 00       | BRK
+F9BA | 00       | BRK
+F9BB | 00       | BRK
+F9BC | 00       | BRK
+F9BD | 00       | BRK
+F9BE | 00       | BRK
+F9BF | 00       | BRK
+F9C0 | 00       | BRK
+F9C1 | 00       | BRK
+F9C2 | 00       | BRK
+F9C3 | 00       | BRK
+F9C4 | 00       | BRK
+F9C5 | 00       | BRK
+F9C6 | 00       | BRK
+F9C7 | 00       | BRK
+F9C8 | 00       | BRK
+F9C9 | 00       | BRK
+F9CA | 00       | BRK
+F9CB | 00       | BRK
+F9CC | 00       | BRK
+F9CD | 00       | BRK
+F9CE | 00       | BRK
+F9CF | 00       | BRK
+F9D0 | 00       | BRK
+F9D1 | 00       | BRK
+F9D2 | 00       | BRK
+F9D3 | 00       | BRK
+F9D4 | 00       | BRK
+F9D5 | 00       | BRK
+F9D6 | 00       | BRK
+F9D7 | 00       | BRK
+F9D8 | 00       | BRK
+F9D9 | 00       | BRK
+F9DA | 00       | BRK
+F9DB | 00       | BRK
+F9DC | 00       | BRK
+F9DD | 00       | BRK
+F9DE | 00       | BRK
+F9DF | 00       | BRK
+F9E0 | 00       | BRK
+F9E1 | 00       | BRK
+F9E2 | 00       | BRK
+F9E3 | 00       | BRK
+F9E4 | 00       | BRK
+F9E5 | 00       | BRK
+F9E6 | 00       | BRK
+F9E7 | 00       | BRK
+F9E8 | 00       | BRK
+F9E9 | 00       | BRK
+F9EA | 00       | BRK
+F9EB | 00       | BRK
+F9EC | 00       | BRK
+F9ED | 00       | BRK
+F9EE | 00       | BRK
+F9EF | 00       | BRK
+F9F0 | 00       | BRK
+F9F1 | 00       | BRK
+F9F2 | 00       | BRK
+F9F3 | 00       | BRK
+F9F4 | 00       | BRK
+F9F5 | 00       | BRK
+F9F6 | 00       | BRK
+F9F7 | 00       | BRK
+F9F8 | 00       | BRK
+F9F9 | 00       | BRK
+F9FA | 00       | BRK
+F9FB | 00       | BRK
+F9FC | 00       | BRK
+F9FD | 00       | BRK
+F9FE | 00       | BRK
+F9FF | 00       | BRK
+FA00 | 00       | BRK
+FA01 | 00       | BRK
+FA02 | 00       | BRK
+FA03 | 00       | BRK
+FA04 | 00       | BRK
+FA05 | 00       | BRK
+FA06 | 00       | BRK
+FA07 | 00       | BRK
+FA08 | 00       | BRK
+FA09 | 00       | BRK
+FA0A | 00       | BRK
+FA0B | 00       | BRK
+FA0C | 00       | BRK
+FA0D | 00       | BRK
+FA0E | 00       | BRK
+FA0F | 00       | BRK
+FA10 | 00       | BRK
+FA11 | 00       | BRK
+FA12 | 00       | BRK
+FA13 | 00       | BRK
+FA14 | 00       | BRK
+FA15 | 00       | BRK
+FA16 | 00       | BRK
+FA17 | 00       | BRK
+FA18 | 00       | BRK
+FA19 | 00       | BRK
+FA1A | 00       | BRK
+FA1B | 00       | BRK
+FA1C | 00       | BRK
+FA1D | 00       | BRK
+FA1E | 00       | BRK
+FA1F | 00       | BRK
+FA20 | 00       | BRK
+FA21 | 00       | BRK
+FA22 | 00       | BRK
+FA23 | 00       | BRK
+FA24 | 00       | BRK
+FA25 | 00       | BRK
+FA26 | 00       | BRK
+FA27 | 00       | BRK
+FA28 | 00       | BRK
+FA29 | 00       | BRK
+FA2A | 00       | BRK
+FA2B | 00       | BRK
+FA2C | 00       | BRK
+FA2D | 00       | BRK
+FA2E | 00       | BRK
+FA2F | 00       | BRK
+FA30 | 00       | BRK
+FA31 | 00       | BRK
+FA32 | 00       | BRK
+FA33 | 00       | BRK
+FA34 | 00       | BRK
+FA35 | 00       | BRK
+FA36 | 00       | BRK
+FA37 | 00       | BRK
+FA38 | 00       | BRK
+FA39 | 00       | BRK
+FA3A | 00       | BRK
+FA3B | 00       | BRK
+FA3C | 00       | BRK
+FA3D | 00       | BRK
+FA3E | 00       | BRK
+FA3F | 00       | BRK
+FA40 | 00       | BRK
+FA41 | 00       | BRK
+FA42 | 00       | BRK
+FA43 | 00       | BRK
+FA44 | 00       | BRK
+FA45 | 00       | BRK
+FA46 | 00       | BRK
+FA47 | 00       | BRK
+FA48 | 00       | BRK
+FA49 | 00       | BRK
+FA4A | 00       | BRK
+FA4B | 00       | BRK
+FA4C | 00       | BRK
+FA4D | 00       | BRK
+FA4E | 00       | BRK
+FA4F | 00       | BRK
+FA50 | 00       | BRK
+FA51 | 00       | BRK
+FA52 | 00       | BRK
+FA53 | 00       | BRK
+FA54 | 00       | BRK
+FA55 | 00       | BRK
+FA56 | 00       | BRK
+FA57 | 00       | BRK
+FA58 | 00       | BRK
+FA59 | 00       | BRK
+FA5A | 00       | BRK
+FA5B | 00       | BRK
+FA5C | 00       | BRK
+FA5D | 00       | BRK
+FA5E | 00       | BRK
+FA5F | 00       | BRK
+FA60 | 00       | BRK
+FA61 | 00       | BRK
+FA62 | 00       | BRK
+FA63 | 00       | BRK
+FA64 | 00       | BRK
+FA65 | 00       | BRK
+FA66 | 00       | BRK
+FA67 | 00       | BRK
+FA68 | 00       | BRK
+FA69 | 00       | BRK
+FA6A | 00       | BRK
+FA6B | 00       | BRK
+FA6C | 00       | BRK
+FA6D | 00       | BRK
+FA6E | 00       | BRK
+FA6F | 00       | BRK
+FA70 | 00       | BRK
+FA71 | 00       | BRK
+FA72 | 00       | BRK
+FA73 | 00       | BRK
+FA74 | 00       | BRK
+FA75 | 00       | BRK
+FA76 | 00       | BRK
+FA77 | 00       | BRK
+FA78 | 00       | BRK
+FA79 | 00       | BRK
+FA7A | 00       | BRK
+FA7B | 00       | BRK
+FA7C | 00       | BRK
+FA7D | 00       | BRK
+FA7E | 00       | BRK
+FA7F | 00       | BRK
+FA80 | 00       | BRK
+FA81 | 00       | BRK
+FA82 | 00       | BRK
+FA83 | 00       | BRK
+FA84 | 00       | BRK
+FA85 | 00       | BRK
+FA86 | 00       | BRK
+FA87 | 00       | BRK
+FA88 | 00       | BRK
+FA89 | 00       | BRK
+FA8A | 00       | BRK
+FA8B | 00       | BRK
+FA8C | 00       | BRK
+FA8D | 00       | BRK
+FA8E | 00       | BRK
+FA8F | 00       | BRK
+FA90 | 00       | BRK
+FA91 | 00       | BRK
+FA92 | 00       | BRK
+FA93 | 00       | BRK
+FA94 | 00       | BRK
+FA95 | 00       | BRK
+FA96 | 00       | BRK
+FA97 | 00       | BRK
+FA98 | 00       | BRK
+FA99 | 00       | BRK
+FA9A | 00       | BRK
+FA9B | 00       | BRK
+FA9C | 00       | BRK
+FA9D | 00       | BRK
+FA9E | 00       | BRK
+FA9F | 00       | BRK
+FAA0 | 00       | BRK
+FAA1 | 00       | BRK
+FAA2 | 00       | BRK
+FAA3 | 00       | BRK
+FAA4 | 00       | BRK
+FAA5 | 00       | BRK
+FAA6 | 00       | BRK
+FAA7 | 00       | BRK
+FAA8 | 00       | BRK
+FAA9 | 00       | BRK
+FAAA | 00       | BRK
+FAAB | 00       | BRK
+FAAC | 00       | BRK
+FAAD | 00       | BRK
+FAAE | 00       | BRK
+FAAF | 00       | BRK
+FAB0 | 00       | BRK
+FAB1 | 00       | BRK
+FAB2 | 00       | BRK
+FAB3 | 00       | BRK
+FAB4 | 00       | BRK
+FAB5 | 00       | BRK
+FAB6 | 00       | BRK
+FAB7 | 00       | BRK
+FAB8 | 00       | BRK
+FAB9 | 00       | BRK
+FABA | 00       | BRK
+FABB | 00       | BRK
+FABC | 00       | BRK
+FABD | 00       | BRK
+FABE | 00       | BRK
+FABF | 00       | BRK
+FAC0 | 00       | BRK
+FAC1 | 00       | BRK
+FAC2 | 00       | BRK
+FAC3 | 00       | BRK
+FAC4 | 00       | BRK
+FAC5 | 00       | BRK
+FAC6 | 00       | BRK
+FAC7 | 00       | BRK
+FAC8 | 00       | BRK
+FAC9 | 00       | BRK
+FACA | 00       | BRK
+FACB | 00       | BRK
+FACC | 00       | BRK
+FACD | 00       | BRK
+FACE | 00       | BRK
+FACF | 00       | BRK
+FAD0 | 00       | BRK
+FAD1 | 00       | BRK
+FAD2 | 00       | BRK
+FAD3 | 00       | BRK
+FAD4 | 00       | BRK
+FAD5 | 00       | BRK
+FAD6 | 00       | BRK
+FAD7 | 00       | BRK
+FAD8 | 00       | BRK
+FAD9 | 00       | BRK
+FADA | 00       | BRK
+FADB | 00       | BRK
+FADC | 00       | BRK
+FADD | 00       | BRK
+FADE | 00       | BRK
+FADF | 00       | BRK
+FAE0 | 00       | BRK
+FAE1 | 00       | BRK
+FAE2 | 00       | BRK
+FAE3 | 00       | BRK
+FAE4 | 00       | BRK
+FAE5 | 00       | BRK
+FAE6 | 00       | BRK
+FAE7 | 00       | BRK
+FAE8 | 00       | BRK
+FAE9 | 00       | BRK
+FAEA | 00       | BRK
+FAEB | 00       | BRK
+FAEC | 00       | BRK
+FAED | 00       | BRK
+FAEE | 00       | BRK
+FAEF | 00       | BRK
+FAF0 | 00       | BRK
+FAF1 | 00       | BRK
+FAF2 | 00       | BRK
+FAF3 | 00       | BRK
+FAF4 | 00       | BRK
+FAF5 | 00       | BRK
+FAF6 | 00       | BRK
+FAF7 | 00       | BRK
+FAF8 | 00       | BRK
+FAF9 | 00       | BRK
+FAFA | 00       | BRK
+FAFB | 00       | BRK
+FAFC | 00       | BRK
+FAFD | 00       | BRK
+FAFE | 00       | BRK
+FAFF | 00       | BRK
+FB00 | 00       | BRK
+FB01 | 00       | BRK
+FB02 | 00       | BRK
+FB03 | 00       | BRK
+FB04 | 00       | BRK
+FB05 | 00       | BRK
+FB06 | 00       | BRK
+FB07 | 00       | BRK
+FB08 | 00       | BRK
+FB09 | 00       | BRK
+FB0A | 00       | BRK
+FB0B | 00       | BRK
+FB0C | 00       | BRK
+FB0D | 00       | BRK
+FB0E | 00       | BRK
+FB0F | 00       | BRK
+FB10 | 00       | BRK
+FB11 | 00       | BRK
+FB12 | 00       | BRK
+FB13 | 00       | BRK
+FB14 | 00       | BRK
+FB15 | 00       | BRK
+FB16 | 00       | BRK
+FB17 | 00       | BRK
+FB18 | 00       | BRK
+FB19 | 00       | BRK
+FB1A | 00       | BRK
+FB1B | 00       | BRK
+FB1C | 00       | BRK
+FB1D | 00       | BRK
+FB1E | 00       | BRK
+FB1F | 00       | BRK
+FB20 | 00       | BRK
+FB21 | 00       | BRK
+FB22 | 00       | BRK
+FB23 | 00       | BRK
+FB24 | 00       | BRK
+FB25 | 00       | BRK
+FB26 | 00       | BRK
+FB27 | 00       | BRK
+FB28 | 00       | BRK
+FB29 | 00       | BRK
+FB2A | 00       | BRK
+FB2B | 00       | BRK
+FB2C | 00       | BRK
+FB2D | 00       | BRK
+FB2E | 00       | BRK
+FB2F | 00       | BRK
+FB30 | 00       | BRK
+FB31 | 00       | BRK
+FB32 | 00       | BRK
+FB33 | 00       | BRK
+FB34 | 00       | BRK
+FB35 | 00       | BRK
+FB36 | 00       | BRK
+FB37 | 00       | BRK
+FB38 | 00       | BRK
+FB39 | 00       | BRK
+FB3A | 00       | BRK
+FB3B | 00       | BRK
+FB3C | 00       | BRK
+FB3D | 00       | BRK
+FB3E | 00       | BRK
+FB3F | 00       | BRK
+FB40 | 00       | BRK
+FB41 | 00       | BRK
+FB42 | 00       | BRK
+FB43 | 00       | BRK
+FB44 | 00       | BRK
+FB45 | 00       | BRK
+FB46 | 00       | BRK
+FB47 | 00       | BRK
+FB48 | 00       | BRK
+FB49 | 00       | BRK
+FB4A | 00       | BRK
+FB4B | 00       | BRK
+FB4C | 00       | BRK
+FB4D | 00       | BRK
+FB4E | 00       | BRK
+FB4F | 00       | BRK
+FB50 | 00       | BRK
+FB51 | 00       | BRK
+FB52 | 00       | BRK
+FB53 | 00       | BRK
+FB54 | 00       | BRK
+FB55 | 00       | BRK
+FB56 | 00       | BRK
+FB57 | 00       | BRK
+FB58 | 00       | BRK
+FB59 | 00       | BRK
+FB5A | 00       | BRK
+FB5B | 00       | BRK
+FB5C | 00       | BRK
+FB5D | 00       | BRK
+FB5E | 00       | BRK
+FB5F | 00       | BRK
+FB60 | 00       | BRK
+FB61 | 00       | BRK
+FB62 | 00       | BRK
+FB63 | 00       | BRK
+FB64 | 00       | BRK
+FB65 | 00       | BRK
+FB66 | 00       | BRK
+FB67 | 00       | BRK
+FB68 | 00       | BRK
+FB69 | 00       | BRK
+FB6A | 00       | BRK
+FB6B | 00       | BRK
+FB6C | 00       | BRK
+FB6D | 00       | BRK
+FB6E | 00       | BRK
+FB6F | 00       | BRK
+FB70 | 00       | BRK
+FB71 | 00       | BRK
+FB72 | 00       | BRK
+FB73 | 00       | BRK
+FB74 | 00       | BRK
+FB75 | 00       | BRK
+FB76 | 00       | BRK
+FB77 | 00       | BRK
+FB78 | 00       | BRK
+FB79 | 00       | BRK
+FB7A | 00       | BRK
+FB7B | 00       | BRK
+FB7C | 00       | BRK
+FB7D | 00       | BRK
+FB7E | 00       | BRK
+FB7F | 00       | BRK
+FB80 | 00       | BRK
+FB81 | 00       | BRK
+FB82 | 00       | BRK
+FB83 | 00       | BRK
+FB84 | 00       | BRK
+FB85 | 00       | BRK
+FB86 | 00       | BRK
+FB87 | 00       | BRK
+FB88 | 00       | BRK
+FB89 | 00       | BRK
+FB8A | 00       | BRK
+FB8B | 00       | BRK
+FB8C | 00       | BRK
+FB8D | 00       | BRK
+FB8E | 00       | BRK
+FB8F | 00       | BRK
+FB90 | 00       | BRK
+FB91 | 00       | BRK
+FB92 | 00       | BRK
+FB93 | 00       | BRK
+FB94 | 00       | BRK
+FB95 | 00       | BRK
+FB96 | 00       | BRK
+FB97 | 00       | BRK
+FB98 | 00       | BRK
+FB99 | 00       | BRK
+FB9A | 00       | BRK
+FB9B | 00       | BRK
+FB9C | 00       | BRK
+FB9D | 00       | BRK
+FB9E | 00       | BRK
+FB9F | 00       | BRK
+FBA0 | 00       | BRK
+FBA1 | 00       | BRK
+FBA2 | 00       | BRK
+FBA3 | 00       | BRK
+FBA4 | 00       | BRK
+FBA5 | 00       | BRK
+FBA6 | 00       | BRK
+FBA7 | 00       | BRK
+FBA8 | 00       | BRK
+FBA9 | 00       | BRK
+FBAA | 00       | BRK
+FBAB | 00       | BRK
+FBAC | 00       | BRK
+FBAD | 00       | BRK
+FBAE | 00       | BRK
+FBAF | 00       | BRK
+FBB0 | 00       | BRK
+FBB1 | 00       | BRK
+FBB2 | 00       | BRK
+FBB3 | 00       | BRK
+FBB4 | 00       | BRK
+FBB5 | 00       | BRK
+FBB6 | 00       | BRK
+FBB7 | 00       | BRK
+FBB8 | 00       | BRK
+FBB9 | 00       | BRK
+FBBA | 00       | BRK
+FBBB | 00       | BRK
+FBBC | 00       | BRK
+FBBD | 00       | BRK
+FBBE | 00       | BRK
+FBBF | 00       | BRK
+FBC0 | 00       | BRK
+FBC1 | 00       | BRK
+FBC2 | 00       | BRK
+FBC3 | 00       | BRK
+FBC4 | 00       | BRK
+FBC5 | 00       | BRK
+FBC6 | 00       | BRK
+FBC7 | 00       | BRK
+FBC8 | 00       | BRK
+FBC9 | 00       | BRK
+FBCA | 00       | BRK
+FBCB | 00       | BRK
+FBCC | 00       | BRK
+FBCD | 00       | BRK
+FBCE | 00       | BRK
+FBCF | 00       | BRK
+FBD0 | 00       | BRK
+FBD1 | 00       | BRK
+FBD2 | 00       | BRK
+FBD3 | 00       | BRK
+FBD4 | 00       | BRK
+FBD5 | 00       | BRK
+FBD6 | 00       | BRK
+FBD7 | 00       | BRK
+FBD8 | 00       | BRK
+FBD9 | 00       | BRK
+FBDA | 00       | BRK
+FBDB | 00       | BRK
+FBDC | 00       | BRK
+FBDD | 00       | BRK
+FBDE | 00       | BRK
+FBDF | 00       | BRK
+FBE0 | 00       | BRK
+FBE1 | 00       | BRK
+FBE2 | 00       | BRK
+FBE3 | 00       | BRK
+FBE4 | 00       | BRK
+FBE5 | 00       | BRK
+FBE6 | 00       | BRK
+FBE7 | 00       | BRK
+FBE8 | 00       | BRK
+FBE9 | 00       | BRK
+FBEA | 00       | BRK
+FBEB | 00       | BRK
+FBEC | 00       | BRK
+FBED | 00       | BRK
+FBEE | 00       | BRK
+FBEF | 00       | BRK
+FBF0 | 00       | BRK
+FBF1 | 00       | BRK
+FBF2 | 00       | BRK
+FBF3 | 00       | BRK
+FBF4 | 00       | BRK
+FBF5 | 00       | BRK
+FBF6 | 00       | BRK
+FBF7 | 00       | BRK
+FBF8 | 00       | BRK
+FBF9 | 00       | BRK
+FBFA | 00       | BRK
+FBFB | 00       | BRK
+FBFC | 00       | BRK
+FBFD | 00       | BRK
+FBFE | 00       | BRK
+FBFF | 00       | BRK
+FC00 | 00       | BRK
+FC01 | 00       | BRK
+FC02 | 00       | BRK
+FC03 | 00       | BRK
+FC04 | 00       | BRK
+FC05 | 00       | BRK
+FC06 | 00       | BRK
+FC07 | 00       | BRK
+FC08 | 00       | BRK
+FC09 | 00       | BRK
+FC0A | 00       | BRK
+FC0B | 00       | BRK
+FC0C | 00       | BRK
+FC0D | 00       | BRK
+FC0E | 00       | BRK
+FC0F | 00       | BRK
+FC10 | 00       | BRK
+FC11 | 00       | BRK
+FC12 | 00       | BRK
+FC13 | 00       | BRK
+FC14 | 00       | BRK
+FC15 | 00       | BRK
+FC16 | 00       | BRK
+FC17 | 00       | BRK
+FC18 | 00       | BRK
+FC19 | 00       | BRK
+FC1A | 00       | BRK
+FC1B | 00       | BRK
+FC1C | 00       | BRK
+FC1D | 00       | BRK
+FC1E | 00       | BRK
+FC1F | 00       | BRK
+FC20 | 00       | BRK
+FC21 | 00       | BRK
+FC22 | 00       | BRK
+FC23 | 00       | BRK
+FC24 | 00       | BRK
+FC25 | 00       | BRK
+FC26 | 00       | BRK
+FC27 | 00       | BRK
+FC28 | 00       | BRK
+FC29 | 00       | BRK
+FC2A | 00       | BRK
+FC2B | 00       | BRK
+FC2C | 00       | BRK
+FC2D | 00       | BRK
+FC2E | 00       | BRK
+FC2F | 00       | BRK
+FC30 | 00       | BRK
+FC31 | 00       | BRK
+FC32 | 00       | BRK
+FC33 | 00       | BRK
+FC34 | 00       | BRK
+FC35 | 00       | BRK
+FC36 | 00       | BRK
+FC37 | 00       | BRK
+FC38 | 00       | BRK
+FC39 | 00       | BRK
+FC3A | 00       | BRK
+FC3B | 00       | BRK
+FC3C | 00       | BRK
+FC3D | 00       | BRK
+FC3E | 00       | BRK
+FC3F | 00       | BRK
+FC40 | 00       | BRK
+FC41 | 00       | BRK
+FC42 | 00       | BRK
+FC43 | 00       | BRK
+FC44 | 00       | BRK
+FC45 | 00       | BRK
+FC46 | 00       | BRK
+FC47 | 00       | BRK
+FC48 | 00       | BRK
+FC49 | 00       | BRK
+FC4A | 00       | BRK
+FC4B | 00       | BRK
+FC4C | 00       | BRK
+FC4D | 00       | BRK
+FC4E | 00       | BRK
+FC4F | 00       | BRK
+FC50 | 00       | BRK
+FC51 | 00       | BRK
+FC52 | 00       | BRK
+FC53 | 00       | BRK
+FC54 | 00       | BRK
+FC55 | 00       | BRK
+FC56 | 00       | BRK
+FC57 | 00       | BRK
+FC58 | 00       | BRK
+FC59 | 00       | BRK
+FC5A | 00       | BRK
+FC5B | 00       | BRK
+FC5C | 00       | BRK
+FC5D | 00       | BRK
+FC5E | 00       | BRK
+FC5F | 00       | BRK
+FC60 | 00       | BRK
+FC61 | 00       | BRK
+FC62 | 00       | BRK
+FC63 | 00       | BRK
+FC64 | 00       | BRK
+FC65 | 00       | BRK
+FC66 | 00       | BRK
+FC67 | 00       | BRK
+FC68 | 00       | BRK
+FC69 | 00       | BRK
+FC6A | 00       | BRK
+FC6B | 00       | BRK
+FC6C | 00       | BRK
+FC6D | 00       | BRK
+FC6E | 00       | BRK
+FC6F | 00       | BRK
+FC70 | 00       | BRK
+FC71 | 00       | BRK
+FC72 | 00       | BRK
+FC73 | 00       | BRK
+FC74 | 00       | BRK
+FC75 | 00       | BRK
+FC76 | 00       | BRK
+FC77 | 00       | BRK
+FC78 | 00       | BRK
+FC79 | 00       | BRK
+FC7A | 00       | BRK
+FC7B | 00       | BRK
+FC7C | 00       | BRK
+FC7D | 00       | BRK
+FC7E | 00       | BRK
+FC7F | 00       | BRK
+FC80 | 00       | BRK
+FC81 | 00       | BRK
+FC82 | 00       | BRK
+FC83 | 00       | BRK
+FC84 | 00       | BRK
+FC85 | 00       | BRK
+FC86 | 00       | BRK
+FC87 | 00       | BRK
+FC88 | 00       | BRK
+FC89 | 00       | BRK
+FC8A | 00       | BRK
+FC8B | 00       | BRK
+FC8C | 00       | BRK
+FC8D | 00       | BRK
+FC8E | 00       | BRK
+FC8F | 00       | BRK
+FC90 | 00       | BRK
+FC91 | 00       | BRK
+FC92 | 00       | BRK
+FC93 | 00       | BRK
+FC94 | 00       | BRK
+FC95 | 00       | BRK
+FC96 | 00       | BRK
+FC97 | 00       | BRK
+FC98 | 00       | BRK
+FC99 | 00       | BRK
+FC9A | 00       | BRK
+FC9B | 00       | BRK
+FC9C | 00       | BRK
+FC9D | 00       | BRK
+FC9E | 00       | BRK
+FC9F | 00       | BRK
+FCA0 | 00       | BRK
+FCA1 | 00       | BRK
+FCA2 | 00       | BRK
+FCA3 | 00       | BRK
+FCA4 | 00       | BRK
+FCA5 | 00       | BRK
+FCA6 | 00       | BRK
+FCA7 | 00       | BRK
+FCA8 | 00       | BRK
+FCA9 | 00       | BRK
+FCAA | 00       | BRK
+FCAB | 00       | BRK
+FCAC | 00       | BRK
+FCAD | 00       | BRK
+FCAE | 00       | BRK
+FCAF | 00       | BRK
+FCB0 | 00       | BRK
+FCB1 | 00       | BRK
+FCB2 | 00       | BRK
+FCB3 | 00       | BRK
+FCB4 | 00       | BRK
+FCB5 | 00       | BRK
+FCB6 | 00       | BRK
+FCB7 | 00       | BRK
+FCB8 | 00       | BRK
+FCB9 | 00       | BRK
+FCBA | 00       | BRK
+FCBB | 00       | BRK
+FCBC | 00       | BRK
+FCBD | 00       | BRK
+FCBE | 00       | BRK
+FCBF | 00       | BRK
+FCC0 | 00       | BRK
+FCC1 | 00       | BRK
+FCC2 | 00       | BRK
+FCC3 | 00       | BRK
+FCC4 | 00       | BRK
+FCC5 | 00       | BRK
+FCC6 | 00       | BRK
+FCC7 | 00       | BRK
+FCC8 | 00       | BRK
+FCC9 | 00       | BRK
+FCCA | 00       | BRK
+FCCB | 00       | BRK
+FCCC | 00       | BRK
+FCCD | 00       | BRK
+FCCE | 00       | BRK
+FCCF | 00       | BRK
+FCD0 | 00       | BRK
+FCD1 | 00       | BRK
+FCD2 | 00       | BRK
+FCD3 | 00       | BRK
+FCD4 | 00       | BRK
+FCD5 | 00       | BRK
+FCD6 | 00       | BRK
+FCD7 | 00       | BRK
+FCD8 | 00       | BRK
+FCD9 | 00       | BRK
+FCDA | 00       | BRK
+FCDB | 00       | BRK
+FCDC | 00       | BRK
+FCDD | 00       | BRK
+FCDE | 00       | BRK
+FCDF | 00       | BRK
+FCE0 | 00       | BRK
+FCE1 | 00       | BRK
+FCE2 | 00       | BRK
+FCE3 | 00       | BRK
+FCE4 | 00       | BRK
+FCE5 | 00       | BRK
+FCE6 | 00       | BRK
+FCE7 | 00       | BRK
+FCE8 | 00       | BRK
+FCE9 | 00       | BRK
+FCEA | 00       | BRK
+FCEB | 00       | BRK
+FCEC | 00       | BRK
+FCED | 00       | BRK
+FCEE | 00       | BRK
+FCEF | 00       | BRK
+FCF0 | 00       | BRK
+FCF1 | 00       | BRK
+FCF2 | 00       | BRK
+FCF3 | 00       | BRK
+FCF4 | 00       | BRK
+FCF5 | 00       | BRK
+FCF6 | 00       | BRK
+FCF7 | 00       | BRK
+FCF8 | 00       | BRK
+FCF9 | 00       | BRK
+FCFA | 00       | BRK
+FCFB | 00       | BRK
+FCFC | 00       | BRK
+FCFD | 00       | BRK
+FCFE | 00       | BRK
+FCFF | 00       | BRK
+FD00 | 00       | BRK
+FD01 | 00       | BRK
+FD02 | 00       | BRK
+FD03 | 00       | BRK
+FD04 | 00       | BRK
+FD05 | 00       | BRK
+FD06 | 00       | BRK
+FD07 | 00       | BRK
+FD08 | 00       | BRK
+FD09 | 00       | BRK
+FD0A | 00       | BRK
+FD0B | 00       | BRK
+FD0C | 00       | BRK
+FD0D | 00       | BRK
+FD0E | 00       | BRK
+FD0F | 00       | BRK
+FD10 | 00       | BRK
+FD11 | 00       | BRK
+FD12 | 00       | BRK
+FD13 | 00       | BRK
+FD14 | 00       | BRK
+FD15 | 00       | BRK
+FD16 | 00       | BRK
+FD17 | 00       | BRK
+FD18 | 00       | BRK
+FD19 | 00       | BRK
+FD1A | 00       | BRK
+FD1B | 00       | BRK
+FD1C | 00       | BRK
+FD1D | 00       | BRK
+FD1E | 00       | BRK
+FD1F | 00       | BRK
+FD20 | 00       | BRK
+FD21 | 00       | BRK
+FD22 | 00       | BRK
+FD23 | 00       | BRK
+FD24 | 00       | BRK
+FD25 | 00       | BRK
+FD26 | 00       | BRK
+FD27 | 00       | BRK
+FD28 | 00       | BRK
+FD29 | 00       | BRK
+FD2A | 00       | BRK
+FD2B | 00       | BRK
+FD2C | 00       | BRK
+FD2D | 00       | BRK
+FD2E | 00       | BRK
+FD2F | 00       | BRK
+FD30 | 00       | BRK
+FD31 | 00       | BRK
+FD32 | 00       | BRK
+FD33 | 00       | BRK
+FD34 | 00       | BRK
+FD35 | 00       | BRK
+FD36 | 00       | BRK
+FD37 | 00       | BRK
+FD38 | 00       | BRK
+FD39 | 00       | BRK
+FD3A | 00       | BRK
+FD3B | 00       | BRK
+FD3C | 00       | BRK
+FD3D | 00       | BRK
+FD3E | 00       | BRK
+FD3F | 00       | BRK
+FD40 | 00       | BRK
+FD41 | 00       | BRK
+FD42 | 00       | BRK
+FD43 | 00       | BRK
+FD44 | 00       | BRK
+FD45 | 00       | BRK
+FD46 | 00       | BRK
+FD47 | 00       | BRK
+FD48 | 00       | BRK
+FD49 | 00       | BRK
+FD4A | 00       | BRK
+FD4B | 00       | BRK
+FD4C | 00       | BRK
+FD4D | 00       | BRK
+FD4E | 00       | BRK
+FD4F | 00       | BRK
+FD50 | 00       | BRK
+FD51 | 00       | BRK
+FD52 | 00       | BRK
+FD53 | 00       | BRK
+FD54 | 00       | BRK
+FD55 | 00       | BRK
+FD56 | 00       | BRK
+FD57 | 00       | BRK
+FD58 | 00       | BRK
+FD59 | 00       | BRK
+FD5A | 00       | BRK
+FD5B | 00       | BRK
+FD5C | 00       | BRK
+FD5D | 00       | BRK
+FD5E | 00       | BRK
+FD5F | 00       | BRK
+FD60 | 00       | BRK
+FD61 | 00       | BRK
+FD62 | 00       | BRK
+FD63 | 00       | BRK
+FD64 | 00       | BRK
+FD65 | 00       | BRK
+FD66 | 00       | BRK
+FD67 | 00       | BRK
+FD68 | 00       | BRK
+FD69 | 00       | BRK
+FD6A | 00       | BRK
+FD6B | 00       | BRK
+FD6C | 00       | BRK
+FD6D | 00       | BRK
+FD6E | 00       | BRK
+FD6F | 00       | BRK
+FD70 | 00       | BRK
+FD71 | 00       | BRK
+FD72 | 00       | BRK
+FD73 | 00       | BRK
+FD74 | 00       | BRK
+FD75 | 00       | BRK
+FD76 | 00       | BRK
+FD77 | 00       | BRK
+FD78 | 00       | BRK
+FD79 | 00       | BRK
+FD7A | 00       | BRK
+FD7B | 00       | BRK
+FD7C | 00       | BRK
+FD7D | 00       | BRK
+FD7E | 00       | BRK
+FD7F | 00       | BRK
+FD80 | 00       | BRK
+FD81 | 00       | BRK
+FD82 | 00       | BRK
+FD83 | 00       | BRK
+FD84 | 00       | BRK
+FD85 | 00       | BRK
+FD86 | 00       | BRK
+FD87 | 00       | BRK
+FD88 | 00       | BRK
+FD89 | 00       | BRK
+FD8A | 00       | BRK
+FD8B | 00       | BRK
+FD8C | 00       | BRK
+FD8D | 00       | BRK
+FD8E | 00       | BRK
+FD8F | 00       | BRK
+FD90 | 00       | BRK
+FD91 | 00       | BRK
+FD92 | 00       | BRK
+FD93 | 00       | BRK
+FD94 | 00       | BRK
+FD95 | 00       | BRK
+FD96 | 00       | BRK
+FD97 | 00       | BRK
+FD98 | 00       | BRK
+FD99 | 00       | BRK
+FD9A | 00       | BRK
+FD9B | 00       | BRK
+FD9C | 00       | BRK
+FD9D | 00       | BRK
+FD9E | 00       | BRK
+FD9F | 00       | BRK
+FDA0 | 00       | BRK
+FDA1 | 00       | BRK
+FDA2 | 00       | BRK
+FDA3 | 00       | BRK
+FDA4 | 00       | BRK
+FDA5 | 00       | BRK
+FDA6 | 00       | BRK
+FDA7 | 00       | BRK
+FDA8 | 00       | BRK
+FDA9 | 00       | BRK
+FDAA | 00       | BRK
+FDAB | 00       | BRK
+FDAC | 00       | BRK
+FDAD | 00       | BRK
+FDAE | 00       | BRK
+FDAF | 00       | BRK
+FDB0 | 00       | BRK
+FDB1 | 00       | BRK
+FDB2 | 00       | BRK
+FDB3 | 00       | BRK
+FDB4 | 00       | BRK
+FDB5 | 00       | BRK
+FDB6 | 00       | BRK
+FDB7 | 00       | BRK
+FDB8 | 00       | BRK
+FDB9 | 00       | BRK
+FDBA | 00       | BRK
+FDBB | 00       | BRK
+FDBC | 00       | BRK
+FDBD | 00       | BRK
+FDBE | 00       | BRK
+FDBF | 00       | BRK
+FDC0 | 00       | BRK
+FDC1 | 00       | BRK
+FDC2 | 00       | BRK
+FDC3 | 00       | BRK
+FDC4 | 00       | BRK
+FDC5 | 00       | BRK
+FDC6 | 00       | BRK
+FDC7 | 00       | BRK
+FDC8 | 00       | BRK
+FDC9 | 00       | BRK
+FDCA | 00       | BRK
+FDCB | 00       | BRK
+FDCC | 00       | BRK
+FDCD | 00       | BRK
+FDCE | 00       | BRK
+FDCF | 00       | BRK
+FDD0 | 00       | BRK
+FDD1 | 00       | BRK
+FDD2 | 00       | BRK
+FDD3 | 00       | BRK
+FDD4 | 00       | BRK
+FDD5 | 00       | BRK
+FDD6 | 00       | BRK
+FDD7 | 00       | BRK
+FDD8 | 00       | BRK
+FDD9 | 00       | BRK
+FDDA | 00       | BRK
+FDDB | 00       | BRK
+FDDC | 00       | BRK
+FDDD | 00       | BRK
+FDDE | 00       | BRK
+FDDF | 00       | BRK
+FDE0 | 00       | BRK
+FDE1 | 00       | BRK
+FDE2 | 00       | BRK
+FDE3 | 00       | BRK
+FDE4 | 00       | BRK
+FDE5 | 00       | BRK
+FDE6 | 00       | BRK
+FDE7 | 00       | BRK
+FDE8 | 00       | BRK
+FDE9 | 00       | BRK
+FDEA | 00       | BRK
+FDEB | 00       | BRK
+FDEC | 00       | BRK
+FDED | 00       | BRK
+FDEE | 00       | BRK
+FDEF | 00       | BRK
+FDF0 | 00       | BRK
+FDF1 | 00       | BRK
+FDF2 | 00       | BRK
+FDF3 | 00       | BRK
+FDF4 | 00       | BRK
+FDF5 | 00       | BRK
+FDF6 | 00       | BRK
+FDF7 | 00       | BRK
+FDF8 | 00       | BRK
+FDF9 | 00       | BRK
+FDFA | 00       | BRK
+FDFB | 00       | BRK
+FDFC | 00       | BRK
+FDFD | 00       | BRK
+FDFE | 00       | BRK
+FDFF | 00       | BRK
+.mem_rand_backup:
+FE00 | AA       | inc R2
+FE01 | 0E       | shl R0
+.mem_rand_backup+2:
+FE02 | D8       | xor R0 R0
+FE03 | C1       | [wait! that's illegal!]
+FE04 | 00       | BRK
+FE05 | 00       | BRK
+FE06 | 00       | BRK
+FE07 | 00       | BRK
+FE08 | 00       | BRK
+FE09 | 00       | BRK
+FE0A | 00       | BRK
+FE0B | 00       | BRK
+FE0C | 00       | BRK
+FE0D | 00       | BRK
+FE0E | 00       | BRK
+FE0F | 00       | BRK
+FE10 | 00       | BRK
+FE11 | 00       | BRK
+FE12 | 00       | BRK
+FE13 | 00       | BRK
+FE14 | 00       | BRK
+FE15 | 00       | BRK
+FE16 | 00       | BRK
+FE17 | 00       | BRK
+FE18 | 00       | BRK
+FE19 | 00       | BRK
+FE1A | 00       | BRK
+FE1B | 00       | BRK
+FE1C | 00       | BRK
+FE1D | 00       | BRK
+FE1E | 00       | BRK
+FE1F | 00       | BRK
+FE20 | 00       | BRK
+FE21 | 00       | BRK
+FE22 | 00       | BRK
+FE23 | 00       | BRK
+FE24 | 00       | BRK
+FE25 | 00       | BRK
+FE26 | 00       | BRK
+FE27 | 00       | BRK
+FE28 | 00       | BRK
+FE29 | 00       | BRK
+FE2A | 00       | BRK
+FE2B | 00       | BRK
+FE2C | 00       | BRK
+FE2D | 00       | BRK
+FE2E | 00       | BRK
+FE2F | 00       | BRK
+FE30 | 00       | BRK
+FE31 | 00       | BRK
+FE32 | 00       | BRK
+FE33 | 00       | BRK
+FE34 | 00       | BRK
+FE35 | 00       | BRK
+FE36 | 00       | BRK
+FE37 | 00       | BRK
+FE38 | 00       | BRK
+FE39 | 00       | BRK
+FE3A | 00       | BRK
+FE3B | 00       | BRK
+FE3C | 00       | BRK
+FE3D | 00       | BRK
+FE3E | 00       | BRK
+FE3F | 00       | BRK
+FE40 | 00       | BRK
+FE41 | 00       | BRK
+FE42 | 00       | BRK
+FE43 | 00       | BRK
+FE44 | 00       | BRK
+FE45 | 00       | BRK
+FE46 | 00       | BRK
+FE47 | 00       | BRK
+FE48 | 00       | BRK
+FE49 | 00       | BRK
+FE4A | 00       | BRK
+FE4B | 00       | BRK
+FE4C | 00       | BRK
+FE4D | 00       | BRK
+FE4E | 00       | BRK
+FE4F | 00       | BRK
+FE50 | 00       | BRK
+FE51 | 00       | BRK
+FE52 | 00       | BRK
+FE53 | 00       | BRK
+FE54 | 00       | BRK
+FE55 | 00       | BRK
+FE56 | 00       | BRK
+FE57 | 00       | BRK
+FE58 | 00       | BRK
+FE59 | 00       | BRK
+FE5A | 00       | BRK
+FE5B | 00       | BRK
+FE5C | 00       | BRK
+FE5D | 00       | BRK
+FE5E | 00       | BRK
+FE5F | 00       | BRK
+FE60 | 00       | BRK
+FE61 | 00       | BRK
+FE62 | 00       | BRK
+FE63 | 00       | BRK
+FE64 | 00       | BRK
+FE65 | 00       | BRK
+FE66 | 00       | BRK
+FE67 | 00       | BRK
+FE68 | 00       | BRK
+FE69 | 00       | BRK
+FE6A | 00       | BRK
+FE6B | 00       | BRK
+FE6C | 00       | BRK
+FE6D | 00       | BRK
+FE6E | 00       | BRK
+FE6F | 00       | BRK
+FE70 | 00       | BRK
+FE71 | 00       | BRK
+FE72 | 00       | BRK
+FE73 | 00       | BRK
+FE74 | 00       | BRK
+FE75 | 00       | BRK
+FE76 | 00       | BRK
+FE77 | 00       | BRK
+FE78 | 00       | BRK
+FE79 | 00       | BRK
+FE7A | 00       | BRK
+FE7B | 00       | BRK
+FE7C | 00       | BRK
+FE7D | 00       | BRK
+FE7E | 00       | BRK
+FE7F | 00       | BRK
+FE80 | 00       | BRK
+FE81 | 00       | BRK
+FE82 | 00       | BRK
+FE83 | 00       | BRK
+FE84 | 00       | BRK
+FE85 | 00       | BRK
+FE86 | 00       | BRK
+FE87 | 00       | BRK
+FE88 | 00       | BRK
+FE89 | 00       | BRK
+FE8A | 00       | BRK
+FE8B | 00       | BRK
+FE8C | 00       | BRK
+FE8D | 00       | BRK
+FE8E | 00       | BRK
+FE8F | 00       | BRK
+FE90 | 00       | BRK
+FE91 | 00       | BRK
+FE92 | 00       | BRK
+FE93 | 00       | BRK
+FE94 | 00       | BRK
+FE95 | 00       | BRK
+FE96 | 00       | BRK
+FE97 | 00       | BRK
+FE98 | 00       | BRK
+FE99 | 00       | BRK
+FE9A | 00       | BRK
+FE9B | 00       | BRK
+FE9C | 00       | BRK
+FE9D | 00       | BRK
+FE9E | 00       | BRK
+FE9F | 00       | BRK
+FEA0 | 00       | BRK
+FEA1 | 00       | BRK
+FEA2 | 00       | BRK
+FEA3 | 00       | BRK
+FEA4 | 00       | BRK
+FEA5 | 00       | BRK
+FEA6 | 00       | BRK
+FEA7 | 00       | BRK
+FEA8 | 00       | BRK
+FEA9 | 00       | BRK
+FEAA | 00       | BRK
+FEAB | 00       | BRK
+FEAC | 00       | BRK
+FEAD | 00       | BRK
+FEAE | 00       | BRK
+FEAF | 00       | BRK
+FEB0 | 00       | BRK
+FEB1 | 00       | BRK
+FEB2 | 00       | BRK
+FEB3 | 00       | BRK
+FEB4 | 00       | BRK
+FEB5 | 00       | BRK
+FEB6 | 00       | BRK
+FEB7 | 00       | BRK
+FEB8 | 00       | BRK
+FEB9 | 00       | BRK
+FEBA | 00       | BRK
+FEBB | 00       | BRK
+FEBC | 00       | BRK
+FEBD | 00       | BRK
+FEBE | 00       | BRK
+FEBF | 00       | BRK
+FEC0 | 00       | BRK
+FEC1 | 00       | BRK
+FEC2 | 00       | BRK
+FEC3 | 00       | BRK
+FEC4 | 00       | BRK
+FEC5 | 00       | BRK
+FEC6 | 00       | BRK
+FEC7 | 00       | BRK
+FEC8 | 00       | BRK
+FEC9 | 00       | BRK
+FECA | 00       | BRK
+FECB | 00       | BRK
+FECC | 00       | BRK
+FECD | 00       | BRK
+FECE | 00       | BRK
+FECF | 00       | BRK
+FED0 | 00       | BRK
+FED1 | 00       | BRK
+FED2 | 00       | BRK
+FED3 | 00       | BRK
+FED4 | 00       | BRK
+FED5 | 00       | BRK
+FED6 | 00       | BRK
+FED7 | 00       | BRK
+FED8 | 00       | BRK
+FED9 | 00       | BRK
+FEDA | 00       | BRK
+FEDB | 00       | BRK
+FEDC | 00       | BRK
+FEDD | 00       | BRK
+FEDE | 00       | BRK
+FEDF | 00       | BRK
+FEE0 | 00       | BRK
+FEE1 | 00       | BRK
+FEE2 | 00       | BRK
+FEE3 | 00       | BRK
+FEE4 | 00       | BRK
+FEE5 | 00       | BRK
+FEE6 | 00       | BRK
+FEE7 | 00       | BRK
+FEE8 | 00       | BRK
+FEE9 | 00       | BRK
+FEEA | 00       | BRK
+FEEB | 00       | BRK
+FEEC | 00       | BRK
+FEED | 00       | BRK
+FEEE | 00       | BRK
+FEEF | 00       | BRK
+FEF0 | 00       | BRK
+FEF1 | 00       | BRK
+FEF2 | 00       | BRK
+FEF3 | 00       | BRK
+FEF4 | BD 00 00 | ld [$0000] R1
+FEF7 | 00       | BRK
+FEF8 | 00       | BRK
+FEF9 | 00       | BRK
+FEFA | 6D       | ldb [R3] R1
+FEFB | 00       | BRK
+FEFC | 42       | ldb R0 [R2]
+FEFD | F0       | [wait! that's illegal!]
+FEFE | 2B       | ld R2 R3
+FEFF | F0       | [wait! that's illegal!]
+FF00 | 00       | BRK
+FF01 | 00       | BRK
+FF02 | 00       | BRK
+FF03 | 00       | BRK
+FF04 | 00       | BRK
+FF05 | 00       | BRK
+FF06 | 00       | BRK
+FF07 | 00       | BRK
+FF08 | 00       | BRK
+FF09 | 00       | BRK
+FF0A | 00       | BRK
+FF0B | 00       | BRK
+FF0C | 00       | BRK
+FF0D | 00       | BRK
+FF0E | 00       | BRK
+FF0F | 00       | BRK
+FF10 | 00       | BRK
+FF11 | 00       | BRK
+FF12 | 00       | BRK
+FF13 | 00       | BRK
+FF14 | 00       | BRK
+FF15 | 00       | BRK
+FF16 | 00       | BRK
+FF17 | 00       | BRK
+FF18 | 00       | BRK
+FF19 | 00       | BRK
+FF1A | 00       | BRK
+FF1B | 00       | BRK
+FF1C | 00       | BRK
+FF1D | 00       | BRK
+FF1E | 00       | BRK
+FF1F | 00       | BRK
+FF20 | 00       | BRK
+FF21 | 00       | BRK
+FF22 | 00       | BRK
+FF23 | 00       | BRK
+FF24 | 00       | BRK
+FF25 | 00       | BRK
+FF26 | 00       | BRK
+FF27 | 00       | BRK
+FF28 | 00       | BRK
+FF29 | 00       | BRK
+FF2A | 00       | BRK
+FF2B | 00       | BRK
+FF2C | 00       | BRK
+FF2D | 00       | BRK
+FF2E | 00       | BRK
+FF2F | 00       | BRK
+FF30 | 00       | BRK
+FF31 | 00       | BRK
+FF32 | 00       | BRK
+FF33 | 00       | BRK
+FF34 | 00       | BRK
+FF35 | 00       | BRK
+FF36 | 00       | BRK
+FF37 | 00       | BRK
+FF38 | 00       | BRK
+FF39 | 00       | BRK
+FF3A | 00       | BRK
+FF3B | 00       | BRK
+FF3C | 00       | BRK
+FF3D | 00       | BRK
+FF3E | 00       | BRK
+FF3F | 00       | BRK
+FF40 | 00       | BRK
+FF41 | 00       | BRK
+FF42 | 00       | BRK
+FF43 | 00       | BRK
+FF44 | 00       | BRK
+FF45 | 00       | BRK
+FF46 | 00       | BRK
+FF47 | 00       | BRK
+FF48 | 00       | BRK
+FF49 | 00       | BRK
+FF4A | 00       | BRK
+FF4B | 00       | BRK
+FF4C | 00       | BRK
+FF4D | 00       | BRK
+FF4E | 00       | BRK
+FF4F | 00       | BRK
+FF50 | 00       | BRK
+FF51 | 00       | BRK
+FF52 | 00       | BRK
+FF53 | 00       | BRK
+FF54 | 00       | BRK
+FF55 | 00       | BRK
+FF56 | 00       | BRK
+FF57 | 00       | BRK
+FF58 | 00       | BRK
+FF59 | 00       | BRK
+FF5A | 00       | BRK
+FF5B | 00       | BRK
+FF5C | 00       | BRK
+FF5D | 00       | BRK
+FF5E | 00       | BRK
+FF5F | 00       | BRK
+FF60 | 00       | BRK
+FF61 | 00       | BRK
+FF62 | 00       | BRK
+FF63 | 00       | BRK
+FF64 | 00       | BRK
+FF65 | 00       | BRK
+FF66 | 00       | BRK
+FF67 | 00       | BRK
+FF68 | 00       | BRK
+FF69 | 00       | BRK
+FF6A | 00       | BRK
+FF6B | 00       | BRK
+FF6C | 00       | BRK
+FF6D | 00       | BRK
+FF6E | 00       | BRK
+FF6F | 00       | BRK
+FF70 | 00       | BRK
+FF71 | 00       | BRK
+FF72 | 00       | BRK
+FF73 | 00       | BRK
+FF74 | 00       | BRK
+FF75 | 00       | BRK
+FF76 | 00       | BRK
+FF77 | 00       | BRK
+FF78 | 00       | BRK
+FF79 | 00       | BRK
+FF7A | 00       | BRK
+FF7B | 00       | BRK
+FF7C | 00       | BRK
+FF7D | 00       | BRK
+FF7E | 00       | BRK
+FF7F | 00       | BRK
+FF80 | 00       | BRK
+FF81 | 00       | BRK
+FF82 | 00       | BRK
+FF83 | 00       | BRK
+FF84 | 00       | BRK
+FF85 | 00       | BRK
+FF86 | 00       | BRK
+FF87 | 00       | BRK
+FF88 | 00       | BRK
+FF89 | 00       | BRK
+FF8A | 00       | BRK
+FF8B | 00       | BRK
+FF8C | 00       | BRK
+FF8D | 00       | BRK
+FF8E | 00       | BRK
+FF8F | 00       | BRK
+FF90 | 00       | BRK
+FF91 | 00       | BRK
+FF92 | 00       | BRK
+FF93 | 00       | BRK
+FF94 | 00       | BRK
+FF95 | 00       | BRK
+FF96 | 00       | BRK
+FF97 | 00       | BRK
+FF98 | 00       | BRK
+FF99 | 00       | BRK
+FF9A | 00       | BRK
+FF9B | 00       | BRK
+FF9C | 00       | BRK
+FF9D | 00       | BRK
+FF9E | 00       | BRK
+FF9F | 00       | BRK
+FFA0 | 00       | BRK
+FFA1 | 00       | BRK
+FFA2 | 00       | BRK
+FFA3 | 00       | BRK
+FFA4 | 00       | BRK
+FFA5 | 00       | BRK
+FFA6 | 00       | BRK
+FFA7 | 00       | BRK
+FFA8 | 00       | BRK
+FFA9 | 00       | BRK
+FFAA | 00       | BRK
+FFAB | 00       | BRK
+FFAC | 00       | BRK
+FFAD | 00       | BRK
+FFAE | 00       | BRK
+FFAF | 00       | BRK
+FFB0 | 00       | BRK
+FFB1 | 00       | BRK
+FFB2 | 00       | BRK
+FFB3 | 00       | BRK
+FFB4 | 00       | BRK
+FFB5 | 00       | BRK
+FFB6 | 00       | BRK
+FFB7 | 00       | BRK
+FFB8 | 00       | BRK
+FFB9 | 00       | BRK
+FFBA | 00       | BRK
+FFBB | 00       | BRK
+FFBC | 00       | BRK
+FFBD | 00       | BRK
+FFBE | 00       | BRK
+FFBF | 00       | BRK
+FFC0 | 00       | BRK
+FFC1 | 00       | BRK
+FFC2 | 00       | BRK
+FFC3 | 00       | BRK
+FFC4 | 00       | BRK
+FFC5 | 00       | BRK
+FFC6 | 00       | BRK
+FFC7 | 00       | BRK
+FFC8 | 00       | BRK
+FFC9 | 00       | BRK
+FFCA | 00       | BRK
+FFCB | 00       | BRK
+FFCC | 00       | BRK
+FFCD | 00       | BRK
+FFCE | 00       | BRK
+FFCF | 00       | BRK
+FFD0 | 00       | BRK
+FFD1 | 00       | BRK
+FFD2 | 00       | BRK
+FFD3 | 00       | BRK
+FFD4 | 00       | BRK
+FFD5 | 00       | BRK
+FFD6 | 00       | BRK
+FFD7 | 00       | BRK
+FFD8 | 00       | BRK
+FFD9 | 00       | BRK
+FFDA | 00       | BRK
+FFDB | 00       | BRK
+FFDC | 00       | BRK
+FFDD | 00       | BRK
+FFDE | 00       | BRK
+FFDF | 00       | BRK
+FFE0 | 00       | BRK
+FFE1 | 00       | BRK
+FFE2 | 00       | BRK
+FFE3 | 00       | BRK
+FFE4 | 00       | BRK
+FFE5 | 00       | BRK
+FFE6 | 00       | BRK
+FFE7 | 00       | BRK
+FFE8 | 00       | BRK
+FFE9 | 00       | BRK
+FFEA | 00       | BRK
+FFEB | 00       | BRK
+FFEC | 00       | BRK
+FFED | 00       | BRK
+FFEE | 00       | BRK
+FFEF | 00       | BRK
+FFF0 | 00       | BRK
+FFF1 | 00       | BRK
+FFF2 | 00       | BRK
+FFF3 | 00       | BRK
+FFF4 | 00       | BRK
+FFF5 | 00       | BRK
+FFF6 | 00       | BRK
+FFF7 | 00       | BRK
+FFF8 | 00       | BRK
+FFF9 | 00       | BRK
+FFFA | 00       | BRK
+FFFB | 00       | BRK
+FFFC | 00       | BRK
+FFFD | 00       | BRK
+FFFE | 00       | BRK
