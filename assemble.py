@@ -43,6 +43,8 @@ useful_vals = {
 "MemSet"       : 0x0040,
 "BreakPoint"   : 0xFFF0
 }
+for val,name in known_syscalls.items():
+    useful_vals[name]=val
 
 def assemble_file(fname, offset=0x2000):
     return assemble_code(open(fname).readlines(), offset)
