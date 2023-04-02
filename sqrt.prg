@@ -4,22 +4,24 @@ push R2                                             ; 300B | 92
 push R3                                             ; 300C | 93
 
 ld R1 $0000           ; r1 = i                      ; 300D | 11 00 00             
-.search_loop:                                        
-ld R2 R1                                            ; 3010 | 26 
+.search_loop:  
+; BRK                                    
+ld R2 R1                                            ; 3010 | 29 
 add R2 R2                                           ; 3011 | 3A
-add R2 sqr_tab        ; [r2] = i^2                  ; 3012 | E2 32 30           
-ld [dummylab+1] R2                                  ; 3015 | BE 19 30    
+add R2 .sqr_tab        ; [r2] = i^2                  ; 3012 | E2 32 30           
+ld [.dummylab+1] R2                                  ; 3015 | BE 19 30    
 .dummylab:                                         
 ld R3 [0000]          ; r3 = i^2                    ; 3018 | B7 00 00  
-ld [dummylab2+1] R3                                 ; 301B | BF 1D 30
+ld [.dummylab2+1] R3                                 ; 301B | BF 1F 30
 .dummylab2:                                       
-cmp R0 $0000          ; X <=>  i^2                  ; 301C | A2 00 00                                                 
+cmp R0 $0000          ; X <=>  i^2                  ; 301E | A2 00 00                                                 
 jp lt .exit           ; if X < i^2                  ; 3021 | 9A 2A 30                     
 add R1 $0001                                        ; 3024 | E1 01 00 
 jp .search_loop                                     ; 3027 | 98 10 30
 
-.exit:       ; X < i^2                              
-ld R0 R3                                            ; 302A | 2C 
+.exit:       ; X < i^2    
+; BRK                          
+ld R0 R1                                            ; 302A | 23 
 add R0 $FFFF ; return i-1                           ; 302B | E0 FF FF
 
 pop R3                                              ; 302E | 97
