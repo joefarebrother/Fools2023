@@ -351,6 +351,17 @@ def connect_serv3_with_console():
     send(console + b"\n")
 
 
-def read_block(blk):
-        exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret")
-        return read_mem(0x3000, nbytes=0x400)
+def read_block(blk, dump=False):
+    exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret")
+    return read_mem(0x3000, nbytes=0x400, return_dump=dump)
+
+
+def dump_all_blocks(dirname):
+    for i in range(256):
+        try:
+            blk, dump = read_block(i, dump=True)
+            if any(b for b in blk):
+                with open(f"{dirname}/{hex(i)}", "w") as f:
+                    f.write(dump)
+        except ConnectionClosedException:
+            connect()
