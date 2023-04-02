@@ -1,7 +1,6 @@
 #pylint: disable=redefined-outer-name
 
 
-
 crashes = ['14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'a0', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'ca', 'cc', 'e4',
            'e5', 'e6', 'e7', 'e8', 'e9', 'ea', 'eb', 'ec', 'ed', 'ee', 'ef', 'f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa', 'fb', 'fc', 'fd', 'fe', 'ff']
 
@@ -28,7 +27,7 @@ known_opcodes_pre = {
     0x09: 'ld sp $XXXX',
     0x10: 'ld $R $XXXX',
     0x20: 'ld $RB $RA',
-    0x30: 'add $RA $RB',
+    0x30: 'add $RB $RA',
     0x90: 'push $R',
     0x94: 'pop $R',
     0x98: 'jp $XXXX',
@@ -63,6 +62,8 @@ known_syscalls = {
     0x02: "in",
     0x03: "halt",
 }
+
+
 def op_len(op):
     return op_lens.get(op, 0)
 
@@ -98,13 +99,16 @@ def as_le(args):
 # prog_offset = 0xF000
 # maxlen = 0
 
+
 maxlen = 0x0360
-def disasm(fname="REPORT03.PRG.dump",prog_offset =0x2000):
+
+
+def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000):
     dump = open(fname)
 
     mem = []
     for line in dump:
-        addr, memline, chrs = line.split(" | ")
+        _addr, memline, _chrs = line.split(" | ")
         for b in memline.split():
             b = int(b, 16)
             mem.append(b)
@@ -151,5 +155,7 @@ def disasm(fname="REPORT03.PRG.dump",prog_offset =0x2000):
 
         pc += 1 + opl
         print(line)
-if __name__=="__main__":
+
+
+if __name__ == "__main__":
     disasm()
