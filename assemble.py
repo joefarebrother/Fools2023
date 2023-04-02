@@ -32,6 +32,17 @@ opcode["db $xx"] = []
 opcode["dw $xxxx"] = []
 opcode["nop"] = [0x20]
 
+useful_vals = {
+"PrintStr"     : 0x0008,
+"StrCmp"       : 0x0010,
+"FindIndex"    : 0x0018,
+"ConvertHex"   : 0x0020,
+"MemCpy"       : 0x0028,
+"ReadStr"      : 0x0030,
+"StrTrim"      : 0x0038,
+"MemSet"       : 0x0040,
+"BreakPoint"   : 0xFFF0
+}
 
 def assemble_file(fname, offset=0x2000):
     return assemble_code(open(fname).readlines(), offset)
@@ -47,7 +58,7 @@ def instrlen(instr):
     return len(opcode[instr])+("$xxxx" in instr)+("$xx" in instr)
 
 def assemble_code(lines, offset=0x2000):
-    labs = {}
+    labs = {k:v for k,v in useful_vals.items()}
     instrs = []
 
     for ln, line in enumerate(lines):
