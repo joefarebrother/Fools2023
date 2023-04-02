@@ -4,7 +4,7 @@ push R2                                             ; 300B | 92
 push R3                                             ; 300C | 93
 
 ld R1 $0000           ; r1 = i                      ; 300D | 11 00 00             
-.searchloop:                                        
+.search_loop:                                        
 ld R2 R1                                            ; 3010 | 26 
 add R2 R2                                           ; 3011 | 3A
 add R2 sqr_tab        ; [r2] = i^2                  ; 3012 | E2 32 30           

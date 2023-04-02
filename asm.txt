@@ -1,1 +1,6 @@
-ld R1 55
+label: ld R1 55
+jp end
+
+end:
+
+

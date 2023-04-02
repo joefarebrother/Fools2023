@@ -22,8 +22,9 @@ for code,op in known_opcodes.items():
         if "$XXXX" not in x and "$XX" not in x:
             kwds.add(x)
     opcode[op] = [code]
-
+kwds.add("nop")
 opcode["dw"]=[]
+opcode["nop"]=[0x20]
 
 def assemble(fname,offset=0x2000):
     lines = list(open(fname))
@@ -31,6 +32,9 @@ def assemble(fname,offset=0x2000):
     instrs = []
 
     for ln,line in enumerate(lines):
+        line=line.replace("$","0x")
+        line=line.replace("z","zz")
+        line=line.replace(".","zx")
         try:
             if (comment:=line.find(";"))>=0:
                 line=line[:comment]
@@ -40,6 +44,8 @@ def assemble(fname,offset=0x2000):
                     newlabname = ps.pop(0)[:-1]
                     assert newlabname not in labs
                     labs[newlabname] = offset
+                    if newlabname.startswith("zx"):
+                        labs[newlabname[2:]] = offset
             if len(ps)>0:
                 if ps[0]=="dw":
                     n = int("".join(ps[1:]),16)
@@ -62,21 +68,21 @@ def assemble(fname,offset=0x2000):
                     i = " ".join(modps)
                     if i not in opcode:
                         raise Exception(f"don't recognise {i}")
+                    instrs.append((i,args))
                     opc = opcode[i][0]
-                    instrs.append(opc,args)
                     offset+=op_len(opc)+1
         except Exception as e:
             print(f"failed at line {ln}:{repr(line)}")
             raise e
     bytesout=[]
     for instr,data in instrs:
-        for op in opc[instr]:
+        for op in opcode[instr]:
             bytesout.append(op)
         for x in data:
-            n = eval(x,globals=labs)
+            n = eval(x,labs)
             bytesout.append(n&255)
             bytesout.append(n>>8)
     return bytesout
 
 if __name__=="__main__":
-    print(assemble("asm.txt"))
+    print(assemble("sqrt.prg"),0x3000)
