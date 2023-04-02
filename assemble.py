@@ -26,7 +26,10 @@ for code, op in known_opcodes.items():
             kwds.add(x)
     opcode[op] = [code]
 kwds.add("nop")
-opcode["dw"] = []
+kwds.add("dw")
+kwds.add("db")
+opcode["db $xx"] = []
+opcode["dw $xxxx"] = []
 opcode["nop"] = [0x20]
 
 
@@ -40,6 +43,8 @@ def assemble_inline(code, offset=0x2000, as_hex=True):
         res = "".join(tohex(b) for b in res)
     return res
 
+def instrlen(instr):
+    return (not (instr.startswith("dw ") or instr.startswith("db "))+("$xxxx" in instr)+("$xx" in instr))
 
 def assemble_code(lines, offset=0x2000):
     labs = {}
@@ -61,11 +66,7 @@ def assemble_code(lines, offset=0x2000):
                     if newlabname.startswith("zx"):
                         labs[newlabname[2:]] = offset
             if len(ps) > 0:
-                if ps[0] == "dw":
-                    n = int("".join(ps[1:]), 16)
-                    instrs.append(("dw", [str(n)]))
-                    offset += 2
-                else:
+                if True:
                     args = []
                     modps = []
                     for p in ps:
@@ -83,8 +84,7 @@ def assemble_code(lines, offset=0x2000):
                     if i not in opcode:
                         raise Exception(f"don't recognise {i}")
                     instrs.append((i, args))
-                    opc = opcode[i][0]
-                    offset += op_len(opc)+1
+                    offset += instrlen(i)
         except Exception as e:
             print(f"failed at line {ln}:{repr(line)}", file=sys.stderr)
             raise e
