@@ -1,5 +1,5 @@
 #pylint: disable=redefined-outer-name
-
+import re
 
 crashes = ['14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'a0', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'ca', 'cc', 'e4',
            'e5', 'e6', 'e7', 'e8', 'e9', 'ea', 'eb', 'ec', 'ed', 'ee', 'ef', 'f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa', 'fb', 'fc', 'fd', 'fe', 'ff']
@@ -100,11 +100,33 @@ def as_le(args):
 # maxlen = 0
 
 
-maxlen = 0x0360
+def process_string(mem, pc, prog_offset):
+    the_escaped_str = ""
+    while pc < len(mem):
+        ch = mem[pc]
+        pc += 1
+        if ch == 0:
+            break
+        if ch < 128:
+            ch = chr(ch)
+            if ch == '\\':
+                the_escaped_str += "\\\\"
+            elif ch == '\n':
+                the_escaped_str += "\\n"
+            else:
+                the_escaped_str += ch
+        else:
+            # todo: process known control codes
+            the_escaped_str += "\\" + tohex(chr)
+    return pc, the_escaped_str
 
 
-def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000):
+def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0x360):
     dump = open(fname)
+    out = []
+    jump_locs = []
+    str_locs = []
+    str_vals = {}
 
     mem = []
     for line in dump:
@@ -118,6 +140,22 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000):
 
     pc = 0
     while pc < len(mem):
+        line = ""
+        line += tohex(prog_offset + pc, 4) + " | "
+
+        if pc+prog_offset in str_locs:
+            npc, str_val = process_string(mem, pc, prog_offset)
+            str_vals[pc+prog_offset] = str_val
+            strlen = npc - pc
+            for i in range(strlen):
+                line += tohex(mem[pc+i]) + " "
+            line += " |\n    ds \""
+            line += str_val
+            line += '"'
+
+            pc = npc
+            out.append(line)
+            continue
         op = mem[pc]
         opl = op_len(op)
         assert opl+pc <= len(mem)
@@ -138,8 +176,25 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000):
             if "$XXXX" in op_name:
                 arg = as_le(args)
                 argi = int(arg, 16)
-                if argi in known_funcs:
-                    op_name = op_name.replace("$XXXX", known_funcs[argi] + f"(${arg})")
+                if "call" in op_name or "jp" in op_name:
+                    if argi in known_funcs:
+                        op_name = op_name.replace("$XXXX", known_funcs[argi] + f"; (${arg})")
+                        if "PrintStr" in known_funcs[argi]:
+                            for l in reversed(out):
+                                if "R2" in l:
+                                    m = re.findall(r'(add|ld) R2 \$(.{4})', l)
+                                    if not m:
+                                        break
+                                    pr_op, pr_arg = m[0]
+                                    pr_arg = int(pr_arg, 16)
+                                    strloc = pr_arg if pr_op == "ld" else pr_arg + prog_offset
+                                    str_locs.append(strloc)
+                                    break
+
+                    else:
+                        op_name = op_name.replace("XXXX", arg)
+                    if prog_offset <= argi < prog_offset+len(mem):
+                        jump_locs.append(argi)
                 else:
                     op_name = op_name.replace("XXXX", arg)
             elif "$XX" in op_name:
@@ -148,13 +203,42 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000):
                 argi = args[0]
                 op_name = op_name.replace("XX", arg)
                 if "int" in op_name:
-                    op_name += f' ({known_syscalls.get(argi, "unknown")})'
+                    op_name += f'  ; ({known_syscalls.get(argi, "unknown")})'
             line += op_name
         elif op in crashes:
             line += "[wait! that's illegal!]"
 
         pc += 1 + opl
-        print(line)
+        out.append(line)
+
+    labels = {}
+    for i, loc in enumerate(jump_locs):
+        lab = f".lab_{i}_{tohex(loc)}"
+        labels[loc] = lab
+
+    for i, loc in enumerate(str_locs):
+        summary = ""
+        if loc in str_vals:
+            str_val = str_vals[loc]
+            words = re.split(r'[^A-Za-z0-9]', str_val)
+            for w in words:
+                if w:
+                    summary = "_" + w
+                    break
+        lab = f".str_{i}_{tohex(loc)}{summary}"
+        labels[loc] = lab
+
+    for line in out:
+        addr, rest = line.split(" | ", 1)
+        addri = int(addr, 16)
+        if addri in labels:
+            print(labels[addri])
+        for loc, lab in labels.items():
+            loch = tohex(loc)
+            if "$"+loch in rest:
+                rest = rest.replace("$"+loch, lab)
+                rest += f" ; (${loch})"
+        print(f"{addr} | {rest}")
 
 
 if __name__ == "__main__":
