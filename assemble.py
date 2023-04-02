@@ -44,7 +44,7 @@ def assemble_inline(code, offset=0x2000, as_hex=True):
     return res
 
 def instrlen(instr):
-    return (not (instr.startswith("dw ") or instr.startswith("db "))+("$xxxx" in instr)+("$xx" in instr))
+    return len(opcode[instr])+("$xxxx" in instr)+("$xx" in instr)
 
 def assemble_code(lines, offset=0x2000):
     labs = {}
@@ -95,7 +95,7 @@ def assemble_code(lines, offset=0x2000):
         for x in data:
             n = eval(x, labs)  # pylint:disable=eval-used
             bytesout.append(n & 255)
-            if "int" not in instr:
+            if "$xxxx" in instr:
                 bytesout.append(n >> 8)
     return bytesout
 
