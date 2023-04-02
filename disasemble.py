@@ -28,7 +28,7 @@ known_opcodes_pre = {
     0x09: 'ld sp $XXXX',
     0x10: 'ld $R $XXXX',
     0x20: 'ld $RB $RA',
-    0x03: 'add $RA $RB',
+    0x30: 'add $RA $RB',
     0x90: 'push $R',
     0x94: 'pop $R',
     0x98: 'jp $XXXX',
