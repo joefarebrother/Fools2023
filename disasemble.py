@@ -23,6 +23,7 @@ known_opcodes_pre = {
     0x50: 'ld $RB [$RA]',
     0x60: 'ldb [$RB] $RA',
     0x70: 'ld [$RB] $RA',
+    0x80: 'cmp $RB $RA',
     0x90: 'push $R',
     0x94: 'pop $R',
     0x98: 'jp $XXXX',

@@ -59,3 +59,10 @@ REPORT:204E:.loop1_exit
 REPORT:2156:.mem_X
 REPORT:2086:Next_X
 REPORT:2063:.loop2
+serv3:FE00:.mem_rand_backup
+serv3:F74F:.mem_rand_after_buf
+serv3:F124:.str_name_prompt
+serv3:F73F:.name_buf
+serv3:F033:infloop
+serv3:F036:Main 
+serv3:F275:.str_Exit
