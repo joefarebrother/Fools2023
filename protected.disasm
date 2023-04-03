@@ -56,107 +56,108 @@
 003D | 00       | BRK
 003E | 00       | BRK
 003F | 00       | BRK
-.MemSet:
+.Ret:
 0040 | 05       | ret
 .startPrintStr:
 0041 | A4 00 10 | cmp R2 $1000
-0044 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0044 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0047 | 42       | ldb R0 [R2]
 0048 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
-004B | 9C 60 00 | jp eq .lab_8_60              ; ($0060)
+004B | 9C 60 00 | jp eq .ret2                  ; ($0060)
 004E | A2 F0 00 | cmp R0 $00F0
-0051 | 9C 61 00 | jp eq .lab_9_61              ; ($0061)
+0051 | 9C 61 00 | jp eq .printRefWord          ; ($0061)
 0054 | A2 F2 00 | cmp R0 .lab_35_F2            ; ($00F2)
-0057 | 9C 72 00 | jp eq .lab_10_72             ; ($0072)
+0057 | 9C 72 00 | jp eq .printRefByte          ; ($0072)
 005A | 06 01    | int $01                      ; (out)
 005C | AA       | inc R2
 005D | 98 41 00 | jp .startPrintStr            ; ($0041)
-.lab_8_60:
+.ret2:
 0060 | 05       | ret
-.lab_9_61:
+.printRefWord:
 0061 | AA       | inc R2
 0062 | 52       | ld R0 [R2]
 0063 | A2 00 10 | cmp R0 $1000
-0066 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0066 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0069 | 50       | ld R0 [R0]
-006A | 99 A1 00 | call .lab_13_A1              ; ($00A1)
+006A | 99 A1 00 | call .printR0Word            ; ($00A1)
 006D | AA       | inc R2
 006E | AA       | inc R2
 006F | 98 41 00 | jp .startPrintStr            ; ($0041)
-.lab_10_72:
+.printRefByte:
 0072 | AA       | inc R2
 0073 | 52       | ld R0 [R2]
 0074 | A2 00 10 | cmp R0 $1000
-0077 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0077 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 007A | 40       | ldb R0 [R0]
-007B | 99 A6 00 | call .lab_16_A6              ; ($00A6)
+007B | 99 A6 00 | call .printR0Byte            ; ($00A6)
 007E | AA       | inc R2
 007F | AA       | inc R2
 0080 | 98 41 00 | jp .startPrintStr            ; ($0041)
 .startStrCmp:
 0083 | A4 00 10 | cmp R2 $1000
-0086 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0086 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0089 | A5 00 10 | cmp R3 $1000
-008C | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+008C | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 008F | 42       | ldb R0 [R2]
 0090 | 47       | ldb R1 [R3]
 0091 | 81       | cmp R0 R1
-0092 | 9D A0 00 | jp ne .lab_20_A0             ; ($00A0)
+0092 | 9D A0 00 | jp ne .ret3                  ; ($00A0)
 0095 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
-0098 | 9C A0 00 | jp eq .lab_20_A0             ; ($00A0)
+0098 | 9C A0 00 | jp eq .ret3                  ; ($00A0)
 009B | AA       | inc R2
 009C | AB       | inc R3
 009D | 98 83 00 | jp .startStrCmp              ; ($0083)
-.lab_20_A0:
+.ret3:
 00A0 | 05       | ret
-.lab_13_A1:
+.printR0Word:
 00A1 | DC       | swap R0
-00A2 | 99 AA 00 | call .lab_23_AA              ; ($00AA)
+00A2 | 99 AA 00 | call .printR0Hex             ; ($00AA)
 00A5 | DC       | swap R0
-.lab_16_A6:
-00A6 | 99 AA 00 | call .lab_23_AA              ; ($00AA)
+.printR0Byte:
+00A6 | 99 AA 00 | call .printR0Hex             ; ($00AA)
 00A9 | 05       | ret
-.lab_23_AA:
+.printR0Hex:
 00AA | 90       | push R0
 00AB | 0F       | shr R0
 00AC | 0F       | shr R0
 00AD | 0F       | shr R0
 00AE | 0F       | shr R0
 00AF | CD 0F 00 | and R0 $000F
-00B2 | 99 BF 00 | call .lab_25_BF              ; ($00BF)
+00B2 | 99 BF 00 | call .printHexDig            ; ($00BF)
 00B5 | 94       | pop R0
 00B6 | 90       | push R0
 00B7 | CD 0F 00 | and R0 $000F
-00BA | 99 BF 00 | call .lab_25_BF              ; ($00BF)
+00BA | 99 BF 00 | call .printHexDig            ; ($00BF)
 00BD | 94       | pop R0
 00BE | 05       | ret
-.lab_25_BF:
-00BF | E0 C6 00 | add R0 $00C6
+.printHexDig:
+00BF | E0 C6 00 | add R0 .table_16_char_hexdigs ; ($00C6)
 00C2 | 40       | ldb R0 [R0]
 00C3 | 06 01    | int $01                      ; (out)
 00C5 | 05       | ret
-00C6 | 30       | add R0 R0
-00C7 | 31       | add R0 R1
-00C8 | 32       | add R0 R2
-00C9 | 33       | add R0 R3
-00CA | 34       | add R1 R0
-00CB | 35       | add R1 R1
-00CC | 36       | add R1 R2
-00CD | 37       | add R1 R3
-00CE | 38       | add R2 R0
-00CF | 39       | add R2 R1
-00D0 | 41       | ldb R0 [R1]
-00D1 | 42       | ldb R0 [R2]
-00D2 | 43       | ldb R0 [R3]
-00D3 | 44       | ldb R1 [R0]
-00D4 | 45       | ldb R1 [R1]
-00D5 | 46       | ldb R1 [R2]
+.table_16_char_hexdigs:
+00C6 | 30 | db $30                             ; '0'
+00C7 | 31 | db $31                             ; '1'
+00C8 | 32 | db $32                             ; '2'
+00C9 | 33 | db $33                             ; '3'
+00CA | 34 | db $34                             ; '4'
+00CB | 35 | db $35                             ; '5'
+00CC | 36 | db $36                             ; '6'
+00CD | 37 | db $37                             ; '7'
+00CE | 38 | db $38                             ; '8'
+00CF | 39 | db $39                             ; '9'
+00D0 | 41 | db $41                             ; 'A'
+00D1 | 42 | db $42                             ; 'B'
+00D2 | 43 | db $43                             ; 'C'
+00D3 | 44 | db $44                             ; 'D'
+00D4 | 45 | db $45                             ; 'E'
+00D5 | 46 | db $46                             ; 'F'
 .startFindIndex:
 00D6 | 11 FF FF | ld R1 $FFFF
 .lab_29_D9:
 00D9 | A9       | inc R1
 00DA | A4 00 10 | cmp R2 $1000
-00DD | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+00DD | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 00E0 | 42       | ldb R0 [R2]
 00E1 | AA       | inc R2
 00E2 | A2 FF 00 | cmp R0 $00FF
@@ -198,7 +199,7 @@
 017B | 00       | BRK
 017C | 13 00 00 | ld R3 .lab_31_00             ; ($0000)
 017F | A4 00 10 | cmp R2 $1000
-0182 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0182 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0185 | 42       | ldb R0 [R2]
 0186 | AA       | inc R2
 0187 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
@@ -270,9 +271,9 @@
 01DF | 0F       | shr R0
 01E0 | FF       | [wait! that's illegal!]
 01E1 | A5 00 10 | cmp R3 $1000
-01E4 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+01E4 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 01E7 | A4 00 10 | cmp R2 $1000
-01EA | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+01EA | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 01ED | 43       | ldb R0 [R3]
 01EE | 68       | ldb [R2] R0
 01EF | AB       | inc R3
@@ -283,7 +284,7 @@
 01F8 | 05       | ret
 01F9 | 06 02    | int $02                      ; (in)
 01FB | A4 00 10 | cmp R2 $1000
-01FE | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+01FE | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0201 | 68       | ldb [R2] R0
 0202 | A2 0A 00 | cmp R0 $000A
 0205 | 9C 0E 02 | jp eq .lab_42_20E            ; ($020E)
@@ -308,7 +309,7 @@
 0227 | 98 14 02 | jp .startStrTrim             ; ($0214)
 022A | 10 00 00 | ld R0 .lab_31_00             ; ($0000)
 022D | A4 00 10 | cmp R2 $1000
-0230 | 9A 40 00 | jp lt MemSet                 ; (.MemSet) ; ($0040)
+0230 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0233 | 68       | ldb [R2] R0
 0234 | 05       | ret
 0235 | 00       | BRK
