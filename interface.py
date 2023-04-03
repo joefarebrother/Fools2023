@@ -267,7 +267,7 @@ def read_serv3_mem(base_addr, cmd="q"):  # this doesn't work with addresses with
     out = []
 
     for mem in chunks(resp_name, 4):
-        out += to_le(mem)
+        out += to_le(fromhex(mem))
 
     return out
 
@@ -363,8 +363,9 @@ def read_block(blk):
     return read_mem(0x3000, nbytes=0x400)
 
 
-def dump_all_blocks(dirname):
+def dump_all_blocks(dirname, confn=connect):
     for i in range(256):
+        print(tohex(i))
         try:
             blk = read_block(i)
             dump = bytes_to_dump(blk, 0x3000)
@@ -372,4 +373,4 @@ def dump_all_blocks(dirname):
                 with open(f"{dirname}/{tohex(i)}.dmp", "w") as f:
                     f.write(dump)
         except ConnectionClosedException:
-            connect()
+            confn()
