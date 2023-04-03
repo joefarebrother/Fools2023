@@ -380,10 +380,10 @@ def read_protected_mem(n):
         return result[1]
     elif result.endswith(b"R"):
         return 0xf0
-    elif result.endswith(b"Re"):#these are probably wrong
-        return 0xf1
+    #elif result.endswith(b"Re"):#these are probably wrong
+    #    return 0xf
     elif result.endswith(b"Rea"):
-        return 0xf2
+        return 0xf1
     raise(Exception("unrecognised pattern"+repr(result) ))
 
 def read_protected_block(addr,ln):

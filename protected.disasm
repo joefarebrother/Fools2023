@@ -66,7 +66,7 @@ $0000:
 004B | 9C 60 00 | jp eq .ret2                  ; ($0060)
 004E | A2 F0 00 | cmp R0 $00F0
 0051 | 9C 61 00 | jp eq .printRefWord          ; ($0061)
-0054 | A2 F2 00 | cmp R0 .FindIndex2           ; ($00F2)
+0054 | A2 F1 00 | cmp R0 $00F1
 0057 | 9C 72 00 | jp eq .printRefByte          ; ($0072)
 005A | 06 01    | int $01                      ; (out)
 005C | AA       | inc R2
