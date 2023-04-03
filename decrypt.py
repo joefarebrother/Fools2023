@@ -1,4 +1,5 @@
-# pylint:disable=global-statement,redefined-outer-name
+# pylint:disable=global-statement,redefined-outer-name,wildcard-import,unused-wildcard-import
+from utils import *
 
 encrypted_data_dump = r"""
 1160 | FB 72 3A 22 21 4B 6A C2 | .r:"!Kj.
@@ -72,7 +73,7 @@ encrypted_data = []
 for line in encrypted_data_dump.splitlines()[1:]:
     _addr, mem, _txt = line.split(" | ", 2)
     for b in mem.split():
-        encrypted_data.append(int(b, 16))
+        encrypted_data.append(fromhex(b))
 
 assert len(encrypted_data) == 0x200, len(encrypted_data)
 
@@ -124,8 +125,7 @@ def decrypt(initial_X):
         X = next_X()
         data = encrypted_data[i*2] + 0x100*encrypted_data[i*2+1]
         data ^= X
-        output.append(data & 0xFF)
-        output.append(data >> 8)
+        output += to_le(data)
 
     return bytes(output)
 

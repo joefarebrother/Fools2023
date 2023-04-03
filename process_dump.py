@@ -1,4 +1,6 @@
+# pylint:disable=wildcard-import,unused-wildcard-import
 import string
+from utils import *
 
 printable_no_ws = set(string.printable) - set(string.whitespace)
 
@@ -12,7 +14,7 @@ for line in dump:
     mem = memline.split()
     chrs = ""
     for b in mem:
-        b = int(b, 16)
+        b = fromhex(b)
         if chr(b) in printable_no_ws:
             chrs += chr(b)
         elif b == 0:

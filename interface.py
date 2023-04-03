@@ -1,13 +1,10 @@
-# pylint: disable=global-statement,invalid-name
+# pylint: disable=global-statement,invalid-name,wildcard-import,unused-wildcard-import,pointless-string-statement
 import sys
 import socket
 import select
-import builtins
 import re
-import string
 from assemble import assemble_inline, assemble_file
-
-_export = (assemble_inline, assemble_file)
+from utils import *
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -36,8 +33,8 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> ", re
         raise ConnectionClosedException("Connection closed")
     out = ""
     if return_bytes:
-        out=b""
-        expected_end=bytes(expected_end, "utf8")
+        out = b""
+        expected_end = bytes(expected_end, "utf8")
     while True:
         ready_read, _ready_write, in_err = select.select([con], [], [con], timeout)
         if in_err:
@@ -48,7 +45,7 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> ", re
                 con = None
                 raise ConnectionClosedException("EOF", out)
             if return_bytes:
-                out+=rcvd_chunk
+                out += rcvd_chunk
             else:
                 rcvd_str = rcvd_chunk.decode('utf8', 'replace')
                 if echoing:
@@ -66,8 +63,8 @@ connect()
 
 
 def send(msg, timeout=None, expected_end=None, return_bytes=False):
-    if timeout==None:
-        timeout=10
+    if timeout == None:
+        timeout = 10
     if not con:
         raise ConnectionClosedException()
     if isinstance(msg, str):
@@ -83,26 +80,7 @@ def send(msg, timeout=None, expected_end=None, return_bytes=False):
         tot_sent += sent
     if echoing:
         print(msg.decode("utf8", errors="replace"), end="")
-    return read_all_poss(timeout=timeout, subsequent_timeout=timeout, expected_end=expected_end,return_bytes=return_bytes)
-
-
-builtin_hex = builtins.hex
-
-
-def my_hex(num, padding=2):
-    if isinstance(num, str):
-        num = num.replace(" ", "").replace("\n", "")
-        assert re.fullmatch(r'[0-9a-fA-F]+', num)
-        return num
-    return f"{num:0{padding}X}"
-
-
-#pylint: disable=redefined-builtin
-hex = my_hex
-
-
-def fromhex(num):
-    return int(num, 16)
+    return read_all_poss(timeout=timeout, subsequent_timeout=timeout, expected_end=expected_end, return_bytes=return_bytes)
 
 
 def expect_prompt_and_ready_suffix(prompt, res):
@@ -122,83 +100,52 @@ def expect_prompt(prompt, res):
 
 
 def read_mem_raw(addr, lines=5):
-    raw = send(f"r\n{hex(addr)}\n{hex(lines)}\n")
+    raw = send(f"r\n{tohex(addr)}\n{tohex(lines)}\n")
     raw = expect_prompt_and_ready_suffix("> Which address? > How many lines? ", raw)
     return raw.splitlines()
 
 
-def read_mem(addr, lines=None, nbytes=None, pretty_dump=None, return_dump=False):
-    if return_dump:
-        pretty_dump = True
+def read_mem(addr, lines=None, nbytes=None, print_dump=None):
     if lines is not None and nbytes is not None:
         raise Exception("Don't use both lines and nbytes")
     if nbytes is not None:
-        if pretty_dump is None:
-            pretty_dump = False
+        if print_dump is None:
+            print_dump = False
         lines = (nbytes-1) // 8 + 1
     else:
         if lines is None:
             lines = 5
-        if pretty_dump is None:
-            pretty_dump = True
+        if print_dump is None:
+            print_dump = True
         if nbytes is None:
             nbytes = lines*8
 
     assert lines is not None and nbytes is not None
 
-    dump = ""
-
     raw = read_mem_raw(addr, lines)
-    if pretty_dump:
+    out = bytes_from_dump(raw)[:nbytes]
+    dump = bytes_to_dump(out, addr)
+    if print_dump:
         print()
-    raw_bytes = []
-    for line in raw:
-        addr, memline = line.split(" | ")
-        mem = memline.split()
-        chrs = ""
-        for b in mem:
-            b = fromhex(b)
-            c = chr(b)
-            raw_bytes.append(b)
-            if c in printable_no_ws:
-                chrs += c
-            elif b == 0:
-                chrs += " "
-            else:
-                chrs += "."
-        if pretty_dump:
-            print(f"{addr} | {memline.strip()} | {chrs}")
-            dump += f"{addr} | {memline.strip()} | {chrs}\n"
-    if return_dump:
-        return bytes(raw_bytes)[:nbytes], dump
-    return bytes(raw_bytes)[:nbytes]
+        print(dump)
 
-printable_no_ws = set(string.printable) - set(string.whitespace)
-
-def byte_to_pretty(b):
-    c = chr(b)
-    if c in printable_no_ws:
-        return c
-    elif b == 0:
-        return " "
-    else:
-        return "."
+    return bytes(out)
 
 
 def print_mem(addr):
-    res = send(f"p\n{hex(addr)}\n")
+    res = send(f"p\n{tohex(addr)}\n")
     res = expect_prompt_and_ready_suffix("> Which address? ", res)
     return res
 
 
 def write_mem(addr, data):
-    data = hex(data)
+    data = tohex(data)
     data_ = ""
     for i, c in enumerate(data):
         data_ += c
         if i % 64 == 0:
             data_ += "\n"
-    res = send(f"w\n{hex(addr)}\n{data_}.\n")
+    res = send(f"w\n{tohex(addr)}\n{data_}.\n")
     res = expect_prompt_and_ready_suffix('> Which address? > Enter hex data. End with dot "." + newline:\n', res)
     assert res == "Loaded.\n", res
 
@@ -207,22 +154,22 @@ def clear_mem(addr, num=0x100):
     write_mem(addr, "00"*num)
 
 
-def exec_mem(addr, timeout=None,return_bytes=False):
-    res = send(f"x\n{hex(addr)}\ny\n",timeout,return_bytes=return_bytes)
-    expected=f"> Which address? > Really exec at {hex(addr, padding=4)}? Type Y if so:"
+def exec_mem(addr, timeout=None, return_bytes=False):
+    res = send(f"x\n{tohex(addr)}\ny\n", timeout, return_bytes=return_bytes)
+    expected = f"> Which address? > Really exec at {tohex(addr, padding=4)}? Type Y if so:"
     if return_bytes:
-        expected = bytes(expected,"utf8")
+        expected = bytes(expected, "utf8")
     res = expect_prompt(expected, res)
     return res
 
 
-def exec_data(code, addr=0x2000,timeout=None, return_bytes=True):
+def exec_data(code, addr=0x2000, timeout=None, return_bytes=True):
     write_mem(addr, code)
-    return exec_mem(addr,timeout, return_bytes=return_bytes)
+    return exec_mem(addr, timeout, return_bytes=return_bytes)
 
 
-def exec_asm(code, addr=0x2000,timeout=None, return_bytes=True):
-    return exec_data(assemble_inline(code, addr), addr,timeout,return_bytes=return_bytes)
+def exec_asm(code, addr=0x2000, timeout=None, return_bytes=True):
+    return exec_data(assemble_inline(code, addr), addr, timeout, return_bytes=return_bytes)
 
 
 file_data = """
@@ -246,14 +193,14 @@ def filesize(filename):
 
 def read_file_to_mem(filename, addr=0x2000):
     _size = filesize(filename)
-    res = send(f"rf\n{filename}\n{hex(addr)}\n")
+    res = send(f"rf\n{filename}\n{tohex(addr)}\n")
     res = expect_prompt_and_ready_suffix("> Filename? > Which address? ", res)
     assert res == "Loaded.\n", res
 
 
-def read_file(filename, addr=0x2000, pretty_dump=True):
+def read_file(filename, addr=0x2000, print_dump=True):
     read_file_to_mem(filename, addr)
-    return read_mem(addr, nbytes=filesize(filename), pretty_dump=pretty_dump)
+    return read_mem(addr, nbytes=filesize(filename), print_dump=print_dump)
 
 
 def print_file(filename, addr=0x2000):
@@ -306,13 +253,12 @@ def connect_serv3_with_name(name, cmd="q"):
     return out
 
 
-def read_serv3_mem(base_addr, cmd="q"):
+def read_serv3_mem(base_addr, cmd="q"):  # this doesn't work with addresses with 0x0A (newline) in them
     name = []
     for i in range(4):
         name.append(0xF0)
         addr = base_addr + i*2
-        name.append(addr % 256)
-        name.append(addr >> 8)
+        name += to_le(addr)
 
     resp = connect_serv3_with_name(name, cmd)
 
@@ -320,10 +266,8 @@ def read_serv3_mem(base_addr, cmd="q"):
 
     out = []
 
-    for i in range(0, 16, 4):
-        mem = fromhex(resp_name[i:i+4])
-        out.append(mem % 256)
-        out.append(mem >> 8)
+    for mem in chunks(resp_name, 4):
+        out += to_le(mem)
 
     return out
 
@@ -372,6 +316,7 @@ def connect_serv3_with_console():
     connect_serv3_corrupt(payload, payload_addr)
     send(console + b"\n")
 
+
 def read_protected_mem(n):
     result = exec_asm(" ld R2 "+str(n)+" / cmp R2 $0 / jp 0x47 / brk / .lab: dw 0x4948 / dw 0x49F0 / dw 0x6565 / dw 0")[:6]
     if result.endswith(b"Ready"):
@@ -380,22 +325,26 @@ def read_protected_mem(n):
         return result[1]
     elif result.endswith(b"R"):
         return 0xf0
-    #elif result.endswith(b"Re"):#these are probably wrong
+    # elif result.endswith(b"Re"):#these are probably wrong
     #    return 0xf
     elif result.endswith(b"Rea"):
         return 0xf1
-    raise(Exception("unrecognised pattern"+repr(result) ))
+    raise(Exception("unrecognised pattern"+repr(result)))
 
-def read_protected_block(addr,ln):
-    return [read_protected_mem(i) for i in range(addr,addr+ln)]
+
+def read_protected_block(addr, ln):
+    return [read_protected_mem(i) for i in range(addr, addr+ln)]
+
 
 def dump_protected_mem(file=sys.stdout):
-    ll=[]
-    for i in range(0,0x1000,0x10):
-        b = read_protected_block(i,0x10)
-        print(f"{hex(i,4)} | {' '.join(map(hex,b))} | {''.join(map(byte_to_pretty,b))}" ,file=file )
+    ll = []
+    for i in range(0, 0x1000, 0x10):
+        b = read_protected_block(i, 0x10)
+        print(bytes_to_dump(b, i), file=file, end="")
         ll.append(b)
     return ll
+
+
 """
 doesn't work because of 0s'
 def read_protected_mem_block(addr,ln):
@@ -408,18 +357,19 @@ def read_protected_mem_block(addr,ln):
     return result
 """
 
-def read_block(blk, dump=False):
-    exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret",return_bytes=False)
-    return read_mem(0x3000, nbytes=0x400, return_dump=dump)
+
+def read_block(blk):
+    exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret", return_bytes=False)
+    return read_mem(0x3000, nbytes=0x400)
 
 
 def dump_all_blocks(dirname):
     for i in range(256):
         try:
-            blk, dump = read_block(i, dump=True)
+            blk = read_block(i)
+            dump = bytes_to_dump(blk, 0x3000)
             if any(b for b in blk):
-                with open(f"{dirname}/{hex(i)}", "w") as f:
+                with open(f"{dirname}/{tohex(i)}.dmp", "w") as f:
                     f.write(dump)
         except ConnectionClosedException:
             connect()
-

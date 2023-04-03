@@ -1,11 +1,12 @@
-#pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,wildcard-import,unused-wildcard-import
 import re
 import sys
+from utils import *
 
 crashes = ['14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'e4',
            'e5', 'e6', 'e7', 'e8', 'e9', 'ea', 'eb', 'ec', 'ed', 'ee', 'ef', 'f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa', 'fb', 'fc', 'fd', 'fe', 'ff']
 
-crashes = [int(op, 16) for op in crashes]
+crashes = [fromhex(op) for op in crashes]
 
 known_opcodes_pre = {
     0x00: 'BRK',
@@ -101,13 +102,6 @@ known_funcs = {
 }
 
 
-def tohex(n, pad=2):
-    return f"{n:0{pad}X}"
-
-
-def as_le(args):
-    assert len(args) == 2, args
-    return tohex(args[1]) + tohex(args[0])
 # dump = open("MATHTEST.PRG.dump")
 # prog_offset = 0x2000
 # maxlen = 0
@@ -134,7 +128,7 @@ def process_string(mem, pc):
                 the_escaped_str += ch
         else:
             if ch in [0xF0, 0xF1]:
-                loc = tohex(mem[pc+1]) + tohex(mem[pc])
+                loc = tohex(from_le(mem, pc))
                 pc += 2
                 the_escaped_str += f"\\{tohex(ch)}[${loc}]"
             else:
@@ -144,6 +138,8 @@ def process_string(mem, pc):
 
 def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
     dump = open(fname)
+    mem = bytes_from_dump(dump)
+
     out = []
     jump_locs = []
     str_locs = []
@@ -156,7 +152,7 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
         ctx, addr, lab = line.split(":", 2)
         if fname.startswith(ctx):
             lab = lab.strip()
-            addri = int(addr, 16)
+            addri = fromhex(addr)
             labels[addri] = lab.strip()
             if lab.startswith(".str"):
                 str_locs.append(addri)
@@ -167,13 +163,6 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
                     tables[addri] = (ln, rest)
                 except ValueError:
                     print("Warning: Bad table", lab, file=sys.stderr)
-
-    mem = []
-    for line in dump:
-        _addr, memline, _chrs = line.split(" | ")
-        for b in memline.split():
-            b = int(b, 16)
-            mem.append(b)
 
     if maxlen:
         mem = mem[:maxlen]
@@ -191,12 +180,12 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
                     line += tohex(mem[pc])
                     line += " "*(16-len(line)) + f"| db ${tohex(mem[pc], 2)}"
                     if rest.startswith("char_"):
-                       line+=f" ; {repr(bytes([mem[pc]]))[1:]}"
+                        line += f" ; {repr(bytes([mem[pc]]))[1:]}"
                     out.append(line)
                     pc += 1
                     line = tohex(prog_offset + pc, 4) + " | "
                     continue
-                word = mem[pc+1]*0x100+mem[pc]
+                word = from_le(mem, pc)
                 if rest.startswith("str_"):
                     str_locs.append(word)
                     if word not in labels:
@@ -241,8 +230,8 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
         if op in known_opcodes:
             op_name = known_opcodes[op]
             if "$XXXX" in op_name:
-                arg = as_le(args)
-                argi = int(arg, 16)
+                argi = from_le(args)
+                arg = tohex(argi)
                 if "call" in op_name or "jp" in op_name:
                     if argi in known_funcs:
                         op_name = op_name.replace("$XXXX", known_funcs[argi] + f"; (${arg})")
@@ -253,7 +242,7 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
                                     if not m:
                                         break
                                     pr_op, pr_arg = m[0]
-                                    pr_arg = int(pr_arg, 16)
+                                    pr_arg = fromhex(pr_arg)
                                     strloc = pr_arg if pr_op == "ld" else pr_arg + prog_offset
                                     str_locs.append(strloc)
                                     break
@@ -298,11 +287,11 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
 
     for line in out:
         addr, rest = line.split(" | ", 1)
-        addri = int(addr, 16)
+        addri = fromhex(addr)
         if addri in labels:
             print(labels[addri] + ":")
         for loc, lab in labels.items():
-            loch = tohex(loc,4)
+            loch = tohex(loc, 4)
             if "$"+loch in rest:
                 rest = rest.replace("$"+loch, lab)
                 rest += f" ; (${loch})"
@@ -319,6 +308,6 @@ if __name__ == "__main__":
         disasm()
         exit()
     filename = sys.argv[1]
-    offset = int(sys.argv[2], 16) if argc >= 3 else 0x2000
-    max_size = int(sys.argv[3], 16) if argc >= 4 else 0
+    offset = fromhex(sys.argv[2]) if argc >= 3 else 0x2000
+    max_size = fromhex(sys.argv[3]) if argc >= 4 else 0
     disasm(filename, offset, max_size)

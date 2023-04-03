@@ -1,5 +1,6 @@
 # pylint:disable=wildcard-import,unused-wildcard-import,pointless-string-statement,redefined-outer-name
 from disasemble import *
+from utils import *
 
 """
 
@@ -33,18 +34,19 @@ opcode["dw $xxxx"] = []
 opcode["nop"] = [0x20]
 
 useful_vals = {
-"printstr"     : 0x0008,
-"strcmp"       : 0x0010,
-"findindex"    : 0x0018,
-"converthex"   : 0x0020,
-"memcpy"       : 0x0028,
-"readstr"      : 0x0030,
-"strtrim"      : 0x0038,
-"memset"       : 0x0040,
-"breakpoint"   : 0xFFF0
+    "printstr": 0x0008,
+    "strcmp": 0x0010,
+    "findindex": 0x0018,
+    "converthex": 0x0020,
+    "memcpy": 0x0028,
+    "readstr": 0x0030,
+    "strtrim": 0x0038,
+    "memset": 0x0040,
+    "breakpoint": 0xFFF0
 }
-for val,name in known_syscalls.items():
-    useful_vals[name.lower()]=val
+for val, name in known_syscalls.items():
+    useful_vals[name.lower()] = val
+
 
 def assemble_file(fname, offset=0x2000):
     return assemble_code(open(fname).readlines(), offset)
@@ -56,11 +58,13 @@ def assemble_inline(code, offset=0x2000, as_hex=True):
         res = "".join(tohex(b) for b in res)
     return res
 
+
 def instrlen(instr):
     return len(opcode[instr])+("$xxxx" in instr)+("$xx" in instr)
 
+
 def assemble_code(lines, offset=0x2000):
-    labs = {k:v for k,v in useful_vals.items()}
+    labs = {k: v for k, v in useful_vals.items()}
     instrs = []
 
     for ln, line in enumerate(lines):
@@ -107,9 +111,7 @@ def assemble_code(lines, offset=0x2000):
             bytesout.append(op)
         for x in data:
             n = eval(x, labs)  # pylint:disable=eval-used
-            bytesout.append(n & 255)
-            if "$xxxx" in instr:
-                bytesout.append(n >> 8)
+            bytesout += to_le(n)[:("$xxxx" in instr)+1]
     return bytesout
 
 
@@ -118,7 +120,7 @@ if __name__ == "__main__":
         fname = sys.argv[1]
         offset = 0x3009
         if len(sys.argv) > 2:
-            offset = int(sys.argv, 16)
+            offset = fromhex(sys.argv)
         s = assemble_file(fname, offset)
         for x in s:
             print(f"{x:0{2}X}", end="")
