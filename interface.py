@@ -384,10 +384,37 @@ def connect_serv2_and_measure_time(password, username="ax.arwen"):
     end_time = datetime.now()
     return (end_time-start_time), res
 
+def test_syscall(n,rs=None):
+    return test_instr(f"int {n}",rs)
 
-def test_syscall(n):
+def test_instr(instr,rs=None):
+    #for i in range(4):
+    #    write_mem(0x2000+i*0x100, [65+i*3,66+i*3])
+    if rs is None:
+        rs = []
+    rs.append(exec_asm("ld R0 $2000 / ld R3 $6968 / ld [R0] R3 / ld R1 $2100 / add R3 $303 / ld [R1] R3 / ld R2 $2300 / add R3 $606 / ld [R2] R3 / ld R2 $2200 / add R3 $FDFD / ld [R2] R3 / ld R3 $2300 / cmp R3 $2300 / "+instr+" / jp eq labe / jp lt lablt / jp gt labgt / jp ne labne  / brk / labe: brk / lablt: brk / labgt: brk / labne: brk ",0x3000))
     for i in range(4):
-        write_mem(0x2000+i*0x100, [65+i*3,66+i*3])
-    print(exec_asm("ld R0 $2000 / ld R1 $2100 / ld R2 $2200 / ld R3 $2300 / cmp R3 $2300 / int "+str(n)+" / jp eq labe / jp lt lablt / jp gt labgt / jp ne labne  / brk / labe: brk / lablt: brk / labgt: brk / labne: brk ",0x3000))
-    for res in [read_mem(0x2000+0x100*i,nbytes=10) for i in range(4)]:
-        print(res)
+        rs.append(read_mem(0x2000+0x100*i,nbytes=10))
+    return rs
+#30 31 32 33 34
+
+syscall_res_l = [{}]
+def test_syscalls(start=5, stop=256):
+    syscall_res=syscall_res_l[0]
+    for i in range(start,stop):
+        if i not in syscall_res:
+            connect()
+            r = []
+            try:
+                t = test_syscall(i,r)
+                print(f"success {i}?, partial: {repr(r)}")
+                syscall_res[i] = t
+            except Exception as e:
+                print(f"failed {i}, partial: {repr(r)}")
+                raise e
+                syscall_res[i] = r
+    for k,v in syscall_res.items():
+        print(f"{k:0{2}X} : {v}")
+
+
+
