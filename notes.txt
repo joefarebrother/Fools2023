@@ -76,3 +76,14 @@ Skill issues are preventing progression. We are able to reach Super Glitch, but 
 FOOLS2023_{XXXXXXXXX}
 
 buffer overflow, you say? hmmm...
+
+flags:
+- text file     - 50
+- undoc cmd     - 50
+- mathtest      - 150
+- decrypt       - 100
+- hidden file   - 150
+- rom           - 150
+- serv3 mem     - 150
+- serv3 exploit - 187
+total score so far: 987

@@ -7,6 +7,8 @@ def tohex(num, padding=2):
         num = num.replace(" ", "").replace("\n", "")
         assert re.fullmatch(r'[0-9a-fA-F]+', num)
         return num
+    if isinstance(num, list):
+        return "".join(tohex(b, padding) for b in num)
     return f"{num:0{padding}X}"
 
 
