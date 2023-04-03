@@ -5,10 +5,10 @@ F009 | 61       | ldb [R0] R1
 F00A | A8       | inc R0
 F00B | 11 21 F0 | ld R1 Breakpoint             ; ($F021)
 F00E | 71       | ld [R0] R1
-F00F | 12 3F F3 | ld R2 .str_0_F33F_nWelcome   ; ($F33F)
+F00F | 12 3F F3 | ld R2 .str_9_F33F_nWelcome   ; ($F33F)
 F012 | 99 08 00 | call PrintStr                ; ($0008)
 F015 | 00       | BRK
-F016 | 12 F3 F7 | ld R2 .str_1_F7F3_Dry        ; ($F7F3)
+F016 | 12 F3 F7 | ld R2 .str_10_F7F3_Dry       ; ($F7F3)
 F019 | 99 08 00 | call PrintStr                ; ($0008)
 F01C | 06 03    | int $03                      ; (halt)
 .infloop_F01E:
@@ -29,12 +29,12 @@ F03A | 11 0C 00 | ld R1 $000C
 F03D | 12 4A FB | ld R2 $FB4A
 F040 | B7 46 FB | ld R3 [.mem_sp]              ; ($FB46)
 F043 | 99 28 00 | call MemCpy                  ; ($0028)
-F046 | 12 A4 FA | ld R2 .str_2_FAA4_BREAK      ; ($FAA4)
+F046 | 12 A4 FA | ld R2 .str_11_FAA4_BREAK     ; ($FAA4)
 F049 | 99 08 00 | call PrintStr                ; ($0008)
 InteractLoop:
 F04C | 10 00 00 | ld R0 $0000
 F04F | B8 02 E0 | ldb [.inp_buffer+2] R0       ; ($E002)
-F052 | 12 9A FA | ld R2 .str_3_FA9A_Ready      ; ($FA9A)
+F052 | 12 9A FA | ld R2 .str_12_FA9A_Ready     ; ($FA9A)
 F055 | 99 08 00 | call PrintStr                ; ($0008)
 F058 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
 F05B | 13 08 00 | ld R3 $0008
@@ -86,7 +86,7 @@ F0DC | 12 24 F7 | ld R2 .str_Inp_too_long      ; ($F724)
 F0DF | 99 08 00 | call PrintStr                ; ($0008)
 F0E2 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .cmd_help:
-F0E5 | 12 AC F8 | ld R2 .str_6_F8AC_Available  ; ($F8AC)
+F0E5 | 12 AC F8 | ld R2 .str_15_F8AC_Available ; ($F8AC)
 F0E8 | 99 08 00 | call PrintStr                ; ($0008)
 F0EB | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .cmd_read:
@@ -197,7 +197,7 @@ F1D0 | 98 82 F1 | jp .write_loop_outer         ; ($F182)
 F1D3 | 06 02    | int $02                      ; (in)
 F1D5 | A2 0A 00 | cmp R0 $000A
 F1D8 | 9D D3 F1 | jp ne .write_found_dot       ; ($F1D3)
-F1DB | 12 EA F7 | ld R2 .str_13_F7EA_Loaded    ; ($F7EA)
+F1DB | 12 EA F7 | ld R2 .str_22_F7EA_Loaded    ; ($F7EA)
 F1DE | 99 08 00 | call PrintStr                ; ($0008)
 F1E1 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .write_invalid_inp:
@@ -225,26 +225,26 @@ F218 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
 F21B | 99 20 00 | call ConvertHex              ; ($0020)
 F21E | 90       | push R0
 F21F | BC 5E FB | ld [$FB5E] R0
-F222 | 12 9D F7 | ld R2 .str_17_F79D_Really    ; ($F79D)
+F222 | 12 9D F7 | ld R2 .str_26_F79D_Really    ; ($F79D)
 F225 | 99 08 00 | call PrintStr                ; ($0008)
 F228 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
 F22B | 13 08 00 | ld R3 $0008
 F22E | 99 30 00 | call ReadStr                 ; ($0030)
 F231 | B0 00 E0 | ldb R0 [.inp_buffer]         ; ($E000)
 F234 | A2 59 00 | cmp R0 $0059
-F237 | 9C 4A F2 | jp eq .lab_39_F24A           ; ($F24A)
+F237 | 9C 4A F2 | jp eq .exec_go               ; ($F24A)
 F23A | A2 79 00 | cmp R0 $0079
-F23D | 9C 4A F2 | jp eq .lab_39_F24A           ; ($F24A)
-F240 | 12 C2 F7 | ld R2 .str_18_F7C2_Cancelled ; ($F7C2)
+F23D | 9C 4A F2 | jp eq .exec_go               ; ($F24A)
+F240 | 12 C2 F7 | ld R2 .str_27_F7C2_Cancelled ; ($F7C2)
 F243 | 99 08 00 | call PrintStr                ; ($0008)
 F246 | 94       | pop R0
 F247 | 98 4C F0 | jp InteractLoop              ; ($F04C)
-.lab_39_F24A:
+.exec_go:
 F24A | 97       | pop R3
 F24B | CC       | call R3
 F24C | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .cmd_continue:
-F24F | 12 DD F7 | ld R2 .str_19_F7DD_Continuing ; ($F7DD)
+F24F | 12 DD F7 | ld R2 .str_28_F7DD_Continuing ; ($F7DD)
 F252 | 99 08 00 | call PrintStr                ; ($0008)
 F255 | B4 3E FB | ld R0 [.mem_R0]              ; ($FB3E)
 F258 | B5 40 FB | ld R1 [.mem_R1]              ; ($FB40)
@@ -252,7 +252,7 @@ F25B | B6 42 FB | ld R2 [.mem_R2]              ; ($FB42)
 F25E | B7 44 FB | ld R3 [.mem_R3]              ; ($FB44)
 F261 | 05       | ret
 .cmd_ls:
-F262 | 12 65 FA | ld R2 .str_20_FA65_BLK       ; ($FA65)
+F262 | 12 65 FA | ld R2 .str_29_FA65_BLK       ; ($FA65)
 F265 | 99 08 00 | call PrintStr                ; ($0008)
 F268 | 10 00 00 | ld R0 $0000
 F26B | 11 00 E0 | ld R1 .inp_buffer            ; ($E000)
@@ -284,7 +284,7 @@ F29A | A5 00 EF | cmp R3 $EF00
 F29D | 9D 73 F2 | jp ne .ls_loop               ; ($F273)
 F2A0 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .cmd_undoc:
-F2A3 | 12 67 F8 | ld R2 .str_22_F867_Wow       ; ($F867)
+F2A3 | 12 67 F8 | ld R2 .str_31_F867_Wow       ; ($F867)
 F2A6 | 99 08 00 | call PrintStr                ; ($0008)
 F2A9 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .cmd_read_file:
@@ -335,11 +335,11 @@ F311 | 9C 36 F3 | jp eq .readfile_invalid      ; ($F336)
 F314 | 28       | ld R2 R0
 F315 | 13 00 E0 | ld R3 .inp_buffer            ; ($E000)
 F318 | 99 28 00 | call MemCpy                  ; ($0028)
-F31B | 12 EA F7 | ld R2 .str_13_F7EA_Loaded    ; ($F7EA)
+F31B | 12 EA F7 | ld R2 .str_22_F7EA_Loaded    ; ($F7EA)
 F31E | 99 08 00 | call PrintStr                ; ($0008)
 F321 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .readfile_notfound:
-F324 | 12 1F F8 | ld R2 .str_26_F81F_File      ; ($F81F)
+F324 | 12 1F F8 | ld R2 .str_35_F81F_File      ; ($F81F)
 F327 | 99 08 00 | call PrintStr                ; ($0008)
 F32A | 98 4C F0 | jp InteractLoop              ; ($F04C)
 .readfile_toolong:
@@ -350,7 +350,7 @@ F333 | 98 4C F0 | jp InteractLoop              ; ($F04C)
 F336 | 12 60 F7 | ld R2 .str_Invalid_inp       ; ($F760)
 F339 | 99 08 00 | call PrintStr                ; ($0008)
 F33C | 98 4C F0 | jp InteractLoop              ; ($F04C)
-.str_0_F33F_nWelcome:
+.str_9_F33F_nWelcome:
 F33F | 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 57 65 6C 63 6F 6D 65 20 74 6F 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 4E 65 74 77 6F 72 6B 3A 20 54 65 73 74 20 53 65 72 76 65 72 20 31 20 28 47 52 4C 54 53 30 31 29 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 47 52 4C 54 53 30 31 20 69 73 20 69 6E 74 65 6E 64 65 64 20 66 6F 72 20 72 65 73 65 61 72 63 68 20 70 75 72 70 6F 73 65 73 20 6F 6E 6C 79 2C 20 74 6F 20 61 69 64 20 6F 75 72 20 65 6E 67 69 6E 65 65 72 73 0A 69 6E 20 6D 69 67 72 61 74 69 6E 67 20 74 68 65 69 72 20 73 6F 66 74 77 61 72 65 20 74 6F 20 74 68 65 20 6C 61 74 65 73 74 20 47 4C 56 4D 20 61 72 63 68 69 74 65 63 74 75 72 65 2E 0A 54 68 69 73 20 73 65 72 76 65 72 20 77 69 6C 6C 20 62 6F 6F 74 20 69 6E 74 6F 20 61 20 6D 61 63 68 69 6E 65 20 6C 61 6E 67 75 61 67 65 20 6D 6F 6E 69 74 6F 72 2C 20 70 72 6F 76 69 64 69 6E 67 0A 61 20 73 69 6D 70 6C 65 20 65 6E 76 69 72 6F 6E 6D 65 6E 74 20 66 6F 72 20 64 65 76 65 6C 6F 70 6D 65 6E 74 20 61 6E 64 20 74 65 73 74 69 6E 67 2E 0A 0A 4E 6F 74 65 20 74 68 61 74 20 74 68 69 73 20 73 65 72 76 65 72 20 69 73 20 70 75 62 6C 69 63 6C 79 20 61 63 63 65 73 73 69 62 6C 65 2C 20 61 6E 64 20 74 68 75 73 2C 20 73 68 6F 75 6C 64 20 6E 65 76 65 72 0A 62 65 20 75 73 65 64 20 74 6F 20 73 74 6F 72 65 20 61 6E 79 20 63 6F 6E 66 69 64 65 6E 74 69 61 6C 20 69 6E 66 6F 72 6D 61 74 69 6F 6E 2E 20 49 66 20 73 74 6F 72 61 67 65 20 6F 66 20 64 61 74 61 20 69 73 0A 6E 65 63 65 73 73 61 72 79 2C 20 63 6F 6E 73 69 64 65 72 20 75 74 69 6C 69 7A 69 6E 67 20 65 6E 63 72 79 70 74 69 6F 6E 2C 20 6F 72 20 75 73 69 6E 67 20 6F 75 72 20 64 65 64 69 63 61 74 65 64 0A 73 74 6F 72 61 67 65 20 73 65 72 76 65 72 73 20 47 52 4C 46 53 30 31 2E 0A 41 64 64 69 74 69 6F 6E 61 6C 6C 79 2C 20 63 6F 6E 73 69 64 65 72 20 75 73 69 6E 67 20 47 52 4C 54 53 30 32 20 66 6F 72 20 61 6E 79 20 73 65 72 69 6F 75 73 20 77 6F 72 6B 20 2D 20 69 74 27 73 0A 61 6E 20 61 75 74 68 65 6E 74 69 63 61 74 65 64 20 74 65 73 74 20 73 65 72 76 65 72 2C 20 77 68 69 63 68 20 73 68 6F 75 6C 64 20 62 65 20 66 61 72 20 6D 6F 72 65 20 73 65 63 75 72 65 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 52 75 6E 6E 69 6E 67 20 6D 61 63 68 69 6E 65 20 6C 61 6E 67 75 61 67 65 20 6D 6F 6E 69 74 6F 72 20 6E 6F 77 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 0A 00  |
     ds "======================================================================\nWelcome to Glitch Research Laboratory Network: Test Server 1 (GRLTS01)\n======================================================================\nGRLTS01 is intended for research purposes only, to aid our engineers\nin migrating their software to the latest GLVM architecture.\nThis server will boot into a machine language monitor, providing\na simple environment for development and testing.\n\nNote that this server is publicly accessible, and thus, should never\nbe used to store any confidential information. If storage of data is\nnecessary, consider utilizing encryption, or using our dedicated\nstorage servers GRLFS01.\nAdditionally, consider using GRLTS02 for any serious work - it's\nan authenticated test server, which should be far more secure.\n======================================================================\nRunning machine language monitor now.\n======================================================================\n\n"
 .str_Inp_too_long:
@@ -368,46 +368,46 @@ F778 | 3E 20 57 68 69 63 68 20 61 64 64 72 65 73 73 3F 20 00  |
 .str_How_many_lines:
 F78A | 3E 20 48 6F 77 20 6D 61 6E 79 20 6C 69 6E 65 73 3F 20 00  |
     ds "> How many lines? "
-.str_17_F79D_Really:
+.str_26_F79D_Really:
 F79D | 3E 20 52 65 61 6C 6C 79 20 65 78 65 63 20 61 74 20 F0 5E FB 3F 20 54 79 70 65 20 59 20 69 66 20 73 6F 3A 20 00  |
     ds "> Really exec at \F0[$FB5E]? Type Y if so: "
-.str_18_F7C2_Cancelled:
+.str_27_F7C2_Cancelled:
 F7C2 | 21 20 43 61 6E 63 65 6C 6C 65 64 20 61 63 74 69 6F 6E 20 65 72 72 6F 72 2E 0A 00  |
     ds "! Cancelled action error.\n"
-.str_19_F7DD_Continuing:
+.str_28_F7DD_Continuing:
 F7DD | 43 6F 6E 74 69 6E 75 69 6E 67 2E 0A 00  |
     ds "Continuing.\n"
-.str_13_F7EA_Loaded:
+.str_22_F7EA_Loaded:
 F7EA | 4C 6F 61 64 65 64 2E 0A 00  |
     ds "Loaded.\n"
-.str_1_F7F3_Dry:
+.str_10_F7F3_Dry:
 F7F3 | 21 20 44 72 79 20 73 74 61 63 6B 2E 20 48 61 6C 74 69 6E 67 20 6D 61 63 68 69 6E 65 2E 0A 00  |
     ds "! Dry stack. Halting machine.\n"
 .str_Filename:
 F812 | 3E 20 46 69 6C 65 6E 61 6D 65 3F 20 00  |
     ds "> Filename? "
-.str_26_F81F_File:
+.str_35_F81F_File:
 F81F | 21 20 46 69 6C 65 20 6E 6F 74 20 66 6F 75 6E 64 20 65 72 72 6F 72 2E 0A 00  |
     ds "! File not found error.\n"
 .str_enter_input:
 F838 | 3E 20 45 6E 74 65 72 20 68 65 78 20 64 61 74 61 2E 20 45 6E 64 20 77 69 74 68 20 64 6F 74 20 22 2E 22 20 2B 20 6E 65 77 6C 69 6E 65 3A 0A 00  |
     ds "> Enter hex data. End with dot "." + newline:\n"
-.str_22_F867_Wow:
+.str_31_F867_Wow:
 F867 | 57 6F 77 2C 20 75 6E 64 6F 63 75 6D 65 6E 74 65 64 20 6D 6F 6E 69 74 6F 72 20 63 6F 6D 6D 61 6E 64 21 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 53 65 63 72 65 74 F0 00 E0 78 F0 01 E0 43 6F 6D 6D 61 6E 64 7D 0A 00  |
     ds "Wow, undocumented monitor command! FOOLS2023_{Secret\F0[.inp_buffer]x\F0[$E001]Command}\n" ; ($E000)
-.str_6_F8AC_Available:
+.str_15_F8AC_Available:
 F8AC | 41 76 61 69 6C 61 62 6C 65 20 63 6F 6D 6D 61 6E 64 73 3A 0A 72 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 68 65 78 0A 70 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 74 65 78 74 0A 77 20 20 20 3A 3A 20 77 72 69 74 65 20 68 65 78 20 64 61 74 61 20 74 6F 20 6D 65 6D 6F 72 79 0A 78 20 20 20 3A 3A 20 65 78 65 63 75 74 65 20 6D 65 6D 6F 72 79 0A 72 66 20 20 3A 3A 20 6C 6F 61 64 20 6D 65 6D 6F 72 79 20 66 72 6F 6D 20 66 69 6C 65 0A 6C 73 20 20 3A 3A 20 70 72 69 6E 74 20 66 69 6C 65 20 69 6E 64 65 78 0A 68 20 20 20 3A 3A 20 70 72 69 6E 74 20 74 68 69 73 20 68 65 6C 70 20 6D 65 73 73 61 67 65 0A 63 20 20 20 3A 3A 20 65 78 69 74 20 6D 6F 6E 69 74 6F 72 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 0A 50 6C 65 61 73 65 20 65 6E 74 65 72 20 68 65 78 20 6E 75 6D 62 65 72 73 20 77 68 65 6E 20 70 72 6F 6D 70 74 65 64 2E 0A 49 66 20 6E 65 63 65 73 73 61 72 79 20 66 6F 72 20 64 65 62 75 67 67 69 6E 67 2C 20 79 6F 75 20 63 61 6E 20 62 72 65 61 6B 20 69 6E 74 6F 20 6D 6F 6E 69 74 6F 72 0A 77 69 74 68 20 69 6E 73 74 72 75 63 74 69 6F 6E 20 42 52 4B 20 28 30 78 30 30 29 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 20 77 69 74 68 20 27 63 27 0A 4E 6F 74 65 3A 20 6D 65 6D 6F 72 79 20 72 65 67 69 6F 6E 20 45 30 30 30 2D 46 46 46 46 20 69 73 20 75 73 65 64 20 62 79 20 6D 6F 6E 69 74 6F 72 0A 00  |
     ds "Available commands:\nr   :: print memory as hex\np   :: print memory as text\nw   :: write hex data to memory\nx   :: execute memory\nrf  :: load memory from file\nls  :: print file index\nh   :: print this help message\nc   :: exit monitor and continue\nPlease enter hex numbers when prompted.\nIf necessary for debugging, you can break into monitor\nwith instruction BRK (0x00) and continue with 'c'\nNote: memory region E000-FFFF is used by monitor\n"
-.str_20_FA65_BLK:
+.str_29_FA65_BLK:
 FA65 | 42 4C 4B 20 20 53 49 5A 45 20 20 4E 41 4D 45 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 00  |
     ds "BLK  SIZE  NAME\n=======================\n"
 .str_ls_blk_size:
 FA8E | F1 56 FB 20 20 20 F0 5E FB 20 20 00  |
     ds "\F1[$FB56]   \F0[$FB5E]  "
-.str_3_FA9A_Ready:
+.str_12_FA9A_Ready:
 FA9A | 52 65 61 64 79 2E 0A 3E 20 00  |
     ds "Ready.\n> "
-.str_2_FAA4_BREAK:
+.str_11_FAA4_BREAK:
 FAA4 | 2A 2A 2A 20 42 52 45 41 4B 20 49 4E 54 4F 20 4D 4F 4E 49 54 4F 52 20 41 54 20 24 F0 48 FB 20 2A 2A 2A 0A 52 30 3D 24 F0 3E FB 20 52 31 3D 24 F0 40 FB 20 52 32 3D 24 F0 42 FB 20 52 33 3D 24 F0 44 FB 0A 53 50 3D 24 F0 46 FB 20 5B F1 4A FB F1 4B FB F1 4C FB F1 4D FB F1 4E FB F1 4F FB F1 50 FB F1 51 FB F1 52 FB F1 53 FB F1 54 FB F1 55 FB 5D 0A 00  |
     ds "*** BREAK INTO MONITOR AT $\F0[$FB48] ***\nR0=$\F0[.mem_R0] R1=$\F0[.mem_R1] R2=$\F0[.mem_R2] R3=$\F0[.mem_R3]\nSP=$\F0[.mem_sp] [\F1[$FB4A]\F1[$FB4B]\F1[$FB4C]\F1[$FB4D]\F1[$FB4E]\F1[$FB4F]\F1[$FB50]\F1[$FB51]\F1[$FB52]\F1[$FB53]\F1[$FB54]\F1[$FB55]]\n" ; ($FB3E) ; ($FB40) ; ($FB42) ; ($FB44) ; ($FB46)
 .str_mem_dump:
