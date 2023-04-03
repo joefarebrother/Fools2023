@@ -27,13 +27,16 @@ def connect():
 echoing = True
 
 
-def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
+def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> ", return_bytes=False):
     if expected_end is None:
         expected_end = "Ready.\n> "
     global con
     if not con:
         raise ConnectionClosedException("Connection closed")
     out = ""
+    if return_bytes:
+        out=b""
+        expected_end=bytes(expected_end, "utf8")
     while True:
         ready_read, _ready_write, in_err = select.select([con], [], [con], timeout)
         if in_err:
@@ -43,10 +46,13 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
             if rcvd_chunk == b'':  # eof
                 con = None
                 raise ConnectionClosedException("EOF", out)
-            rcvd_str = rcvd_chunk.decode('utf8', 'replace')
-            if echoing:
-                print(rcvd_str, end="")
-            out += rcvd_str
+            if return_bytes:
+                out+=rcvd_chunk
+            else:
+                rcvd_str = rcvd_chunk.decode('utf8', 'replace')
+                if echoing:
+                    print(rcvd_str, end="")
+                out += rcvd_str
             if out.endswith(expected_end):
                 break
         else:
@@ -58,7 +64,9 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> "):
 connect()
 
 
-def send(msg, timeout=2, expected_end=None):
+def send(msg, timeout=None, expected_end=None, return_bytes=False):
+    if timeout==None:
+        timeout=10
     if not con:
         raise ConnectionClosedException()
     if isinstance(msg, str):
@@ -74,7 +82,7 @@ def send(msg, timeout=2, expected_end=None):
         tot_sent += sent
     if echoing:
         print(msg.decode("utf8", errors="replace"), end="")
-    return read_all_poss(timeout=timeout, subsequent_timeout=timeout, expected_end=expected_end)
+    return read_all_poss(timeout=timeout, subsequent_timeout=timeout, expected_end=expected_end,return_bytes=return_bytes)
 
 
 builtin_hex = builtins.hex
@@ -188,19 +196,22 @@ def clear_mem(addr, num=0x100):
     write_mem(addr, "00"*num)
 
 
-def exec_mem(addr):
-    res = send(f"x\n{hex(addr)}\ny\n")
-    res = expect_prompt(f"> Which address? > Really exec at {hex(addr, padding=4)}? Type Y if so:", res)
+def exec_mem(addr, timeout=None,return_bytes=False):
+    res = send(f"x\n{hex(addr)}\ny\n",timeout,return_bytes=return_bytes)
+    expected=f"> Which address? > Really exec at {hex(addr, padding=4)}? Type Y if so:"
+    if return_bytes:
+        expected = bytes(expected,"utf8")
+    res = expect_prompt(expected, res)
     return res
 
 
-def exec_data(code, addr=0x2000):
+def exec_data(code, addr=0x2000,timeout=None, return_bytes=True):
     write_mem(addr, code)
-    return exec_mem(addr)
+    return exec_mem(addr,timeout, return_bytes=return_bytes)
 
 
-def exec_asm(code, addr=0x2000):
-    return exec_data(assemble_inline(code, addr), addr)
+def exec_asm(code, addr=0x2000,timeout=None, return_bytes=True):
+    return exec_data(assemble_inline(code, addr), addr,timeout,return_bytes=return_bytes)
 
 
 file_data = """
@@ -352,5 +363,31 @@ def connect_serv3_with_console():
 
 
 def read_block(blk):
-        exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret")
+        exec_asm(f"ld R0 {blk} / ld R1 $3000 / int $04 / ret",return_bytes=False)
         return read_mem(0x3000, nbytes=0x400)
+
+def read_protected_mem(n):
+    result = exec_asm(" ld R2 "+str(n)+" / cmp R2 $0 / jp 0x47 / brk / .lab: dw 0x4948 / dw 0x49F0 / dw 0x6565 / dw 0")[:6]
+    if result.endswith(b"Ready"):
+        return 0
+    elif result.endswith(b"Read"):
+        return result[1]
+    elif result.endswith(b"R"):
+        return 0xf0
+    elif result.endswith(b"Re"):#these are probably wrong
+        return 0xf1
+    elif result.endswith(b"Rea"):
+        return 0xf2
+    raise(Exception("unrecognised pattern"+repr(result) ))
+
+"""
+doesn't work because of 0s'
+def read_protected_mem_block(addr,ln):
+    assert(ln>0)
+    result = exec_asm(f" ld R3 {ln} / ld R2 {addr} /  loop: push R3 / push R2 / call 0x47 / pop R2 / pop R3 / inc R2 / dec R3 / cmp R3 $0 / jp ne loop / ret / brk ")
+    if result.startswith(b" "):
+        result=result[1:]
+    if result.endswith(b"Ready.\n> "):
+        result = result[:-len(b"Ready.\n> ")]
+    return result
+"""

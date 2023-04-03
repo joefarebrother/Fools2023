@@ -33,18 +33,18 @@ opcode["dw $xxxx"] = []
 opcode["nop"] = [0x20]
 
 useful_vals = {
-"PrintStr"     : 0x0008,
-"StrCmp"       : 0x0010,
-"FindIndex"    : 0x0018,
-"ConvertHex"   : 0x0020,
-"MemCpy"       : 0x0028,
-"ReadStr"      : 0x0030,
-"StrTrim"      : 0x0038,
-"MemSet"       : 0x0040,
-"BreakPoint"   : 0xFFF0
+"printstr"     : 0x0008,
+"strcmp"       : 0x0010,
+"findindex"    : 0x0018,
+"converthex"   : 0x0020,
+"memcpy"       : 0x0028,
+"readstr"      : 0x0030,
+"strtrim"      : 0x0038,
+"memset"       : 0x0040,
+"breakpoint"   : 0xFFF0
 }
 for val,name in known_syscalls.items():
-    useful_vals[name]=val
+    useful_vals[name.lower()]=val
 
 def assemble_file(fname, offset=0x2000):
     return assemble_code(open(fname).readlines(), offset)
