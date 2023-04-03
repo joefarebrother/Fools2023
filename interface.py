@@ -3,6 +3,7 @@ import sys
 import socket
 import select
 import re
+from datetime import datetime
 from assemble import assemble_inline, assemble_file
 from utils import *
 
@@ -13,13 +14,13 @@ class ConnectionClosedException(Exception):
     pass
 
 
-def connect():
+def connect(port=13337, expected_end="Ready.\n> "):
     global con
     if con:
         con.close()
     con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    con.connect(("fools2023.online", 13337))
-    read_all_poss(timeout=3)
+    con.connect(("fools2023.online", port))
+    read_all_poss(timeout=3, expected_end=expected_end)
 
 
 echoing = True
@@ -220,12 +221,7 @@ def test_comparisons(code, addr=0x2000):
 
 
 def connect_server3():
-    global con
-    if con:
-        con.close()
-    con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    con.connect(("fools2023.online", 13339))
-    read_all_poss(timeout=3, expected_end="(max 15 characters): ")
+    connect(port=13339)
 
 
 def bytes_(x):
@@ -374,3 +370,16 @@ def dump_all_blocks(dirname, confn=connect):
                     f.write(dump)
         except ConnectionClosedException:
             confn()
+
+
+def connect_serv2():
+    connect(port=13338, expected_end="Username: ")
+
+
+def connect_serv2_and_measure_time(password, username="ax.arwen"):
+    connect_serv2()
+    send(username + "\n", timeout=5, expected_end="Password: ")
+    start_time = datetime.now()
+    res = send(password + "\n", timeout=10, expected_end="Username: ")
+    end_time = datetime.now()
+    return (end_time-start_time), res
