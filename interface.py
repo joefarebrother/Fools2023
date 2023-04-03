@@ -383,3 +383,11 @@ def connect_serv2_and_measure_time(password, username="ax.arwen"):
     res = send(password + "\n", timeout=10, expected_end="Username: ")
     end_time = datetime.now()
     return (end_time-start_time), res
+
+
+def test_syscall(n):
+    for i in range(4):
+        write_mem(0x2000+i*0x100, [65+i*3,66+i*3])
+    print(exec_asm("ld R0 $2000 / ld R1 $2100 / ld R2 $2200 / ld R3 $2300 / cmp R3 $2300 / int "+str(n)+" / jp eq labe / jp lt lablt / jp gt labgt / jp ne labne  / brk / labe: brk / lablt: brk / labgt: brk / labne: brk ",0x3000))
+    for res in [read_mem(0x2000+0x100*i,nbytes=10) for i in range(4)]:
+        print(res)

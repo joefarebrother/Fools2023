@@ -44,6 +44,14 @@ useful_vals = {
     "memset": 0x0040,
     "breakpoint": 0xFFF0
 }
+
+xxops = {x.split()[0] for x in opcode if "$xx" in x and "$xxxx" not in x}
+for op in xxops:
+    for instr in opcode:
+        if instr.startswith(op+" ") and "$xxxx" in instr:
+            raise Exception("non-unique opcode with $xx and $xxxx")
+
+
 for val, name in known_syscalls.items():
     useful_vals[name.lower()] = val
 
@@ -94,7 +102,7 @@ def assemble_code(lines, offset=0x2000):
                             modps.append("[$xxxx]")
                             args.append(p[1:-1])
                         else:
-                            modps.append("$xxxx" if "int" not in modps else "$xx")
+                            modps.append("$xx" if modps[0] in xxops else "$xxxx")
                             args.append(p)
                     # print(ps,modps,file=sys.stderr)
                     i = " ".join(modps)
