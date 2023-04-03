@@ -293,7 +293,7 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
         if addri in labels:
             print(labels[addri] + ":")
         for loc, lab in labels.items():
-            loch = tohex(loc)
+            loch = tohex(loc,4)
             if "$"+loch in rest:
                 rest = rest.replace("$"+loch, lab)
                 rest += f" ; (${loch})"
