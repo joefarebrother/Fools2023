@@ -1,4 +1,5 @@
 # pylint: disable=global-statement,invalid-name
+import sys
 import socket
 import select
 import builtins
@@ -152,7 +153,6 @@ def read_mem(addr, lines=None, nbytes=None, pretty_dump=None, return_dump=False)
         print()
     raw_bytes = []
     for line in raw:
-        printable_no_ws = set(string.printable) - set(string.whitespace)
         addr, memline = line.split(" | ")
         mem = memline.split()
         chrs = ""
@@ -172,6 +172,17 @@ def read_mem(addr, lines=None, nbytes=None, pretty_dump=None, return_dump=False)
     if return_dump:
         return bytes(raw_bytes)[:nbytes], dump
     return bytes(raw_bytes)[:nbytes]
+
+printable_no_ws = set(string.printable) - set(string.whitespace)
+
+def byte_to_pretty(b):
+    c = chr(b)
+    if c in printable_no_ws:
+        return c
+    elif b == 0:
+        return " "
+    else:
+        return "."
 
 
 def print_mem(addr):
@@ -375,6 +386,16 @@ def read_protected_mem(n):
         return 0xf2
     raise(Exception("unrecognised pattern"+repr(result) ))
 
+def read_protected_block(addr,ln):
+    return [read_protected_mem(i) for i in range(addr,addr+ln)]
+
+def dump_protected_mem(file=sys.stdout):
+    ll=[]
+    for i in range(0,0x1000,0x10):
+        b = read_protected_block(i,0x10)
+        print(f"{hex(i,4)} | {' '.join(map(hex,b))} | {''.join(map(byte_to_pretty,b))}" ,file=file )
+        ll.append(b)
+    return ll
 """
 doesn't work because of 0s'
 def read_protected_mem_block(addr,ln):

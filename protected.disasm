@@ -1,4 +1,4 @@
-.lab_31_00:
+$0000:
 0000 | FF       | [wait! that's illegal!]
 0001 | FF       | [wait! that's illegal!]
 0002 | FF       | [wait! that's illegal!]
@@ -62,11 +62,11 @@
 0041 | A4 00 10 | cmp R2 $1000
 0044 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 0047 | 42       | ldb R0 [R2]
-0048 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
+0048 | A2 00 00 | cmp R0 $0000                 ; ($0000)
 004B | 9C 60 00 | jp eq .ret2                  ; ($0060)
 004E | A2 F0 00 | cmp R0 $00F0
 0051 | 9C 61 00 | jp eq .printRefWord          ; ($0061)
-0054 | A2 F2 00 | cmp R0 .lab_35_F2            ; ($00F2)
+0054 | A2 F2 00 | cmp R0 .FindIndex2           ; ($00F2)
 0057 | 9C 72 00 | jp eq .printRefByte          ; ($0072)
 005A | 06 01    | int $01                      ; (out)
 005C | AA       | inc R2
@@ -102,7 +102,7 @@
 0090 | 47       | ldb R1 [R3]
 0091 | 81       | cmp R0 R1
 0092 | 9D A0 00 | jp ne .ret3                  ; ($00A0)
-0095 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
+0095 | A2 00 00 | cmp R0 $0000                 ; ($0000)
 0098 | 9C A0 00 | jp eq .ret3                  ; ($00A0)
 009B | AA       | inc R2
 009C | AB       | inc R3
@@ -136,182 +136,193 @@
 00C3 | 06 01    | int $01                      ; (out)
 00C5 | 05       | ret
 .table_16_char_hexdigs:
-00C6 | 30 | db $30                             ; '0'
-00C7 | 31 | db $31                             ; '1'
-00C8 | 32 | db $32                             ; '2'
-00C9 | 33 | db $33                             ; '3'
-00CA | 34 | db $34                             ; '4'
-00CB | 35 | db $35                             ; '5'
-00CC | 36 | db $36                             ; '6'
-00CD | 37 | db $37                             ; '7'
-00CE | 38 | db $38                             ; '8'
-00CF | 39 | db $39                             ; '9'
-00D0 | 41 | db $41                             ; 'A'
-00D1 | 42 | db $42                             ; 'B'
-00D2 | 43 | db $43                             ; 'C'
-00D3 | 44 | db $44                             ; 'D'
-00D4 | 45 | db $45                             ; 'E'
-00D5 | 46 | db $46                             ; 'F'
+00C6 | 30       | db $30                       ; '0'
+00C7 | 31       | db $31                       ; '1'
+00C8 | 32       | db $32                       ; '2'
+00C9 | 33       | db $33                       ; '3'
+00CA | 34       | db $34                       ; '4'
+00CB | 35       | db $35                       ; '5'
+00CC | 36       | db $36                       ; '6'
+00CD | 37       | db $37                       ; '7'
+00CE | 38       | db $38                       ; '8'
+00CF | 39       | db $39                       ; '9'
+00D0 | 41       | db $41                       ; 'A'
+00D1 | 42       | db $42                       ; 'B'
+00D2 | 43       | db $43                       ; 'C'
+00D3 | 44       | db $44                       ; 'D'
+00D4 | 45       | db $45                       ; 'E'
+00D5 | 46       | db $46                       ; 'F'
 .startFindIndex:
 00D6 | 11 FF FF | ld R1 $FFFF
-.lab_29_D9:
+.FindIndex_loop:
 00D9 | A9       | inc R1
 00DA | A4 00 10 | cmp R2 $1000
 00DD | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
 00E0 | 42       | ldb R0 [R2]
 00E1 | AA       | inc R2
 00E2 | A2 FF 00 | cmp R0 $00FF
-00E5 | 9C EE 00 | jp eq .lab_28_EE             ; ($00EE)
+00E5 | 9C EE 00 | jp eq .RetFFFF               ; ($00EE)
 00E8 | 83       | cmp R0 R3
-00E9 | 9D D9 00 | jp ne .lab_29_D9             ; ($00D9)
+00E9 | 9D D9 00 | jp ne .FindIndex_loop        ; ($00D9)
 00EC | 21       | ld R0 R1
 00ED | 05       | ret
-.lab_28_EE:
+.RetFFFF:
 00EE | 10 FF FF | ld R0 $FFFF
 00F1 | 05       | ret
-.lab_35_F2:
+.FindIndex2:
 00F2 | 11 FF FF | ld R1 $FFFF
+.FindIndex2_loop:
 00F5 | A9       | inc R1
 00F6 | 42       | ldb R0 [R2]
 00F7 | AA       | inc R2
 00F8 | A2 FF 00 | cmp R0 $00FF
-00FB | 9C 04 01 | jp eq .lab_30_104            ; ($0104)
+00FB | 9C 04 01 | jp eq .RetFFFF2              ; ($0104)
 00FE | 83       | cmp R0 R3
-00FF | 9D 00 00 | jp ne .lab_31_00             ; ($0000)
-0102 | 00       | BRK
-0103 | 00       | BRK
-.lab_30_104:
-0104 | 00       | BRK
-0105 | F5       | [wait! that's illegal!]
-0106 | 00       | BRK
-0107 | 21       | ld R0 R1
-0108 | 05       | ret
-0109 | 10 FF FF | ld R0 $FFFF
-010C | 05       | ret
-010D | 00       | BRK
-010E | 00       | BRK
-010F | 00       | BRK
+00FF | 9D F5 00 | jp ne .FindIndex2_loop       ; ($00F5)
+0102 | 21       | ld R0 R1
+0103 | 05       | ret
+.RetFFFF2:
+0104 | 10 FF FF | ld R0 $FFFF
+0107 | 05       | ret
+0108 | 00       | BRK
+0109 | 00       | BRK
+010A | 00       | BRK
 .strSecret:
-0110 | 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 47 4C 56 4D 20 42 49 4F 53 20 76 65 72 73 69 6F 6E 20 31 2E 33 20 2F 20 44 6F 20 6E 6F 74 20 64 69 73 74 72 69 62 75 74 65 21 20 2F 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 44 75 6D 70 69 6E 67 57 61 73 41 6E 49 6E 73 69 64 65 4A 6F 62 7D 00  |
+010B | 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 47 4C 56 4D 20 42 49 4F 53 20 76 65 72 73 69 6F 6E 20 31 2E 33 20 2F 20 44 6F 20 6E 6F 74 20 64 69 73 74 72 69 62 75 74 65 21 20 2F 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 44 75 6D 70 69 6E 67 57 61 73 41 6E 49 6E 73 69 64 65 4A 6F 62 7D 00  |
     ds "Glitch Research Laboratory GLVM BIOS version 1.3 / Do not distribute! / FOOLS2023_{DumpingWasAnInsideJob}"
-.lab_37_17A:
-017A | 00       | BRK
-017B | 00       | BRK
-017C | 13 00 00 | ld R3 .lab_31_00             ; ($0000)
-017F | A4 00 10 | cmp R2 $1000
-0182 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
-0185 | 42       | ldb R0 [R2]
-0186 | AA       | inc R2
-0187 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
-018A | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
-018D | A2 0A 00 | cmp R0 $000A
-0190 | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
-0193 | 3F       | add R3 R3
-0194 | 3F       | add R3 R3
-0195 | 3F       | add R3 R3
-0196 | 3F       | add R3 R3
-0197 | 92       | push R2
-0198 | 93       | push R3
-0199 | 12 AE 01 | ld R2 $01AE
-019C | 2C       | ld R3 R0
-019D | 99 F2 00 | call .lab_35_F2              ; ($00F2)
-01A0 | 97       | pop R3
-01A1 | 96       | pop R2
-01A2 | A2 FF FF | cmp R0 $FFFF
-01A5 | 9C AD 01 | jp eq .lab_36_1AD            ; ($01AD)
-01A8 | 11 C5 01 | ld R1 $01C5
-01AB | 34       | add R1 R0
+0175 | 00       | BRK
+0176 | 00       | BRK
+.startConvertHex:
+0177 | 13 00 00 | ld R3 $0000                  ; ($0000)
+.ConvertHex_loop:
+017A | A4 00 10 | cmp R2 $1000
+017D | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
+0180 | 42       | ldb R0 [R2]
+0181 | AA       | inc R2
+0182 | A2 00 00 | cmp R0 $0000                 ; ($0000)
+0185 | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
+0188 | A2 0A 00 | cmp R0 $000A
+018B | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
+018E | 3F       | add R3 R3
+018F | 3F       | add R3 R3
+0190 | 3F       | add R3 R3
+0191 | 3F       | add R3 R3
+0192 | 92       | push R2
+0193 | 93       | push R3
+0194 | 12 AE 01 | ld R2 .table_23_char_hex_decode ; ($01AE)
+0197 | 2C       | ld R3 R0
+0198 | 99 F2 00 | call .FindIndex2             ; ($00F2)
+019B | 97       | pop R3
+019C | 96       | pop R2
+019D | A2 FF FF | cmp R0 $FFFF
+01A0 | 9C AD 01 | jp eq .lab_36_1AD            ; ($01AD)
+01A3 | 11 C5 01 | ld R1 .table_23_byte_hex_decode2 ; ($01C5)
+01A6 | 34       | add R1 R0
+01A7 | 45       | ldb R1 [R1]
+01A8 | 3D       | add R3 R1
+01A9 | 98 7A 01 | jp .ConvertHex_loop          ; ($017A)
 .lab_33_1AC:
-01AC | 45       | ldb R1 [R1]
+01AC | 23       | ld R0 R3
 .lab_36_1AD:
-01AD | 3D       | add R3 R1
-01AE | 98 7A 01 | jp .lab_37_17A               ; ($017A)
-01B1 | 23       | ld R0 R3
-01B2 | 05       | ret
-01B3 | 30       | add R0 R0
-01B4 | 31       | add R0 R1
-01B5 | 32       | add R0 R2
-01B6 | 33       | add R0 R3
-01B7 | 34       | add R1 R0
-01B8 | 35       | add R1 R1
-01B9 | 36       | add R1 R2
-01BA | 37       | add R1 R3
-01BB | 38       | add R2 R0
-01BC | 39       | add R2 R1
-01BD | 61       | ldb [R0] R1
-01BE | 62       | ldb [R0] R2
-01BF | 63       | ldb [R0] R3
-01C0 | 64       | ldb [R1] R0
-01C1 | 65       | ldb [R1] R1
-01C2 | 66       | ldb [R1] R2
-01C3 | 41       | ldb R0 [R1]
-01C4 | 42       | ldb R0 [R2]
-01C5 | 43       | ldb R0 [R3]
-01C6 | 44       | ldb R1 [R0]
-01C7 | 45       | ldb R1 [R1]
-01C8 | 46       | ldb R1 [R2]
-01C9 | FF       | [wait! that's illegal!]
-01CA | 00       | BRK
-01CB | 01 02 03 | mul R0 $0302
-01CE | 04       | 
-01CF | 05       | ret
-01D0 | 06 07    | int $07                      ; (unknown)
-01D2 | 08       | 
-01D3 | 09 0A 0B | ld sp $0B0A
-01D6 | 0C       | 
-01D7 | 0D       | 
-01D8 | 0E       | shl R0
-01D9 | 0F       | shr R0
-01DA | 0A       | ld R0 sp
-01DB | 0B       | 
+01AD | 05       | ret
+.table_23_char_hex_decode:
+01AE | 30       | db $30                       ; '0'
+01AF | 31       | db $31                       ; '1'
+01B0 | 32       | db $32                       ; '2'
+01B1 | 33       | db $33                       ; '3'
+01B2 | 34       | db $34                       ; '4'
+01B3 | 35       | db $35                       ; '5'
+01B4 | 36       | db $36                       ; '6'
+01B5 | 37       | db $37                       ; '7'
+01B6 | 38       | db $38                       ; '8'
+01B7 | 39       | db $39                       ; '9'
+01B8 | 61       | db $61                       ; 'a'
+01B9 | 62       | db $62                       ; 'b'
+01BA | 63       | db $63                       ; 'c'
+01BB | 64       | db $64                       ; 'd'
+01BC | 65       | db $65                       ; 'e'
+01BD | 66       | db $66                       ; 'f'
+01BE | 41       | db $41                       ; 'A'
+01BF | 42       | db $42                       ; 'B'
+01C0 | 43       | db $43                       ; 'C'
+01C1 | 44       | db $44                       ; 'D'
+01C2 | 45       | db $45                       ; 'E'
+01C3 | 46       | db $46                       ; 'F'
+01C4 | FF       | db $FF                       ; '\xff'
+.table_23_byte_hex_decode2:
+01C5 | 00       | db $00
+01C6 | 01       | db $01
+01C7 | 02       | db $02
+01C8 | 03       | db $03
+01C9 | 04       | db $04
+01CA | 05       | db $05
+01CB | 06       | db $06
+01CC | 07       | db $07
+01CD | 08       | db $08
+01CE | 09       | db $09
+01CF | 0A       | db $0A
+01D0 | 0B       | db $0B
+01D1 | 0C       | db $0C
+01D2 | 0D       | db $0D
+01D3 | 0E       | db $0E
+01D4 | 0F       | db $0F
+01D5 | 0A       | db $0A
+01D6 | 0B       | db $0B
+01D7 | 0C       | db $0C
+01D8 | 0D       | db $0D
+01D9 | 0E       | db $0E
+01DA | 0F       | db $0F
+01DB | FF       | db $FF
 .startMemCpy:
-01DC | 0C       | 
-01DD | 0D       | 
-01DE | 0E       | shl R0
-01DF | 0F       | shr R0
-01E0 | FF       | [wait! that's illegal!]
-01E1 | A5 00 10 | cmp R3 $1000
-01E4 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
-01E7 | A4 00 10 | cmp R2 $1000
-01EA | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
-01ED | 43       | ldb R0 [R3]
-01EE | 68       | ldb [R2] R0
-01EF | AB       | inc R3
-01F0 | AA       | inc R2
-01F1 | AD       | dec R1
-01F2 | A3 00 00 | cmp R1 .lab_31_00            ; ($0000)
-01F5 | 9D DC 01 | jp ne .startMemCpy           ; ($01DC)
-01F8 | 05       | ret
-01F9 | 06 02    | int $02                      ; (in)
-01FB | A4 00 10 | cmp R2 $1000
-01FE | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
-0201 | 68       | ldb [R2] R0
-0202 | A2 0A 00 | cmp R0 $000A
-0205 | 9C 0E 02 | jp eq .lab_42_20E            ; ($020E)
-0208 | A5 00 00 | cmp R3 .lab_31_00            ; ($0000)
+01DC | A5 00 10 | cmp R3 $1000
+01DF | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
+01E2 | A4 00 10 | cmp R2 $1000
+01E5 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
+01E8 | 43       | ldb R0 [R3]
+01E9 | 68       | ldb [R2] R0
+01EA | AB       | inc R3
+01EB | AA       | inc R2
+01EC | AD       | dec R1
+01ED | A3 00 00 | cmp R1 $0000                 ; ($0000)
+01F0 | 9D DC 01 | jp ne .startMemCpy           ; ($01DC)
+01F3 | 05       | ret
+.startReadStr:
+01F4 | 06 02    | int $02                      ; (in)
+01F6 | A4 00 10 | cmp R2 $1000
+01F9 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
+01FC | 68       | ldb [R2] R0
+01FD | A2 0A 00 | cmp R0 $000A
+0200 | 9C 0E 02 | jp eq .lab_42_20E            ; ($020E)
+0203 | A5 00 00 | cmp R3 $0000                 ; ($0000)
+0206 | 9C 0B 02 | jp eq .lab_43_20B            ; ($020B)
+0209 | AA       | inc R2
+020A | AF       | dec R3
 .lab_43_20B:
-020B | 9C 0B 02 | jp eq .lab_43_20B            ; ($020B)
+020B | 98 F4 01 | jp .startReadStr             ; ($01F4)
 .lab_42_20E:
 020E | AA       | inc R2
-020F | AF       | dec R3
-0210 | 98 F4 01 | jp .startReadStr             ; ($01F4)
-0213 | AA       | inc R2
+020F | 10 00 00 | ld R0 $0000                  ; ($0000)
+0212 | 68       | ldb [R2] R0
+0213 | 05       | ret
 .startStrTrim:
-0214 | 10 00 00 | ld R0 .lab_31_00             ; ($0000)
-0217 | 68       | ldb [R2] R0
-0218 | 05       | ret
-0219 | 42       | ldb R0 [R2]
-021A | A2 0A 00 | cmp R0 $000A
-021D | 9C 25 02 | jp eq .lab_45_225            ; ($0225)
-0220 | A2 00 00 | cmp R0 .lab_31_00            ; ($0000)
-0223 | 9C 25 02 | jp eq .lab_45_225            ; ($0225)
-0226 | AA       | inc R2
-0227 | 98 14 02 | jp .startStrTrim             ; ($0214)
-022A | 10 00 00 | ld R0 .lab_31_00             ; ($0000)
-022D | A4 00 10 | cmp R2 $1000
-0230 | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
-0233 | 68       | ldb [R2] R0
-0234 | 05       | ret
+0214 | 42       | ldb R0 [R2]
+0215 | A2 0A 00 | cmp R0 $000A
+0218 | 9C 25 02 | jp eq .lab_45_225            ; ($0225)
+021B | A2 00 00 | cmp R0 $0000                 ; ($0000)
+021E | 9C 25 02 | jp eq .lab_45_225            ; ($0225)
+0221 | AA       | inc R2
+0222 | 98 14 02 | jp .startStrTrim             ; ($0214)
+.lab_45_225:
+0225 | 10 00 00 | ld R0 $0000                  ; ($0000)
+0228 | A4 00 10 | cmp R2 $1000
+022B | 9A 40 00 | jp lt MemSet                 ; (.Ret) ; ($0040)
+022E | 68       | ldb [R2] R0
+022F | 05       | ret
+0230 | 00       | BRK
+0231 | 00       | BRK
+0232 | 00       | BRK
+0233 | 00       | BRK
+0234 | 00       | BRK
 0235 | 00       | BRK
 0236 | 00       | BRK
 0237 | 00       | BRK
@@ -3843,8 +3854,3 @@
 0FFD | 00       | BRK
 0FFE | 00       | BRK
 0FFF | 00       | BRK
-1000 | 00       | BRK
-1001 | 00       | BRK
-1002 | 00       | BRK
-1003 | 00       | BRK
-1004 | 00       | BRK

@@ -187,8 +187,11 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
             addri = pc+prog_offset
             ln, rest = tables[pc+prog_offset]
             for i in range(ln):
-                if rest.startswith("char_"):
-                    line += f"{tohex(mem[pc])} | db ${tohex(mem[pc], 2)} ; {repr(chr(mem[pc]))}"
+                if rest.startswith("char_") or rest.startswith("byte_"):
+                    line += tohex(mem[pc])
+                    line += " "*(16-len(line)) + f"| db ${tohex(mem[pc], 2)}"
+                    if rest.startswith("char_"):
+                       line+=f" ; {repr(bytes([mem[pc]]))[1:]}"
                     out.append(line)
                     pc += 1
                     line = tohex(prog_offset + pc, 4) + " | "
@@ -199,7 +202,8 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
                     if word not in labels:
                         labname = f".{rest}_{i}"
                         labels[word] = labname
-                line += f"{tohex(mem[pc])} {tohex(mem[pc+1])} | dw ${tohex(word, 4)}"
+                line += f"{tohex(mem[pc])} {tohex(mem[pc+1])}"
+                line += " "*(16-len(line)) + f"| dw ${tohex(word, 4)}"
                 out.append(line)
                 pc += 2
                 line = tohex(prog_offset + pc, 4) + " | "
