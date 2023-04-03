@@ -45,12 +45,12 @@ def read_all_poss(timeout=3, subsequent_timeout=2, expected_end="Ready.\n> ", re
             if rcvd_chunk == b'':  # eof
                 con = None
                 raise ConnectionClosedException("EOF", out)
+            rcvd_str = rcvd_chunk.decode('utf8', 'replace')
+            if echoing:
+                print(rcvd_str, end="")
             if return_bytes:
                 out += rcvd_chunk
             else:
-                rcvd_str = rcvd_chunk.decode('utf8', 'replace')
-                if echoing:
-                    print(rcvd_str, end="")
                 out += rcvd_str
             if out.endswith(expected_end):
                 break

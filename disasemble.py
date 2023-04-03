@@ -3,7 +3,7 @@ import re
 import sys
 from utils import *
 
-crashes = ['14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'e4',
+crashes = ['07', '14', '15', '16', '17', '18', '19', '1a', '1b', '1c', '1d', '1e', '1f', 'c0', 'c1', 'c2', 'c3', 'c4', 'c6', 'e4',
            'e5', 'e6', 'e7', 'e8', 'e9', 'ea', 'eb', 'ec', 'ed', 'ee', 'ef', 'f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa', 'fb', 'fc', 'fd', 'fe', 'ff']
 
 crashes = [fromhex(op) for op in crashes]
@@ -11,6 +11,9 @@ crashes = [fromhex(op) for op in crashes]
 known_opcodes_pre = {
     0x00: 'BRK',
     0x01: 'mul R0 $XXXX',
+    0x02: 'mul R0 R1',
+    0x03: 'div R0 $XX',
+    0x04: 'div R0 R1',
     0x05: 'ret',
     0x06: 'int $XX',
     0x09: 'ld sp $XXXX',
