@@ -115,5 +115,7 @@ protected:00F5:.FindIndex2_loop
 protected:0104:.RetFFFF2
 protected:010B:.strSecret
 protected:017A:.ConvertHex_loop
+protected:01AC:.ConvertHex_ret
+protected:01AD:.ConvertHex_retFFFF
 protected:01AE:.table_23_char_hex_decode
 protected:01C5:.table_23_byte_hex_decode2

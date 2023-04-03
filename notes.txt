@@ -34,6 +34,32 @@ e seems to now take no args but took 2 before?
 seen: 0666, 0664, 0665 - in math
 04 used in ls command and rf command. interacts with filesystem?
 
+functions in protected memory:
+All have protections before reading or writing to attempt to avoid protected memory
+
+0x0008: PrintStr R2 (addr) -> R2 (points to ending null) R0=0
+prints up to null terminator, F0{$addr} outputs hex words, F1{$addr} outputs hex bytes
+
+0x0010: StrCmp R2(str) , R3(str) -> flags)
+flags set at first unequal character (or null terminator), R2,R3 point there,
+R0,R1 hold the values of those chacacters
+
+0x0018: FindIndex R2(tableAddr) , R3(val) -> R2(addr of val), R0(index of val)
+finds val in table starting at R2, terminated by FF
+return -1 (FFFF) in R0 if not found
+
+0x0020: ConvertHex R2(addr) -> R0 (result),R3 , clobbers R1,R2
+decodes mixed case hex string terminated by '\x00' or '\n'
+
+0x0028: MemCpy R3(source),R2(dest) -> clobbers all
+0x0030: ReadStr R2 (dest), R3 (maxlen) ->
+read terminated by '\n', writes string terminated by '\0',
+writes at most maxlen+1 bytes including '\0'
+
+0x0038: StrTrim
+0x0040: MemSet
+just seems to be `ret`?
+
 decrypted thing:
 
 REPORT: MARCH

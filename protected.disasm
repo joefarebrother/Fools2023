@@ -200,9 +200,9 @@ $0000:
 0180 | 42       | ldb R0 [R2]
 0181 | AA       | inc R2
 0182 | A2 00 00 | cmp R0 $0000                 ; ($0000)
-0185 | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
+0185 | 9C AC 01 | jp eq .ConvertHex_ret        ; ($01AC)
 0188 | A2 0A 00 | cmp R0 $000A
-018B | 9C AC 01 | jp eq .lab_33_1AC            ; ($01AC)
+018B | 9C AC 01 | jp eq .ConvertHex_ret        ; ($01AC)
 018E | 3F       | add R3 R3
 018F | 3F       | add R3 R3
 0190 | 3F       | add R3 R3
@@ -215,15 +215,15 @@ $0000:
 019B | 97       | pop R3
 019C | 96       | pop R2
 019D | A2 FF FF | cmp R0 $FFFF
-01A0 | 9C AD 01 | jp eq .lab_36_1AD            ; ($01AD)
+01A0 | 9C AD 01 | jp eq .ConvertHex_retFFFF    ; ($01AD)
 01A3 | 11 C5 01 | ld R1 .table_23_byte_hex_decode2 ; ($01C5)
 01A6 | 34       | add R1 R0
 01A7 | 45       | ldb R1 [R1]
 01A8 | 3D       | add R3 R1
 01A9 | 98 7A 01 | jp .ConvertHex_loop          ; ($017A)
-.lab_33_1AC:
+.ConvertHex_ret:
 01AC | 23       | ld R0 R3
-.lab_36_1AD:
+.ConvertHex_retFFFF:
 01AD | 05       | ret
 .table_23_char_hex_decode:
 01AE | 30       | db $30                       ; '0'
