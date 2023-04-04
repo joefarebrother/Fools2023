@@ -180,6 +180,10 @@ BLK  SIZE  NAME
 08   0560  REPORT03.PRG
 0A   02B1  MATHTEST.PRG
 01   0035  FLAG.TXT
+01   0400  ENCTABLE.BIN
+02   0165  MIXTEST.PRG
+04   0026  FLAG.TXT
+
 """
 
 
@@ -422,3 +426,8 @@ def test_syscalls(start=5, stop=256):
                 # syscall_res[i]=r
     for k, v in syscall_res.items():
         print(f"{k:0{2}X} : {v}")
+
+
+def connect_serv2_with_console():
+    connect_serv2()
+    send("ax.arwen\nsepiB7705*X\n")

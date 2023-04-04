@@ -64,5 +64,5 @@ def bytes_to_dump(data, addr, chunksize=16):
         memline += " " * (23-len(memline))
         chline = "".join(byte_to_pretty(c) for c in chunk)
         out += f"{tohex(addr)} | {memline} | {chline}\n"
-        addr += 8
+        addr += chunksize
     return out
