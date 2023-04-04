@@ -10,13 +10,17 @@ def try_password_list(pws):
     print(out)
     out = out.splitlines()
 
-    _pw, header_time_ns, un_time_ns, pw_time_ns, succ = out.split(", ")
-    assert pw == _pw
-    header_time_ns = int(header_time_ns)
-    un_time_ns = int(un_time_ns)
-    pw_time_ns = int(pw_time_ns)
+    res = []
+    for line in out:
+        pw, header_time_ns, un_time_ns, pw_time_ns, succ = line.split(", ")
+        assert pw in pws
+        header_time_ns = int(header_time_ns)
+        un_time_ns = int(un_time_ns)
+        pw_time_ns = int(pw_time_ns)
 
-    return header_time_ns, un_time_ns, pw_time_ns, succ
+        res.append(header_time_ns, un_time_ns, pw_time_ns, succ)
+
+    return res
 
 
 class SuccessfulPasswordException(Exception):  # exceptions are totally for success conditions, right?
@@ -27,13 +31,12 @@ def try_passwords(prefix):
     timings = {}
     chrs = printable_no_ws | {" "}
 
-    for ch in sorted(chrs):
-        pw = prefix + ch
-        header_time_ns, un_time_ns, pw_time_ns, succ = try_password_list(pw)
-        timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
-        if succ == "true":
-            print("Successful password??", pw)
-            raise SuccessfulPasswordException("Yay!", pw)
+    for chunk in chunks(sorted(chrs), 8):
+        for pw, header_time_ns, un_time_ns, pw_time_ns, succ in try_password_list([prefix+c for c in chunk]):
+            timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
+            if succ == "true":
+                print("Successful password??", pw)
+                raise SuccessfulPasswordException("Yay!", pw)
 
     return timings
 
@@ -84,3 +87,6 @@ def crack_password(prefix, ntimes=10):
         else:
             raise Exception("No statistically significant difference found", slowest_pw, slowest_t,
                             snd_slowest_pw, snd_slowest_t, fastest_pw, fastest_t, rng, best_dif)
+
+
+crack_password("se")
