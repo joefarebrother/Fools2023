@@ -219,7 +219,6 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
 
         op = mem[pc]
         opl = op_len(op)
-        print(op,opl)
         assert opl+pc <= len(mem)
         args = []
         for i in range(opl):
@@ -260,7 +259,6 @@ def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
                 else:
                     op_name = op_name.replace("XXXX", arg)
             elif "$XX" in op_name:
-                print(args)
                 assert len(args) == 1
                 arg = tohex(args[0])
                 argi = args[0]
