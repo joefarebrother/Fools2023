@@ -23,41 +23,44 @@ use std::env;
 // Username: 
 // length: 54
 
-fn try_pass(password: &str) -> std::io::Result<(Duration, bool)> {
+fn try_pass(password: &str) -> std::io::Result<(Duration, Duration, bool)> {
     let mut stream = TcpStream::connect("fools2023.online:13338")?;
 
-    let mut buf = [0_u8; 265];
-    stream.read_exact(&mut buf)?;
+    const EXPECTED_INTRO_LEN: usize = 265;
+    const EXPECTED_UN_RESP_LEN: usize = 62;
+    const EXPECTED_PW_RESP_LEN: usize = 54;
 
     let username = "ax.arwen\n";
-    stream.write_all(username.as_bytes())?;
+    let to_send: String = format!("{}\n{}\n", username, password);
+
+    stream.read_exact(&mut [0; EXPECTED_INTRO_LEN])?;
+
+    let un_start = Instant::now();    
+    stream.write_all(to_send.as_bytes())?;
     
-    let mut buf = [0_u8; 62];
-    stream.read_exact(&mut buf)?;
+    stream.read_exact(&mut [0; EXPECTED_UN_RESP_LEN])?;
 
-    stream.write_all(password.as_bytes())?;
+    let un_end = Instant::now();
 
-    let start = Instant::now();
-
-    stream.write(&[10])?;
-    let mut buf = [0_u8; 54];
+    let mut buf = [0_u8; EXPECTED_PW_RESP_LEN];
     stream.read_exact(&mut buf)?;
 
     let end = Instant::now();
 
-    let dur = end - start;    
+    let pw_dur = end-un_end; 
+    let un_dur = un_end-un_start;  
 
     let buf_str: String = String::from_utf8_lossy(&buf).to_string();
     let incorrect = buf_str.contains("incorrect");
 
-    Ok((dur, !incorrect))
+    Ok((un_dur, pw_dur, !incorrect))
 }
 
 fn main() -> std::io::Result<()> {
     for arg in env::args().skip(1) {
-        let (dur, correct) = try_pass(&arg)?;
+        let (un_dur, pw_dur, correct) = try_pass(&arg)?;
 
-        println!("{}, {}, {}", arg, dur.as_micros(), correct);
+        println!("{}, {}, {}, {}", arg, un_dur.as_micros(), pw_dur.as_micros(), correct);
     }
 
 

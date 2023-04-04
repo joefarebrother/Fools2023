@@ -91,25 +91,24 @@ def assemble_code(lines, offset=0x2000):
                     if newlabname.startswith("zx"):
                         labs[newlabname[2:]] = offset
             if len(ps) > 0:
-                if True:
-                    args = []
-                    modps = []
-                    for p in ps:
-                        if p in kwds:
-                            modps.append(p)
-                        elif p[0] == "[":
-                            assert p[-1] == "]"
-                            modps.append("[$xxxx]")
-                            args.append(p[1:-1])
-                        else:
-                            modps.append("$xx" if modps[0] in xxops else "$xxxx")
-                            args.append(p)
-                    # print(ps,modps,file=sys.stderr)
-                    i = " ".join(modps)
-                    if i not in opcode:
-                        raise Exception(f"don't recognise {i}")
-                    instrs.append((i, args))
-                    offset += instrlen(i)
+                args = []
+                modps = []
+                for p in ps:
+                    if p in kwds:
+                        modps.append(p)
+                    elif p[0] == "[":
+                        assert p[-1] == "]"
+                        modps.append("[$xxxx]")
+                        args.append(p[1:-1])
+                    else:
+                        modps.append("$xx" if modps[0] in xxops else "$xxxx")
+                        args.append(p)
+                # print(ps,modps,file=sys.stderr)
+                i = " ".join(modps)
+                if i not in opcode:
+                    raise Exception(f"don't recognise {i}")
+                instrs.append((i, args))
+                offset += instrlen(i)
         except Exception as e:
             print(f"failed at line {ln}:{repr(line)}", file=sys.stderr)
             raise e

