@@ -86,4 +86,5 @@ flags:
 - rom           - 150
 - serv3 mem     - 150
 - serv3 exploit - 187
-total score so far: 987
+- server2       - 100
+total score so far: 1087

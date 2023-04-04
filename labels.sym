@@ -119,3 +119,8 @@ protected:01AC:.ConvertHex_ret
 protected:01AD:.ConvertHex_retFFFF
 protected:01AE:.table_23_char_hex_decode
 protected:01C5:.table_23_byte_hex_decode2
+serv2:F37E:Breakpoint
+serv2:F69C:.str_welcome_header
+serv2:F015:PromptUsername
+serv2:F22D:.str_username_prompt
+serv2:F1DB

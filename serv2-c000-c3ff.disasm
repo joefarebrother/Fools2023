@@ -1,0 +1,779 @@
+C000 | 51       | ld R0 [R1]
+C001 | E2 23 10 | add R2 $1023
+C004 | 07       | [wait! that's illegal!]
+C005 | 72       | ld [R0] R2
+C006 | E4       | [wait! that's illegal!]
+C007 | 06 A2    | int $A2                      ; (unknown)
+C009 | 1B       | [wait! that's illegal!]
+C00A | 5B       | ld R2 [R3]
+C00B | EF       | [wait! that's illegal!]
+C00C | 17       | [wait! that's illegal!]
+C00D | 0B       | 
+C00E | 92       | push R2
+C00F | FB       | [wait! that's illegal!]
+C010 | D3       | 
+C011 | 94       | pop R0
+C012 | 80       | cmp R0 R0
+C013 | 9F BD 1E | call gt $1EBD
+C016 | 76       | ld [R1] R2
+C017 | 2D       | ld R3 R1
+C018 | 6F       | ldb [R3] R3
+C019 | 6E       | ldb [R3] R2
+C01A | 3A       | add R2 R2
+C01B | 3E       | add R3 R2
+C01C | A9       | inc R1
+C01D | 8D       | cmp R3 R1
+C01E | 77       | ld [R1] R3
+C01F | 55       | ld R1 [R1]
+C020 | F1       | [wait! that's illegal!]
+C021 | A3 F0 B0 | cmp R1 $B0F0
+C024 | 31       | add R0 R1
+C025 | 53       | ld R0 [R3]
+C026 | CE CB 8F | or R0 $8FCB
+C029 | 44       | ldb R1 [R0]
+C02A | 19       | [wait! that's illegal!]
+C02B | D5       | 
+C02C | 79       | ld [R2] R1
+C02D | 75       | ld [R1] R1
+C02E | F9       | [wait! that's illegal!]
+C02F | A8       | inc R0
+C030 | 7A       | ld [R2] R2
+C031 | 97       | pop R3
+C032 | 11 E9 00 | ld R1 $E9
+C035 | BA F4 65 | ldb [$65F4] R2
+C038 | 35       | add R1 R1
+C039 | 7D       | ld [R3] R1
+C03A | 70       | ld [R0] R0
+C03B | 83       | cmp R0 R3
+C03C | C8       | jp R3
+C03D | 98 0F B4 | jp $B40F
+C040 | 45       | ldb R1 [R1]
+C041 | 0A       | ld R0 sp
+C042 | 16       | [wait! that's illegal!]
+C043 | E6       | [wait! that's illegal!]
+C044 | 99 A0 7B | call $7BA0
+C047 | A4 57 9B | cmp R2 $9B57
+C04A | F3       | [wait! that's illegal!]
+C04B | 54       | ld R1 [R0]
+C04C | 73       | ld [R0] R3
+C04D | 87       | cmp R1 R3
+C04E | 27       | ld R1 R3
+C04F | 2C       | ld R3 R0
+C050 | 5C       | ld R3 [R0]
+C051 | 7F       | ld [R3] R3
+C052 | 68       | ldb [R2] R0
+C053 | 3C       | add R3 R0
+C054 | B1 18 D9 | ldb R1 [$D918]
+C057 | 37       | add R1 R3
+C058 | 90       | push R0
+.lab_0_C059:
+C059 | 62       | ldb [R0] R2
+C05A | 74       | ld [R1] R0
+C05B | 1A       | [wait! that's illegal!]
+C05C | 82       | cmp R0 R2
+C05D | D2       | 
+C05E | C4       | [wait! that's illegal!]
+C05F | BC 78 40 | ld [$4078] R0
+C062 | 9E B2 B7 | call lt $B7B2
+C065 | 46       | ldb R1 [R2]
+C066 | E8       | [wait! that's illegal!]
+C067 | 25       | ld R1 R1
+C068 | 86       | cmp R1 R2
+C069 | 02       | mul R0 R1
+C06A | A5 DD 58 | cmp R3 $58DD
+C06D | 64       | ldb [R1] R0
+C06E | C2       | [wait! that's illegal!]
+C06F | C5       | jp R0
+C070 | CF 4B CD | xor R0 $CD4B
+C073 | 61       | ldb [R0] R1
+C074 | 20       | ld R0 R0
+C075 | 3B       | add R2 R3
+C076 | 84       | cmp R1 R0
+C077 | 5F       | ld R3 [R3]
+C078 | 49       | ldb R2 [R1]
+C079 | 4D       | ldb R3 [R1]
+C07A | B3 DB E3 | ldb R3 [$E3DB]
+C07D | EB       | [wait! that's illegal!]
+C07E | 59       | ld R2 [R1]
+C07F | 39       | add R2 R1
+C080 | 9A 69 B6 | jp lt $B669
+C083 | 60       | ldb [R0] R0
+C084 | 8B       | cmp R2 R3
+C085 | EE       | [wait! that's illegal!]
+C086 | 03 FC    | div R0 $FC
+C088 | 8A       | cmp R2 R2
+C089 | DF       | 
+C08A | FA       | [wait! that's illegal!]
+C08B | 26       | ld R1 R2
+C08C | AC       | dec R0
+C08D | FE       | [wait! that's illegal!]
+C08E | 95       | pop R1
+C08F | 14       | [wait! that's illegal!]
+C090 | 4F       | ldb R3 [R3]
+C091 | A6       | push sp
+C092 | 30       | add R0 R0
+C093 | 42       | ldb R0 [R2]
+C094 | 32       | add R0 R2
+C095 | 81       | cmp R0 R1
+C096 | 2B       | ld R2 R3
+C097 | EC       | [wait! that's illegal!]
+C098 | 2F       | ld R3 R3
+C099 | 6B       | ldb [R2] R3
+C09A | 52       | ld R0 [R2]
+C09B | 41       | ldb R0 [R1]
+C09C | 04       | div R0 R1
+C09D | F5       | [wait! that's illegal!]
+C09E | E5       | [wait! that's illegal!]
+C09F | 5E       | ld R3 [R2]
+C0A0 | D6       | 
+C0A1 | 4E       | ldb R3 [R2]
+C0A2 | E0 1C B8 | add R0 $B81C
+C0A5 | 24       | ld R1 R0
+C0A6 | 13 F7 2E | ld R3 $2EF7
+C0A9 | 1D       | [wait! that's illegal!]
+C0AA | 33       | add R0 R3
+C0AB | 67       | ldb [R1] R3
+C0AC | 43       | ldb R0 [R3]
+C0AD | BB B9 05 | ldb [$5B9] R3
+C0B0 | 6D       | ldb [R3] R1
+C0B1 | AA       | inc R2
+C0B2 | D8       | xor R0 R0
+C0B3 | 3F       | add R3 R3
+C0B4 | F6       | [wait! that's illegal!]
+C0B5 | 36       | add R1 R2
+C0B6 | D7       | 
+C0B7 | 4C       | ldb R3 [R0]
+C0B8 | 89       | cmp R2 R1
+C0B9 | D4       | 
+C0BA | 29       | ld R2 R1
+C0BB | BE 28 6A | ld [$6A28] R2
+C0BE | F8       | [wait! that's illegal!]
+C0BF | 0D       | 
+C0C0 | D1       | 
+C0C1 | DE       | 
+C0C2 | D0       | 
+C0C3 | 88       | cmp R2 R0
+C0C4 | 0E       | shl R0
+C0C5 | AF       | dec R3
+C0C6 | 91       | push R1
+C0C7 | C7       | jp R2
+C0C8 | 66       | ldb [R1] R2
+C0C9 | CC       | call R3
+C0CA | 4A       | ldb R2 [R2]
+C0CB | ED       | [wait! that's illegal!]
+C0CC | 9C 56 21 | jp eq $2156
+C0CF | 01 3D C0 | mul R0 $C03D
+C0D2 | BF 5D C1 | ld [$C15D] R3
+C0D5 | C3       | [wait! that's illegal!]
+C0D6 | 6C       | ldb [R3] R0
+C0D7 | 8E       | cmp R3 R2
+C0D8 | 47       | ldb R1 [R3]
+C0D9 | 71       | ld [R0] R1
+C0DA | 63       | ldb [R0] R3
+C0DB | A7       | push pc
+C0DC | 5A       | ld R2 [R2]
+C0DD | 85       | cmp R1 R1
+C0DE | FF       | [wait! that's illegal!]
+C0DF | 15       | [wait! that's illegal!]
+C0E0 | 12 B5 C6 | ld R2 $C6B5
+C0E3 | FD       | [wait! that's illegal!]
+C0E4 | 34       | add R1 R0
+C0E5 | 0C       | 
+C0E6 | AB       | inc R3
+C0E7 | F2       | [wait! that's illegal!]
+C0E8 | E1 08 2A | add R1 $2A08
+C0EB | A1 CA 48 | call ne $48CA
+C0EE | 7C       | ld [R3] R0
+C0EF | 50       | ld R0 [R0]
+C0F0 | 09 7E DA | ld sp $DA7E
+C0F3 | C9       | call R0
+C0F4 | 93       | push R3
+C0F5 | EA       | [wait! that's illegal!]
+C0F6 | 22       | ld R0 R2
+C0F7 | AD       | dec R1
+C0F8 | 8C       | cmp R3 R0
+C0F9 | 38       | add R2 R0
+C0FA | AE       | dec R2
+C0FB | DC       | swap R0
+C0FC | 96       | pop R2
+C0FD | E7       | [wait! that's illegal!]
+C0FE | 1F       | [wait! that's illegal!]
+C0FF | 9D E4 79 | jp ne $79E4
+C102 | 3B       | add R2 R3
+C103 | 96       | pop R2
+C104 | F4       | [wait! that's illegal!]
+C105 | 43       | ldb R0 [R3]
+C106 | 2F       | ld R3 R3
+C107 | 58       | ld R2 [R0]
+C108 | A5 70 00 | cmp R3 $70
+C10B | 8D       | cmp R3 R1
+C10C | 94       | pop R0
+C10D | 21       | ld R0 R1
+C10E | 34       | add R1 R0
+C10F | 18       | [wait! that's illegal!]
+C110 | 98 DE FC | jp $FCDE
+C113 | 39       | add R2 R1
+C114 | A9       | inc R1
+C115 | 25       | ld R1 R1
+C116 | D7       | 
+C117 | 74       | ld [R1] R0
+C118 | 32       | add R0 R2
+C119 | D9       | xor R0 R1
+C11A | EF       | [wait! that's illegal!]
+C11B | A1 B0 FD | call ne $FDB0
+C11E | 7E       | ld [R3] R2
+C11F | 69       | ldb [R2] R1
+C120 | C8       | jp R3
+C121 | E6       | [wait! that's illegal!]
+C122 | 4F       | ldb R3 [R3]
+C123 | 9F CF 67 | call gt $67CF
+C126 | A2 E9 22 | cmp R0 $22E9
+C129 | 61       | ldb [R0] R1
+C12A | 48       | ldb R2 [R0]
+C12B | AF       | dec R3
+C12C | 12 62 8C | ld R2 $8C62
+C12F | F0       | [wait! that's illegal!]
+C130 | BD 82 6C | ld [$6C82] R1
+C133 | B8 E2 D0 | ldb [$D0E2] R0
+C136 | 6B       | ldb [R2] R3
+C137 | 7C       | ld [R3] R0
+C138 | 93       | push R3
+C139 | 56       | ld R1 [R2]
+C13A | 87       | cmp R1 R3
+C13B | 54       | ld R1 [R0]
+C13C | 5B       | ld R2 [R3]
+C13D | 8B       | cmp R2 R3
+C13E | 09 85 10 | ld sp $1085
+C141 | B7 DC 72 | ld R3 [$72DC]
+C144 | B1 AA 37 | ldb R1 [$37AA]
+C147 | 2A       | ld R2 R2
+C148 | 1E       | [wait! that's illegal!]
+C149 | EE       | [wait! that's illegal!]
+C14A | 1C       | [wait! that's illegal!]
+C14B | 08       | 
+C14C | 04       | div R0 R1
+C14D | CB       | call R2
+C14E | 75       | ld [R1] R1
+C14F | 80       | cmp R0 R0
+C150 | 17       | [wait! that's illegal!]
+C151 | 19       | [wait! that's illegal!]
+C152 | C0       | [wait! that's illegal!]
+C153 | 7B       | ld [R2] R3
+C154 | 81       | cmp R0 R1
+C155 | A0 30 ED | call eq $ED30
+C158 | 45       | ldb R1 [R1]
+C159 | D8       | xor R0 R0
+C15A | 13 68 99 | ld R3 $9968
+C15D | 4D       | ldb R3 [R1]
+C15E | 71       | ld [R0] R1
+C15F | F5       | [wait! that's illegal!]
+C160 | B2 D6 2C | ldb R2 [$2CD6]
+C163 | 0F       | shr R0
+C164 | 02       | mul R0 R1
+C165 | 5A       | ld R2 [R2]
+C166 | A4 EB F2 | cmp R2 $F2EB
+C169 | 57       | ld R1 [R3]
+C16A | E0 38 49 | add R0 $4938
+C16D | EC       | [wait! that's illegal!]
+C16E | 95       | pop R1
+C16F | 9C 2D 07 | jp eq $72D
+C172 | 23       | ld R0 R3
+C173 | 5C       | ld R3 [R0]
+C174 | 1D       | [wait! that's illegal!]
+C175 | FE       | [wait! that's illegal!]
+C176 | 44       | ldb R1 [R0]
+C177 | C7       | jp R2
+C178 | 9E 16 97 | call lt $9716
+C17B | 9D A6 B9 | jp ne $B9A6
+C17E | D4       | 
+C17F | 27       | ld R1 R3
+C180 | 3A       | add R2 R2
+C181 | 28       | ld R2 R0
+C182 | 4C       | ldb R3 [R0]
+C183 | A8       | inc R0
+C184 | D3       | 
+C185 | F7       | [wait! that's illegal!]
+C186 | 3D       | add R3 R1
+C187 | AD       | dec R1
+C188 | F6       | [wait! that's illegal!]
+C189 | 63       | ldb [R0] R3
+C18A | 9B C6 AE | jp gt $AEC6
+C18D | 06 E7    | int $E7                      ; (unknown)
+C18F | C4       | [wait! that's illegal!]
+C190 | 65       | ldb [R1] R1
+C191 | 40       | ldb R0 [R0]
+C192 | A7       | push pc
+C193 | 6E       | ldb [R3] R2
+C194 | FB       | [wait! that's illegal!]
+C195 | 0C       | 
+C196 | 92       | push R2
+C197 | 47       | ldb R1 [R3]
+C198 | 3C       | add R3 R0
+C199 | 0E       | shl R0
+C19A | 66       | ldb [R1] R2
+C19B | 78       | ld [R2] R0
+C19C | DF       | 
+C19D | 60       | ldb [R0] R0
+C19E | 4B       | ldb R2 [R3]
+C19F | E8       | [wait! that's illegal!]
+C1A0 | 53       | ld R0 [R3]
+C1A1 | 52       | ld R0 [R2]
+C1A2 | FA       | [wait! that's illegal!]
+C1A3 | 1A       | [wait! that's illegal!]
+C1A4 | 73       | ld [R0] R3
+C1A5 | D5       | 
+C1A6 | 2B       | ld R2 R3
+C1A7 | F8       | [wait! that's illegal!]
+C1A8 | 14       | [wait! that's illegal!]
+C1A9 | DB       | xor R0 R3
+C1AA | 88       | cmp R2 R0
+C1AB | D2       | 
+C1AC | 15       | [wait! that's illegal!]
+C1AD | 03 26    | div R0 $26
+C1AF | C5       | jp R0
+C1B0 | 4A       | ldb R2 [R2]
+C1B1 | 86       | cmp R1 R2
+C1B2 | 91       | push R1
+C1B3 | 83       | cmp R0 R3
+C1B4 | 3F       | add R3 R3
+C1B5 | 89       | cmp R2 R1
+C1B6 | 9A EA CA | jp lt $CAEA
+C1B9 | AC       | dec R0
+C1BA | 6A       | ldb [R2] R2
+C1BB | A3 DD 29 | cmp R1 $29DD
+C1BE | 3E       | add R3 R2
+C1BF | CC       | call R3
+C1C0 | 59       | ld R2 [R1]
+C1C1 | 77       | ld [R1] R3
+C1C2 | 50       | ld R0 [R0]
+C1C3 | 33       | add R0 R3
+C1C4 | AB       | inc R3
+C1C5 | 20       | ld R0 R0
+C1C6 | F3       | [wait! that's illegal!]
+C1C7 | 2E       | ld R3 R2
+C1C8 | 51       | ld R0 [R1]
+C1C9 | B3 BC 11 | ldb R3 [$11BC]
+C1CC | F1       | [wait! that's illegal!]
+C1CD | 5E       | ld R3 [R2]
+C1CE | 4E       | ldb R3 [R2]
+C1CF | 8F       | cmp R3 R3
+C1D0 | 84       | cmp R1 R0
+C1D1 | 0D       | 
+C1D2 | 8E       | cmp R3 R2
+C1D3 | 6F       | ldb [R3] R3
+C1D4 | BB 36 CE | ldb [$CE36] R3
+C1D7 | 6D       | ldb [R3] R1
+C1D8 | BF 46 42 | ld [$4246] R3
+C1DB | 1B       | [wait! that's illegal!]
+C1DC | 01 E3 C1 | mul R0 $C1E3
+C1DF | C3       | [wait! that's illegal!]
+C1E0 | 31       | add R0 R1
+C1E1 | 7D       | ld [R3] R1
+C1E2 | 24       | ld R1 R0
+C1E3 | 05       | ret
+C1E4 | 5F       | ld R3 [R3]
+C1E5 | 1F       | [wait! that's illegal!]
+C1E6 | 0A       | ld R0 sp
+C1E7 | 64       | ldb [R1] R0
+C1E8 | BE FF 5D | ld [$5DFF] R2
+C1EB | C9       | call R0
+C1EC | BA C2 B5 | ldb [$B5C2] R2
+C1EF | F9       | [wait! that's illegal!]
+C1F0 | B6 8A 55 | ld R2 [$558A]
+C1F3 | CD 41 7A | and R0 $7A41
+C1F6 | 35       | add R1 R1
+C1F7 | DA       | xor R0 R2
+C1F8 | 76       | ld [R1] R2
+C1F9 | D1       | 
+C1FA | 7F       | ld [R3] R3
+C1FB | E5       | [wait! that's illegal!]
+C1FC | E1 0B B4 | add R1 $B40B
+C1FF | 90       | push R0
+C200 | 2B       | ld R2 R3
+C201 | ED       | [wait! that's illegal!]
+C202 | 1B       | [wait! that's illegal!]
+C203 | 3A       | add R2 R2
+C204 | B8 3D 84 | ldb [$843D] R0
+C207 | 4E       | ldb R3 [R2]
+C208 | 9B 6E 60 | jp gt $606E
+C20B | B9 BC B6 | ldb [$B6BC] R1
+C20E | FE       | [wait! that's illegal!]
+C20F | 7C       | ld [R3] R0
+C210 | 0F       | shr R0
+C211 | B7 70 39 | ld R3 [$3970]
+C214 | 9C 57 CF | jp eq $CF57
+C217 | 2C       | ld R3 R0
+C218 | BB 28 A2 | ldb [$A228] R3
+C21B | 10 31 6B | ld R0 $6B31
+C21E | A6       | push sp
+C21F | 7F       | ld [R3] R3
+C220 | 81       | cmp R0 R1
+C221 | C1       | [wait! that's illegal!]
+C222 | A3 F8 85 | cmp R1 $85F8
+C225 | 26       | ld R1 R2
+C226 | 0A       | ld R0 sp
+C227 | D7       | 
+C228 | 46       | ldb R1 [R2]
+C229 | 1E       | [wait! that's illegal!]
+C22A | DA       | xor R0 R2
+C22B | 01 B5 DE | mul R0 $DEB5
+C22E | D6       | 
+C22F | 3E       | add R3 R2
+C230 | 3B       | add R2 R3
+C231 | A1 5D FC | call ne $FC5D
+C234 | 79       | ld [R2] R1
+C235 | A0 90 55 | call eq $5590
+C238 | F1       | [wait! that's illegal!]
+C239 | CC       | call R3
+C23A | AD       | dec R1
+C23B | 02       | mul R0 R1
+C23C | F6       | [wait! that's illegal!]
+C23D | 12 19 20 | ld R2 $2019
+C240 | CD 75 B2 | and R0 $B275
+C243 | F7       | [wait! that's illegal!]
+C244 | 4B       | ldb R2 [R3]
+C245 | 9D 2D F2 | jp ne $F22D
+C248 | 94       | pop R0
+C249 | C8       | jp R3
+C24A | E1 EC BD | add R1 $BDEC
+C24D | 73       | ld [R0] R3
+C24E | A4 D9 2A | cmp R2 $2AD9
+C251 | D8       | xor R0 R0
+C252 | 42       | ldb R0 [R2]
+C253 | 13 87 B3 | ld R3 $B387
+C256 | E4       | [wait! that's illegal!]
+C257 | E0 34 61 | add R0 $6134
+C25A | 29       | ld R2 R1
+C25B | 7B       | ld [R2] R3
+C25C | 88       | cmp R2 R0
+C25D | E9       | [wait! that's illegal!]
+C25E | 8A       | cmp R2 R2
+C25F | BF 74 F0 | ld [$F074] R3
+C262 | 1F       | [wait! that's illegal!]
+C263 | 18       | [wait! that's illegal!]
+C264 | 5C       | ld R3 [R0]
+C265 | 37       | add R1 R3
+C266 | 51       | ld R0 [R1]
+C267 | 80       | cmp R0 R0
+C268 | 7E       | ld [R3] R2
+C269 | 0D       | 
+C26A | 76       | ld [R1] R2
+C26B | AA       | inc R2
+C26C | 72       | ld [R0] R2
+.lab_1_C26D:
+C26D | AF       | dec R3
+C26E | FD       | [wait! that's illegal!]
+C26F | F4       | [wait! that's illegal!]
+C270 | DC       | swap R0
+C271 | 21       | ld R0 R1
+C272 | 14       | [wait! that's illegal!]
+C273 | EF       | [wait! that's illegal!]
+C274 | E8       | [wait! that's illegal!]
+C275 | A5 DF 95 | cmp R3 $95DF
+C278 | 25       | ld R1 R1
+C279 | F9       | [wait! that's illegal!]
+C27A | 09 49 47 | ld sp $4749
+C27D | 52       | ld R0 [R2]
+C27E | E5       | [wait! that's illegal!]
+C27F | A9       | inc R1
+C280 | 86       | cmp R1 R2
+C281 | A7       | push pc
+C282 | 8D       | cmp R3 R1
+C283 | 63       | ldb [R0] R3
+C284 | C6       | jp R1
+C285 | 4D       | ldb R3 [R1]
+C286 | EB       | [wait! that's illegal!]
+C287 | 66       | ldb [R1] R2
+C288 | 3F       | add R3 R3
+C289 | 82       | cmp R0 R2
+C28A | 6C       | ldb [R3] R0
+C28B | C9       | call R0
+C28C | D5       | 
+C28D | 43       | ldb R0 [R3]
+C28E | 58       | ld R2 [R0]
+C28F | E6       | [wait! that's illegal!]
+C290 | 33       | add R0 R3
+C291 | 77       | ld [R1] R3
+C292 | 0E       | shl R0
+C293 | EE       | [wait! that's illegal!]
+C294 | 53       | ld R0 [R3]
+C295 | 3C       | add R3 R0
+C296 | 9E BE 4C | call lt $4CBE
+C299 | FA       | [wait! that's illegal!]
+C29A | 6A       | ldb [R2] R2
+C29B | 65       | ldb [R1] R1
+C29C | 71       | ld [R0] R1
+C29D | 5A       | ld R2 [R2]
+C29E | 67       | ldb [R1] R3
+C29F | 1D       | [wait! that's illegal!]
+C2A0 | 98 16 1C | jp $1C16
+C2A3 | 4F       | ldb R3 [R3]
+C2A4 | 8F       | cmp R3 R3
+C2A5 | 6F       | ldb [R3] R3
+C2A6 | 2F       | ld R3 R3
+C2A7 | 11 9A 44 | ld R1 $449A
+C2AA | C4       | [wait! that's illegal!]
+C2AB | AC       | dec R0
+C2AC | 08       | 
+C2AD | 41       | ldb R0 [R1]
+C2AE | 24       | ld R1 R0
+C2AF | EA       | [wait! that's illegal!]
+C2B0 | CA       | call R1
+C2B1 | D0       | 
+C2B2 | 9F 59 C0 | call gt .lab_0_C059          ; ($C059)
+C2B5 | 68       | ldb [R2] R0
+C2B6 | 96       | pop R2
+C2B7 | 15       | [wait! that's illegal!]
+C2B8 | 05       | ret
+C2B9 | 91       | push R1
+C2BA | E3 AB 38 | add R3 $38AB
+C2BD | 78       | ld [R2] R0
+C2BE | 17       | [wait! that's illegal!]
+C2BF | 7A       | ld [R2] R2
+C2C0 | 92       | push R2
+C2C1 | 2E       | ld R3 R2
+C2C2 | 5E       | ld R3 [R2]
+C2C3 | A8       | inc R0
+C2C4 | D4       | 
+C2C5 | D3       | 
+C2C6 | C5       | jp R0
+C2C7 | 7D       | ld [R3] R1
+C2C8 | 89       | cmp R2 R1
+C2C9 | 48       | ldb R2 [R0]
+C2CA | 40       | ldb R0 [R0]
+C2CB | FB       | [wait! that's illegal!]
+C2CC | 45       | ldb R1 [R1]
+C2CD | 8B       | cmp R2 R3
+C2CE | F3       | [wait! that's illegal!]
+C2CF | 03 97    | div R0 $97
+C2D1 | C7       | jp R2
+C2D2 | 62       | ldb [R0] R2
+C2D3 | 8C       | cmp R3 R0
+C2D4 | 56       | ld R1 [R2]
+C2D5 | 69       | ldb [R2] R1
+C2D6 | DB       | xor R0 R3
+C2D7 | B1 B0 CB | ldb R1 [$CBB0]
+C2DA | 8E       | cmp R3 R2
+C2DB | C3       | [wait! that's illegal!]
+C2DC | 6D       | ldb [R3] R1
+C2DD | 83       | cmp R0 R3
+C2DE | 23       | ld R0 R3
+C2DF | 35       | add R1 R1
+C2E0 | 54       | ld R1 [R0]
+C2E1 | 4A       | ldb R2 [R2]
+C2E2 | CE E2 C2 | or R0 $C2E2
+C2E5 | D2       | 
+C2E6 | 1A       | [wait! that's illegal!]
+C2E7 | 0C       | 
+C2E8 | E7       | [wait! that's illegal!]
+C2E9 | F5       | [wait! that's illegal!]
+C2EA | 5F       | ld R3 [R3]
+C2EB | 0B       | 
+C2EC | 36       | add R1 R2
+C2ED | FF       | [wait! that's illegal!]
+C2EE | 50       | ld R0 [R0]
+C2EF | 00       | BRK
+C2F0 | 5B       | ld R2 [R3]
+C2F1 | 32       | add R0 R2
+C2F2 | 04       | div R0 R1
+C2F3 | 07       | [wait! that's illegal!]
+C2F4 | AE       | dec R2
+C2F5 | B4 93 BA | ld R0 [$BA93]
+C2F8 | DD       | 
+C2F9 | 99 22 30 | call $3022
+C2FC | 06 27    | int $27                      ; (unknown)
+C2FE | 64       | ldb [R1] R0
+C2FF | D1       | 
+C300 | 63       | ldb [R0] R3
+C301 | 27       | ld R1 R3
+C302 | 11 4F 1F | ld R1 $1F4F
+C305 | 8F       | cmp R3 R3
+C306 | 7E       | ld [R3] R2
+C307 | B2 5A 94 | ldb R2 [$945A]
+C30A | 6E       | ldb [R3] R2
+C30B | 26       | ld R1 R2
+C30C | C3       | [wait! that's illegal!]
+C30D | 9D 43 6F | jp ne $6F43
+C310 | C1       | [wait! that's illegal!]
+C311 | 56       | ld R1 [R2]
+C312 | 58       | ld R2 [R0]
+C313 | DB       | xor R0 R3
+C314 | 8E       | cmp R3 R2
+C315 | 1D       | [wait! that's illegal!]
+C316 | FE       | [wait! that's illegal!]
+C317 | A3 71 BD | cmp R1 $BD71
+C31A | 24       | ld R1 R0
+C31B | CB       | call R2
+C31C | 0D       | 
+C31D | BA 96 42 | ldb [$4296] R2
+C320 | F6       | [wait! that's illegal!]
+C321 | 51       | ld R0 [R1]
+C322 | 5E       | ld R3 [R2]
+C323 | 9C 7B 68 | jp eq $687B
+C326 | A7       | push pc
+C327 | 14       | [wait! that's illegal!]
+C328 | 1B       | [wait! that's illegal!]
+C329 | CA       | call R1
+C32A | FC       | [wait! that's illegal!]
+C32B | CF C7 93 | xor R0 $93C7
+C32E | D2       | 
+C32F | B0 EC 5F | ldb R0 [$5FEC]
+C332 | 33       | add R0 R3
+C333 | 30       | add R0 R0
+C334 | 25       | ld R1 R1
+C335 | EF       | [wait! that's illegal!]
+C336 | A6       | push sp
+C337 | CD 87 BE | and R0 $BE87
+C33A | 28       | ld R2 R0
+C33B | 10 AA 00 | ld R0 $AA
+C33E | 5B       | ld R2 [R3]
+C33F | F8       | [wait! that's illegal!]
+C340 | 59       | ld R2 [R1]
+C341 | 12 CC 20 | ld R2 $20CC
+C344 | E7       | [wait! that's illegal!]
+C345 | 3B       | add R2 R3
+C346 | F9       | [wait! that's illegal!]
+C347 | 1A       | [wait! that's illegal!]
+C348 | 6B       | ldb [R2] R3
+C349 | 39       | add R2 R1
+C34A | 13 90 08 | ld R3 $890
+C34D | A8       | inc R0
+C34E | 02       | mul R0 R1
+C34F | BF B8 7A | ld [$7AB8] R3
+C352 | 0E       | shl R0
+C353 | 9E 6D C2 | call lt .lab_1_C26D          ; ($C26D)
+C356 | 69       | ldb [R2] R1
+C357 | 75       | ld [R1] R1
+C358 | D9       | xor R0 R1
+C359 | 64       | ldb [R1] R0
+C35A | 8A       | cmp R2 R2
+C35B | 47       | ldb R1 [R3]
+C35C | 86       | cmp R1 R2
+C35D | 4B       | ldb R2 [R3]
+C35E | F0       | [wait! that's illegal!]
+C35F | DA       | xor R0 R2
+C360 | B7 DD FF | ld R3 [$FFDD]
+C363 | EE       | [wait! that's illegal!]
+C364 | F1       | [wait! that's illegal!]
+C365 | 35       | add R1 R1
+C366 | 81       | cmp R0 R1
+C367 | 09 D0 4C | ld sp $4CD0
+C36A | 34       | add R1 R0
+C36B | E1 BC 82 | add R1 $82BC
+C36E | FD       | [wait! that's illegal!]
+C36F | F4       | [wait! that's illegal!]
+C370 | 73       | ld [R0] R3
+C371 | 3C       | add R3 R0
+C372 | C4       | [wait! that's illegal!]
+C373 | B5 AF 07 | ld R1 [$7AF]
+C376 | 31       | add R0 R1
+C377 | 8B       | cmp R2 R3
+C378 | E5       | [wait! that's illegal!]
+C379 | B6 17 3D | ld R2 [$3D17]
+C37C | F3       | [wait! that's illegal!]
+C37D | D6       | 
+C37E | 57       | ld R1 [R3]
+C37F | 5C       | ld R3 [R0]
+C380 | 3F       | add R3 R3
+C381 | 3A       | add R2 R2
+C382 | 46       | ldb R1 [R2]
+C383 | 2D       | ld R3 R1
+C384 | 18       | [wait! that's illegal!]
+C385 | 49       | ldb R2 [R1]
+C386 | 70       | ld [R0] R0
+C387 | 48       | ldb R2 [R0]
+C388 | 8C       | cmp R3 R0
+C389 | 44       | ldb R1 [R0]
+C38A | 41       | ldb R0 [R1]
+C38B | F5       | [wait! that's illegal!]
+C38C | 7D       | ld [R3] R1
+C38D | FB       | [wait! that's illegal!]
+C38E | A0 3E 9B | call eq $9B3E
+C391 | C9       | call R0
+C392 | C5       | jp R0
+C393 | 05       | ret
+C394 | 0A       | ld R0 sp
+C395 | 67       | ldb [R1] R3
+C396 | 53       | ld R0 [R3]
+C397 | 74       | ld [R1] R0
+C398 | 1C       | [wait! that's illegal!]
+C399 | 15       | [wait! that's illegal!]
+C39A | F7       | [wait! that's illegal!]
+C39B | 83       | cmp R0 R3
+C39C | A1 AE 8D | call ne $8DAE
+C39F | 91       | push R1
+C3A0 | EA       | [wait! that's illegal!]
+C3A1 | 85       | cmp R1 R1
+C3A2 | 9A 16 29 | jp lt $2916
+C3A5 | 23       | ld R0 R3
+C3A6 | E3 E2 A5 | add R3 $A5E2
+C3A9 | CE 38 88 | or R0 $8838
+C3AC | E4       | [wait! that's illegal!]
+C3AD | 99 95 B3 | call $B395
+C3B0 | 72       | ld [R0] R2
+C3B1 | 2A       | ld R2 R2
+C3B2 | 19       | [wait! that's illegal!]
+C3B3 | 4E       | ldb R3 [R2]
+C3B4 | 80       | cmp R0 R0
+C3B5 | AB       | inc R3
+C3B6 | 5D       | ld R3 [R1]
+C3B7 | F2       | [wait! that's illegal!]
+C3B8 | 84       | cmp R1 R0
+C3B9 | 92       | push R2
+C3BA | 6C       | ldb [R3] R0
+C3BB | 32       | add R0 R2
+C3BC | ED       | [wait! that's illegal!]
+C3BD | E6       | [wait! that's illegal!]
+C3BE | DE       | 
+C3BF | 7F       | ld [R3] R3
+C3C0 | C6       | jp R1
+C3C1 | E0 C8 65 | add R0 $65C8
+C3C4 | 7C       | ld [R3] R0
+C3C5 | BB E9 B4 | ldb [$B4E9] R3
+C3C8 | EB       | [wait! that's illegal!]
+C3C9 | 61       | ldb [R0] R1
+C3CA | E8       | [wait! that's illegal!]
+C3CB | 79       | ld [R2] R1
+C3CC | 76       | ld [R1] R2
+C3CD | 62       | ldb [R0] R2
+C3CE | 50       | ld R0 [R0]
+C3CF | B9 77 2C | ldb [$2C77] R1
+C3D2 | 78       | ld [R2] R0
+C3D3 | 40       | ldb R0 [R0]
+C3D4 | 21       | ld R0 R1
+C3D5 | 2E       | ld R3 R2
+C3D6 | AC       | dec R0
+C3D7 | 06 D4    | int $D4                      ; (unknown)
+C3D9 | 4D       | ldb R3 [R1]
+C3DA | 22       | ld R0 R2
+C3DB | D5       | 
+C3DC | DC       | swap R0
+C3DD | DF       | 
+C3DE | 89       | cmp R2 R1
+C3DF | 52       | ld R0 [R2]
+C3E0 | C0       | [wait! that's illegal!]
+C3E1 | 66       | ldb [R1] R2
+C3E2 | 36       | add R1 R2
+C3E3 | 45       | ldb R1 [R1]
+C3E4 | D3       | 
+C3E5 | 2F       | ld R3 R3
+C3E6 | A2 60 D8 | cmp R0 $D860
+C3E9 | AD       | dec R1
+C3EA | 37       | add R1 R3
+C3EB | 97       | pop R3
+C3EC | 0C       | 
+C3ED | A4 0F 9F | cmp R2 $9F0F
+C3F0 | B1 04 2B | ldb R1 [$2B04]
+C3F3 | 03 D1    | div R0 $D1
+C3F5 | 01 A9 FA | mul R0 $FAA9
+C3F8 | 1E       | [wait! that's illegal!]
+C3F9 | D7       | 
+C3FA | 4A       | ldb R2 [R2]
+C3FB | 54       | ld R1 [R0]
+C3FC | 55       | ld R1 [R1]
+C3FD | 0B       | 
+C3FE | 6A       | ldb [R2] R2
+C3FF | 98 00 00 | jp $00
+C402 | 00       | BRK
+C403 | 00       | BRK
+C404 | 00       | BRK

@@ -1,0 +1,876 @@
+F000 | 09 00 FF | ld sp $FF00
+F003 | 10 F0 FF | ld R0 $FFF0
+F006 | 11 98 00 | ld R1 $98
+F009 | 61       | ldb [R0] R1
+F00A | A8       | inc R0
+F00B | 11 7E F3 | ld R1 Breakpoint             ; ($F37E)
+F00E | 71       | ld [R0] R1
+F00F | 12 9C F6 | ld R2 .str_1_F69C_nWelcome   ; ($F69C)
+F012 | 99 08 00 | call PrintStr                ; ($08)
+PromptUsername:
+F015 | 12 2D F2 | ld R2 .str_2_F22D_Username   ; ($F22D)
+F018 | 99 08 00 | call PrintStr                ; ($08)
+F01B | 13 10 00 | ld R3 $10
+F01E | 12 DB F1 | ld R2 $F1DB
+F021 | 99 30 00 | call ReadStr                 ; ($30)
+F024 | 12 1E F1 | ld R2 $F11E
+.lab_2_F027:
+F027 | 42       | ldb R0 [R2]
+F028 | A2 00 00 | cmp R0 $00
+F02B | 9C AC F0 | jp eq .lab_0_F0AC            ; ($F0AC)
+F02E | 13 DB F1 | ld R3 $F1DB
+F031 | 92       | push R2
+F032 | 99 10 00 | call StrCmp                  ; ($10)
+F035 | 96       | pop R2
+F036 | A2 00 00 | cmp R0 $00
+F039 | 9C 42 F0 | jp eq .lab_1_F042            ; ($F042)
+F03C | E2 50 00 | add R2 $50
+F03F | 98 27 F0 | jp .lab_2_F027               ; ($F027)
+.lab_1_F042:
+F042 | E2 10 00 | add R2 $10
+F045 | 92       | push R2
+F046 | 99 04 F1 | call .lab_3_F104             ; ($F104)
+F049 | 12 38 F2 | ld R2 .str_3_F238_Username   ; ($F238)
+F04C | 99 08 00 | call PrintStr                ; ($08)
+F04F | 13 30 00 | ld R3 $30
+F052 | 12 EC F1 | ld R2 $F1EC
+F055 | 99 30 00 | call ReadStr                 ; ($30)
+F058 | 99 04 F1 | call .lab_3_F104             ; ($F104)
+F05B | 10 01 00 | ld R0 $01
+F05E | 11 00 C0 | ld R1 $C000
+F061 | 06 04    | int $04                      ; (load_blk)
+F063 | 96       | pop R2
+F064 | 13 EC F1 | ld R3 $F1EC
+.lab_8_F067:
+F067 | 93       | push R3
+F068 | 11 00 C0 | ld R1 $C000
+F06B | 43       | ldb R0 [R3]
+F06C | 34       | add R1 R0
+F06D | 13 00 00 | ld R3 $00
+F070 | 41       | ldb R0 [R1]
+F071 | 3C       | add R3 R0
+F072 | E1 00 01 | add R1 $100
+F075 | 41       | ldb R0 [R1]
+F076 | 3C       | add R3 R0
+F077 | E1 00 01 | add R1 $100
+F07A | 41       | ldb R0 [R1]
+F07B | 3C       | add R3 R0
+F07C | E1 00 01 | add R1 $100
+F07F | 41       | ldb R0 [R1]
+F080 | 3C       | add R3 R0
+F081 | 23       | ld R0 R3
+F082 | CD FF 00 | and R0 $FF
+F085 | 46       | ldb R1 [R2]
+F086 | 81       | cmp R0 R1
+F087 | 9D B8 F0 | jp ne .lab_5_F0B8            ; ($F0B8)
+F08A | 97       | pop R3
+F08B | 99 C1 F0 | call .lab_6_F0C1             ; ($F0C1)
+F08E | AA       | inc R2
+F08F | AB       | inc R3
+F090 | 42       | ldb R0 [R2]
+F091 | A2 00 00 | cmp R0 $00
+F094 | 9C 9A F0 | jp eq .lab_7_F09A            ; ($F09A)
+F097 | 98 67 F0 | jp .lab_8_F067               ; ($F067)
+.lab_7_F09A:
+F09A | 12 B3 F2 | ld R2 .str_4_F2B3_Login      ; ($F2B3)
+F09D | 99 08 00 | call PrintStr                ; ($08)
+F0A0 | 00       | BRK
+F0A1 | 12 6B F8 | ld R2 .str_5_F86B_Dry        ; ($F86B)
+F0A4 | 99 08 00 | call PrintStr                ; ($08)
+F0A7 | 06 03    | int $03                      ; (halt)
+.lab_9_F0A9:
+F0A9 | 98 A9 F0 | jp .lab_9_F0A9               ; ($F0A9)
+.lab_0_F0AC:
+F0AC | 99 04 F1 | call .lab_3_F104             ; ($F104)
+F0AF | 12 78 F2 | ld R2 .str_6_F278_User       ; ($F278)
+F0B2 | 99 08 00 | call PrintStr                ; ($08)
+F0B5 | 98 15 F0 | jp PromptUsername            ; ($F015)
+.lab_5_F0B8:
+F0B8 | 12 98 F2 | ld R2 .str_7_F298_Password   ; ($F298)
+F0BB | 99 08 00 | call PrintStr                ; ($08)
+F0BE | 98 15 F0 | jp PromptUsername            ; ($F015)
+.lab_6_F0C1:
+F0C1 | B0 00 C0 | ldb R0 [$C000]
+F0C4 | B8 00 F1 | ldb [$F100] R0
+F0C7 | B0 00 C1 | ldb R0 [$C100]
+F0CA | B8 01 F1 | ldb [$F101] R0
+F0CD | B0 00 C2 | ldb R0 [$C200]
+F0D0 | B8 02 F1 | ldb [$F102] R0
+F0D3 | B0 00 C3 | ldb R0 [$C300]
+F0D6 | B8 03 F1 | ldb [$F103] R0
+F0D9 | 11 00 C0 | ld R1 $C000
+.lab_13_F0DC:
+F0DC | A9       | inc R1
+F0DD | 41       | ldb R0 [R1]
+F0DE | AD       | dec R1
+F0DF | 64       | ldb [R1] R0
+F0E0 | A9       | inc R1
+F0E1 | A3 FF C3 | cmp R1 $C3FF
+F0E4 | 9D DC F0 | jp ne .lab_13_F0DC           ; ($F0DC)
+F0E7 | B0 00 F1 | ldb R0 [$F100]
+F0EA | B8 FF C0 | ldb [$C0FF] R0
+F0ED | B0 01 F1 | ldb R0 [$F101]
+F0F0 | B8 FF C1 | ldb [$C1FF] R0
+F0F3 | B0 02 F1 | ldb R0 [$F102]
+F0F6 | B8 FF C2 | ldb [$C2FF] R0
+F0F9 | B0 03 F1 | ldb R0 [$F103]
+F0FC | B8 FF C3 | ldb [$C3FF] R0
+F0FF | 05       | ret
+F100 | 9D 90 D1 | jp ne $D190
+F103 | 98 92 12 | jp $1292
+F106 | 65       | ldb [R1] R1
+F107 | F2       | [wait! that's illegal!]
+F108 | 99 08 00 | call PrintStr                ; ($08)
+F10B | 96       | pop R2
+F10C | 10 FF 3F | ld R0 $3FFF
+.lab_14_F10F:
+F10F | 08       | 
+F110 | 08       | 
+F111 | 08       | 
+F112 | 08       | 
+F113 | 08       | 
+F114 | 08       | 
+F115 | 08       | 
+F116 | AC       | dec R0
+F117 | A2 00 00 | cmp R0 $00
+F11A | 9D 0F F1 | jp ne .lab_14_F10F           ; ($F10F)
+F11D | 05       | ret
+F11E | 61       | ldb [R0] R1
+F11F | 78       | ld [R2] R0
+F120 | 2E       | ld R3 R2
+F121 | 61       | ldb [R0] R1
+F122 | 72       | ld [R0] R2
+F123 | 77       | ld [R1] R3
+F124 | 65       | ldb [R1] R1
+F125 | 6E       | ldb [R3] R2
+F126 | 00       | BRK
+F127 | 00       | BRK
+F128 | 00       | BRK
+F129 | 00       | BRK
+F12A | 00       | BRK
+F12B | 00       | BRK
+F12C | 00       | BRK
+F12D | 00       | BRK
+F12E | C6       | jp R1
+F12F | 44       | ldb R1 [R0]
+F130 | 99 E3 E9 | call $E9E3
+F133 | 19       | [wait! that's illegal!]
+F134 | 0D       | 
+F135 | 07       | [wait! that's illegal!]
+F136 | 0D       | 
+F137 | 12 79 00 | ld R2 $79
+F13A | 00       | BRK
+F13B | 00       | BRK
+F13C | 00       | BRK
+F13D | 00       | BRK
+F13E | 00       | BRK
+F13F | 00       | BRK
+F140 | 00       | BRK
+F141 | 00       | BRK
+F142 | 00       | BRK
+F143 | 00       | BRK
+F144 | 00       | BRK
+F145 | 00       | BRK
+F146 | 00       | BRK
+F147 | 00       | BRK
+F148 | 00       | BRK
+F149 | 00       | BRK
+F14A | 00       | BRK
+F14B | 00       | BRK
+F14C | 00       | BRK
+F14D | 00       | BRK
+F14E | 00       | BRK
+F14F | 00       | BRK
+F150 | 00       | BRK
+F151 | 00       | BRK
+F152 | 00       | BRK
+F153 | 00       | BRK
+F154 | 00       | BRK
+F155 | 00       | BRK
+F156 | 00       | BRK
+F157 | 00       | BRK
+F158 | 00       | BRK
+F159 | 00       | BRK
+F15A | 00       | BRK
+F15B | 00       | BRK
+F15C | 00       | BRK
+F15D | 00       | BRK
+F15E | 00       | BRK
+F15F | 00       | BRK
+F160 | 00       | BRK
+F161 | 00       | BRK
+F162 | 00       | BRK
+F163 | 00       | BRK
+F164 | 00       | BRK
+F165 | 00       | BRK
+F166 | 00       | BRK
+F167 | 00       | BRK
+F168 | 00       | BRK
+F169 | 00       | BRK
+F16A | 00       | BRK
+F16B | 00       | BRK
+F16C | 00       | BRK
+F16D | 00       | BRK
+F16E | 73       | ld [R0] R3
+F16F | 62       | ldb [R0] R2
+F170 | 77       | ld [R1] R3
+F171 | 2E       | ld R3 R2
+F172 | 73       | ld [R0] R3
+F173 | 68       | ldb [R2] R0
+F174 | 61       | ldb [R0] R1
+F175 | 64       | ldb [R1] R0
+F176 | 6F       | ldb [R3] R3
+F177 | 77       | ld [R1] R3
+F178 | 00       | BRK
+F179 | 00       | BRK
+F17A | 00       | BRK
+F17B | 00       | BRK
+F17C | 00       | BRK
+F17D | 00       | BRK
+F17E | E9       | [wait! that's illegal!]
+F17F | 22       | ld R0 R2
+F180 | D8       | xor R0 R0
+F181 | 7C       | ld [R3] R0
+F182 | 3C       | add R3 R0
+F183 | 07       | [wait! that's illegal!]
+F184 | 54       | ld R1 [R0]
+F185 | 2D       | ld R3 R1
+F186 | 5E       | ld R3 [R2]
+F187 | 53       | ld R0 [R3]
+F188 | 6A       | ldb [R2] R2
+F189 | FF       | [wait! that's illegal!]
+F18A | 80       | cmp R0 R0
+F18B | 5E       | ld R3 [R2]
+F18C | CD C8 CF | and R0 $CFC8
+F18F | FF       | [wait! that's illegal!]
+F190 | 44       | ldb R1 [R0]
+F191 | 74       | ld [R1] R0
+F192 | C8       | jp R3
+F193 | D8       | xor R0 R0
+F194 | 4B       | ldb R2 [R3]
+F195 | 00       | BRK
+F196 | 00       | BRK
+F197 | 00       | BRK
+F198 | 00       | BRK
+F199 | 00       | BRK
+F19A | 00       | BRK
+F19B | 00       | BRK
+F19C | 00       | BRK
+F19D | 00       | BRK
+F19E | 00       | BRK
+F19F | 00       | BRK
+F1A0 | 00       | BRK
+F1A1 | 00       | BRK
+F1A2 | 00       | BRK
+F1A3 | 00       | BRK
+F1A4 | 00       | BRK
+F1A5 | 00       | BRK
+F1A6 | 00       | BRK
+F1A7 | 00       | BRK
+F1A8 | 00       | BRK
+F1A9 | 00       | BRK
+F1AA | 00       | BRK
+F1AB | 00       | BRK
+F1AC | 00       | BRK
+F1AD | 00       | BRK
+F1AE | 00       | BRK
+F1AF | 00       | BRK
+F1B0 | 00       | BRK
+F1B1 | 00       | BRK
+F1B2 | 00       | BRK
+F1B3 | 00       | BRK
+F1B4 | 00       | BRK
+F1B5 | 00       | BRK
+F1B6 | 00       | BRK
+F1B7 | 00       | BRK
+F1B8 | 00       | BRK
+F1B9 | 00       | BRK
+F1BA | 00       | BRK
+F1BB | 00       | BRK
+F1BC | 00       | BRK
+F1BD | 00       | BRK
+F1BE | 00       | BRK
+F1BF | 00       | BRK
+F1C0 | 00       | BRK
+F1C1 | 00       | BRK
+F1C2 | 00       | BRK
+F1C3 | 00       | BRK
+F1C4 | 00       | BRK
+F1C5 | 00       | BRK
+F1C6 | 00       | BRK
+F1C7 | 00       | BRK
+F1C8 | 00       | BRK
+F1C9 | 00       | BRK
+F1CA | 00       | BRK
+F1CB | 00       | BRK
+F1CC | 00       | BRK
+F1CD | 00       | BRK
+F1CE | 00       | BRK
+F1CF | 00       | BRK
+F1D0 | 00       | BRK
+F1D1 | 00       | BRK
+F1D2 | 00       | BRK
+F1D3 | 00       | BRK
+F1D4 | 00       | BRK
+F1D5 | 00       | BRK
+F1D6 | 00       | BRK
+F1D7 | 00       | BRK
+F1D8 | 00       | BRK
+F1D9 | 00       | BRK
+F1DA | 00       | BRK
+F1DB | 61       | ldb [R0] R1
+F1DC | 78       | ld [R2] R0
+F1DD | 2E       | ld R3 R2
+F1DE | 61       | ldb [R0] R1
+F1DF | 72       | ld [R0] R2
+F1E0 | 77       | ld [R1] R3
+F1E1 | 65       | ldb [R1] R1
+F1E2 | 6E       | ldb [R3] R2
+F1E3 | 0A       | ld R0 sp
+F1E4 | 00       | BRK
+F1E5 | 5F       | ld R3 [R3]
+F1E6 | 5F       | ld R3 [R3]
+F1E7 | 5F       | ld R3 [R3]
+F1E8 | 5F       | ld R3 [R3]
+F1E9 | 5F       | ld R3 [R3]
+F1EA | 5F       | ld R3 [R3]
+F1EB | 00       | BRK
+F1EC | 73       | ld [R0] R3
+F1ED | 65       | ldb [R1] R1
+F1EE | 70       | ld [R0] R0
+F1EF | 69       | ldb [R2] R1
+F1F0 | 42       | ldb R0 [R2]
+F1F1 | 37       | add R1 R3
+F1F2 | 37       | add R1 R3
+F1F3 | 30       | add R0 R0
+F1F4 | 35       | add R1 R1
+F1F5 | 2A       | ld R2 R2
+F1F6 | 58       | ld R2 [R0]
+F1F7 | 0A       | ld R0 sp
+F1F8 | 00       | BRK
+F1F9 | 5F       | ld R3 [R3]
+F1FA | 5F       | ld R3 [R3]
+F1FB | 5F       | ld R3 [R3]
+F1FC | 5F       | ld R3 [R3]
+F1FD | 5F       | ld R3 [R3]
+F1FE | 5F       | ld R3 [R3]
+F1FF | 5F       | ld R3 [R3]
+F200 | 5F       | ld R3 [R3]
+F201 | 5F       | ld R3 [R3]
+F202 | 5F       | ld R3 [R3]
+F203 | 5F       | ld R3 [R3]
+F204 | 5F       | ld R3 [R3]
+F205 | 5F       | ld R3 [R3]
+F206 | 5F       | ld R3 [R3]
+F207 | 5F       | ld R3 [R3]
+F208 | 5F       | ld R3 [R3]
+F209 | 5F       | ld R3 [R3]
+F20A | 5F       | ld R3 [R3]
+F20B | 5F       | ld R3 [R3]
+F20C | 5F       | ld R3 [R3]
+F20D | 5F       | ld R3 [R3]
+F20E | 5F       | ld R3 [R3]
+F20F | 5F       | ld R3 [R3]
+F210 | 5F       | ld R3 [R3]
+F211 | 5F       | ld R3 [R3]
+F212 | 5F       | ld R3 [R3]
+F213 | 5F       | ld R3 [R3]
+F214 | 5F       | ld R3 [R3]
+F215 | 5F       | ld R3 [R3]
+F216 | 5F       | ld R3 [R3]
+F217 | 5F       | ld R3 [R3]
+F218 | 5F       | ld R3 [R3]
+F219 | 5F       | ld R3 [R3]
+F21A | 5F       | ld R3 [R3]
+F21B | 5F       | ld R3 [R3]
+F21C | 5F       | ld R3 [R3]
+F21D | 5F       | ld R3 [R3]
+F21E | 5F       | ld R3 [R3]
+F21F | 5F       | ld R3 [R3]
+F220 | 5F       | ld R3 [R3]
+F221 | 5F       | ld R3 [R3]
+F222 | 5F       | ld R3 [R3]
+F223 | 5F       | ld R3 [R3]
+F224 | 5F       | ld R3 [R3]
+F225 | 5F       | ld R3 [R3]
+F226 | 5F       | ld R3 [R3]
+F227 | 5F       | ld R3 [R3]
+F228 | 5F       | ld R3 [R3]
+F229 | 5F       | ld R3 [R3]
+F22A | 5F       | ld R3 [R3]
+F22B | 5F       | ld R3 [R3]
+F22C | 00       | BRK
+.str_2_F22D_Username:
+F22D | 55 73 65 72 6E 61 6D 65 3A 20 00  |
+    ds "Username: "
+.str_3_F238_Username:
+F238 | 3E 3E 20 55 73 65 72 6E 61 6D 65 20 4F 4B 2E 20 50 61 73 73 77 6F 72 64 20 72 65 71 75 69 72 65 64 0A 50 61 73 73 77 6F 72 64 3A 20 00  |
+    ds ">> Username OK. Password required\nPassword: "
+F265 | 3E       | add R3 R2
+F266 | 3E       | add R3 R2
+F267 | 20       | ld R0 R0
+F268 | 50       | ld R0 [R0]
+F269 | 6C       | ldb [R3] R0
+F26A | 65       | ldb [R1] R1
+F26B | 61       | ldb [R0] R1
+F26C | 73       | ld [R0] R3
+F26D | 65       | ldb [R1] R1
+F26E | 20       | ld R0 R0
+F26F | 77       | ld [R1] R3
+F270 | 61       | ldb [R0] R1
+F271 | 69       | ldb [R2] R1
+F272 | 74       | ld [R1] R0
+F273 | 2E       | ld R3 R2
+F274 | 2E       | ld R3 R2
+F275 | 2E       | ld R3 R2
+F276 | 0A       | ld R0 sp
+F277 | 00       | BRK
+.str_6_F278_User:
+F278 | 3E 3E 20 55 73 65 72 20 6E 6F 74 20 66 6F 75 6E 64 20 69 6E 20 64 61 74 61 62 61 73 65 2E 0A 00  |
+    ds ">> User not found in database.\n"
+.str_7_F298_Password:
+F298 | 3E 3E 20 50 61 73 73 77 6F 72 64 20 69 73 20 69 6E 63 6F 72 72 65 63 74 2E 0A 00  |
+    ds ">> Password is incorrect.\n"
+.str_4_F2B3_Login:
+F2B3 | 3E 3E 20 4C 6F 67 69 6E 20 73 75 63 63 65 73 73 66 75 6C 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 52 75 6E 6E 69 6E 67 20 6D 61 63 68 69 6E 65 20 6C 61 6E 67 75 61 67 65 20 6D 6F 6E 69 74 6F 72 20 6E 6F 77 2E 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 0A 00  |
+    ds ">> Login successful.\n======================================================================\nRunning machine language monitor now.\n======================================================================\n\n"
+Breakpoint:
+F37E | A6       | push sp
+F37F | BC B6 FB | ld [$FBB6] R0
+F382 | BD B8 FB | ld [$FBB8] R1
+F385 | BE BA FB | ld [$FBBA] R2
+F388 | BF BC FB | ld [$FBBC] R3
+F38B | 94       | pop R0
+F38C | BC BE FB | ld [$FBBE] R0
+F38F | 0A       | ld R0 sp
+F390 | 50       | ld R0 [R0]
+F391 | E0 FF FF | add R0 $FFFF
+F394 | BC C0 FB | ld [$FBC0] R0
+F397 | 11 0C 00 | ld R1 $0C
+F39A | 12 C2 FB | ld R2 $FBC2
+F39D | B7 BE FB | ld R3 [$FBBE]
+F3A0 | 99 28 00 | call MemCpy                  ; ($28)
+F3A3 | 12 1C FB | ld R2 .str_9_FB1C_BREAK      ; ($FB1C)
+F3A6 | 99 08 00 | call PrintStr                ; ($08)
+.lab_32_F3A9:
+F3A9 | 10 00 00 | ld R0 $00
+F3AC | B8 02 E0 | ldb [.inp_buffer+2] R0       ; ($E002)
+F3AF | 12 12 FB | ld R2 .str_10_FB12_Ready     ; ($FB12)
+F3B2 | 99 08 00 | call PrintStr                ; ($08)
+F3B5 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F3B8 | 13 08 00 | ld R3 $08
+F3BB | 99 30 00 | call ReadStr                 ; ($30)
+F3BE | A5 00 00 | cmp R3 $00
+F3C1 | 9C 39 F4 | jp eq .lab_15_F439           ; ($F439)
+F3C4 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F3C7 | 99 38 00 | call StrTrim                 ; ($38)
+F3CA | B0 02 E0 | ldb R0 [.inp_buffer+2]       ; ($E002)
+F3CD | A2 00 00 | cmp R0 $00
+F3D0 | 9D 30 F4 | jp ne .lab_16_F430           ; ($F430)
+F3D3 | B4 00 E0 | ld R0 [.inp_buffer]          ; ($E000)
+F3D6 | A2 68 0A | cmp R0 $A68
+F3D9 | 9C 42 F4 | jp eq .lab_17_F442           ; ($F442)
+F3DC | A2 68 00 | cmp R0 $68
+F3DF | 9C 42 F4 | jp eq .lab_17_F442           ; ($F442)
+F3E2 | A2 72 00 | cmp R0 $72
+F3E5 | 9C 4B F4 | jp eq .lab_19_F44B           ; ($F44B)
+F3E8 | A2 72 0A | cmp R0 $A72
+F3EB | 9C 4B F4 | jp eq .lab_19_F44B           ; ($F44B)
+F3EE | A2 70 00 | cmp R0 $70
+F3F1 | 9C 4A F5 | jp eq .lab_21_F54A           ; ($F54A)
+F3F4 | A2 70 0A | cmp R0 $A70
+F3F7 | 9C 4A F5 | jp eq .lab_21_F54A           ; ($F54A)
+F3FA | A2 78 00 | cmp R0 $78
+F3FD | 9C 66 F5 | jp eq .lab_23_F566           ; ($F566)
+F400 | A2 78 0A | cmp R0 $A78
+F403 | 9C 66 F5 | jp eq .lab_23_F566           ; ($F566)
+F406 | A2 63 00 | cmp R0 $63
+F409 | 9C AC F5 | jp eq .lab_25_F5AC           ; ($F5AC)
+F40C | A2 63 0A | cmp R0 $A63
+F40F | 9C AC F5 | jp eq .lab_25_F5AC           ; ($F5AC)
+F412 | A2 55 43 | cmp R0 $4355
+F415 | 9C 00 F6 | jp eq .lab_27_F600           ; ($F600)
+F418 | A2 6C 73 | cmp R0 $736C
+F41B | 9C BF F5 | jp eq .lab_28_F5BF           ; ($F5BF)
+F41E | A2 72 66 | cmp R0 $6672
+F421 | 9C 09 F6 | jp eq .lab_29_F609           ; ($F609)
+F424 | A2 77 00 | cmp R0 $77
+F427 | 9C BB F4 | jp eq .lab_30_F4BB           ; ($F4BB)
+F42A | A2 77 0A | cmp R0 $A77
+F42D | 9C BB F4 | jp eq .lab_30_F4BB           ; ($F4BB)
+.lab_16_F430:
+F430 | 12 B5 F7 | ld R2 .str_11_F7B5_Bad       ; ($F7B5)
+F433 | 99 08 00 | call PrintStr                ; ($08)
+F436 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_15_F439:
+F439 | 12 9C F7 | ld R2 .str_12_F79C_Input     ; ($F79C)
+F43C | 99 08 00 | call PrintStr                ; ($08)
+F43F | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_17_F442:
+F442 | 12 24 F9 | ld R2 .str_13_F924_Available ; ($F924)
+F445 | 99 08 00 | call PrintStr                ; ($08)
+F448 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_19_F44B:
+F44B | 12 F0 F7 | ld R2 .str_14_F7F0_Which     ; ($F7F0)
+F44E | 99 08 00 | call PrintStr                ; ($08)
+F451 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F454 | 13 08 00 | ld R3 $08
+F457 | 99 30 00 | call ReadStr                 ; ($30)
+F45A | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F45D | 99 20 00 | call ConvertHex              ; ($20)
+F460 | A2 FF FF | cmp R0 $FFFF
+F463 | 9C B2 F4 | jp eq .lab_35_F4B2           ; ($F4B2)
+F466 | 90       | push R0
+F467 | 12 02 F8 | ld R2 .str_15_F802_How       ; ($F802)
+F46A | 99 08 00 | call PrintStr                ; ($08)
+F46D | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F470 | 13 08 00 | ld R3 $08
+F473 | 99 30 00 | call ReadStr                 ; ($30)
+F476 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F479 | 99 20 00 | call ConvertHex              ; ($20)
+F47C | A2 FF FF | cmp R0 $FFFF
+F47F | 9C B2 F4 | jp eq .lab_35_F4B2           ; ($F4B2)
+F482 | A2 00 00 | cmp R0 $00
+F485 | 9C B2 F4 | jp eq .lab_35_F4B2           ; ($F4B2)
+F488 | 2C       | ld R3 R0
+F489 | 96       | pop R2
+.lab_38_F48A:
+F48A | 92       | push R2
+F48B | 93       | push R3
+F48C | 11 08 00 | ld R1 $08
+F48F | 2E       | ld R3 R2
+F490 | 12 CE FB | ld R2 $FBCE
+F493 | 99 28 00 | call MemCpy                  ; ($28)
+F496 | 97       | pop R3
+F497 | 96       | pop R2
+F498 | BE D6 FB | ld [$FBD6] R2
+F49B | 92       | push R2
+F49C | 93       | push R3
+F49D | 12 8F FB | ld R2 .str_16_FB8F_F0        ; ($FB8F)
+F4A0 | 99 08 00 | call PrintStr                ; ($08)
+F4A3 | 97       | pop R3
+F4A4 | 96       | pop R2
+F4A5 | E2 08 00 | add R2 $08
+F4A8 | AF       | dec R3
+F4A9 | A5 00 00 | cmp R3 $00
+F4AC | 9D 8A F4 | jp ne .lab_38_F48A           ; ($F48A)
+F4AF | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_35_F4B2:
+F4B2 | 12 D8 F7 | ld R2 .str_17_F7D8_Invalid   ; ($F7D8)
+F4B5 | 99 08 00 | call PrintStr                ; ($08)
+F4B8 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_30_F4BB:
+F4BB | 12 F0 F7 | ld R2 .str_14_F7F0_Which     ; ($F7F0)
+F4BE | 99 08 00 | call PrintStr                ; ($08)
+F4C1 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F4C4 | 13 08 00 | ld R3 $08
+F4C7 | 99 30 00 | call ReadStr                 ; ($30)
+F4CA | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F4CD | 99 20 00 | call ConvertHex              ; ($20)
+F4D0 | A2 FF FF | cmp R0 $FFFF
+F4D3 | 9C 41 F5 | jp eq .lab_41_F541           ; ($F541)
+F4D6 | BC D6 FB | ld [$FBD6] R0
+F4D9 | 12 B0 F8 | ld R2 .str_19_F8B0_Enter     ; ($F8B0)
+F4DC | 99 08 00 | call PrintStr                ; ($08)
+.lab_48_F4DF:
+F4DF | 13 02 E0 | ld R3 .inp_buffer+2          ; ($E002)
+F4E2 | 10 00 00 | ld R0 $00
+F4E5 | 6C       | ldb [R3] R0
+F4E6 | AF       | dec R3
+F4E7 | 6C       | ldb [R3] R0
+F4E8 | AF       | dec R3
+.lab_43_F4E9:
+F4E9 | 06 02    | int $02                      ; (in)
+F4EB | 6C       | ldb [R3] R0
+F4EC | 2B       | ld R2 R3
+F4ED | A2 2E 00 | cmp R0 $2E
+F4F0 | 9C 30 F5 | jp eq .lab_42_F530           ; ($F530)
+F4F3 | A2 0A 00 | cmp R0 $0A
+F4F6 | 9C E9 F4 | jp eq .lab_43_F4E9           ; ($F4E9)
+F4F9 | 93       | push R3
+F4FA | 99 20 00 | call ConvertHex              ; ($20)
+F4FD | 97       | pop R3
+F4FE | A2 FF FF | cmp R0 $FFFF
+F501 | 9C E9 F4 | jp eq .lab_43_F4E9           ; ($F4E9)
+F504 | AB       | inc R3
+.lab_46_F505:
+F505 | 06 02    | int $02                      ; (in)
+F507 | 6C       | ldb [R3] R0
+F508 | 2B       | ld R2 R3
+F509 | A2 2E 00 | cmp R0 $2E
+F50C | 9C 30 F5 | jp eq .lab_42_F530           ; ($F530)
+F50F | A2 0A 00 | cmp R0 $0A
+F512 | 9C 05 F5 | jp eq .lab_46_F505           ; ($F505)
+F515 | 93       | push R3
+F516 | 99 20 00 | call ConvertHex              ; ($20)
+F519 | 97       | pop R3
+F51A | A2 FF FF | cmp R0 $FFFF
+F51D | 9C 05 F5 | jp eq .lab_46_F505           ; ($F505)
+F520 | AF       | dec R3
+F521 | 2B       | ld R2 R3
+F522 | 99 20 00 | call ConvertHex              ; ($20)
+F525 | B5 D6 FB | ld R1 [$FBD6]
+F528 | 64       | ldb [R1] R0
+F529 | A9       | inc R1
+F52A | BD D6 FB | ld [$FBD6] R1
+F52D | 98 DF F4 | jp .lab_48_F4DF              ; ($F4DF)
+.lab_42_F530:
+F530 | 06 02    | int $02                      ; (in)
+F532 | A2 0A 00 | cmp R0 $0A
+F535 | 9D 30 F5 | jp ne .lab_42_F530           ; ($F530)
+F538 | 12 62 F8 | ld R2 .str_20_F862_Loaded    ; ($F862)
+F53B | 99 08 00 | call PrintStr                ; ($08)
+F53E | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_41_F541:
+F541 | 12 D8 F7 | ld R2 .str_17_F7D8_Invalid   ; ($F7D8)
+F544 | 99 08 00 | call PrintStr                ; ($08)
+F547 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_21_F54A:
+F54A | 12 F0 F7 | ld R2 .str_14_F7F0_Which     ; ($F7F0)
+F54D | 99 08 00 | call PrintStr                ; ($08)
+F550 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F553 | 13 08 00 | ld R3 $08
+F556 | 99 30 00 | call ReadStr                 ; ($30)
+F559 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F55C | 99 20 00 | call ConvertHex              ; ($20)
+F55F | 28       | ld R2 R0
+F560 | 99 08 00 | call PrintStr                ; ($08)
+F563 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_23_F566:
+F566 | 12 F0 F7 | ld R2 .str_14_F7F0_Which     ; ($F7F0)
+F569 | 99 08 00 | call PrintStr                ; ($08)
+F56C | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F56F | 13 08 00 | ld R3 $08
+F572 | 99 30 00 | call ReadStr                 ; ($30)
+F575 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F578 | 99 20 00 | call ConvertHex              ; ($20)
+F57B | 90       | push R0
+F57C | BC D6 FB | ld [$FBD6] R0
+F57F | 12 15 F8 | ld R2 .str_24_F815_Really    ; ($F815)
+F582 | 99 08 00 | call PrintStr                ; ($08)
+F585 | 12 00 E0 | ld R2 .inp_buffer            ; ($E000)
+F588 | 13 08 00 | ld R3 $08
+F58B | 99 30 00 | call ReadStr                 ; ($30)
+F58E | B0 00 E0 | ldb R0 [.inp_buffer]         ; ($E000)
+F591 | A2 59 00 | cmp R0 $59
+F594 | 9C A7 F5 | jp eq .lab_53_F5A7           ; ($F5A7)
+F597 | A2 79 00 | cmp R0 $79
+F59A | 9C A7 F5 | jp eq .lab_53_F5A7           ; ($F5A7)
+F59D | 12 3A F8 | ld R2 .str_25_F83A_Cancelled ; ($F83A)
+F5A0 | 99 08 00 | call PrintStr                ; ($08)
+F5A3 | 94       | pop R0
+F5A4 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_53_F5A7:
+F5A7 | 97       | pop R3
+F5A8 | CC       | call R3
+F5A9 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_25_F5AC:
+F5AC | 12 55 F8 | ld R2 .str_26_F855_Continuing ; ($F855)
+F5AF | 99 08 00 | call PrintStr                ; ($08)
+F5B2 | B4 B6 FB | ld R0 [$FBB6]
+F5B5 | B5 B8 FB | ld R1 [$FBB8]
+F5B8 | B6 BA FB | ld R2 [$FBBA]
+F5BB | B7 BC FB | ld R3 [$FBBC]
+F5BE | 05       | ret
+.lab_28_F5BF:
+F5BF | 12 DD FA | ld R2 .str_27_FADD_BLK       ; ($FADD)
+F5C2 | 99 08 00 | call PrintStr                ; ($08)
+F5C5 | 10 00 00 | ld R0 $00
+F5C8 | 11 00 E0 | ld R1 .inp_buffer            ; ($E000)
+F5CB | 06 04    | int $04                      ; (load_blk)
+F5CD | 13 00 E0 | ld R3 .inp_buffer            ; ($E000)
+.lab_58_F5D0:
+F5D0 | 43       | ldb R0 [R3]
+F5D1 | A2 00 00 | cmp R0 $00
+F5D4 | 9C F4 F5 | jp eq .lab_57_F5F4           ; ($F5F4)
+F5D7 | 93       | push R3
+F5D8 | B8 CE FB | ldb [$FBCE] R0
+F5DB | AB       | inc R3
+F5DC | 53       | ld R0 [R3]
+F5DD | 93       | push R3
+F5DE | BC D6 FB | ld [$FBD6] R0
+F5E1 | 12 06 FB | ld R2 .str_28_FB06_F1        ; ($FB06)
+F5E4 | 99 08 00 | call PrintStr                ; ($08)
+F5E7 | 97       | pop R3
+F5E8 | AB       | inc R3
+F5E9 | AB       | inc R3
+F5EA | 2B       | ld R2 R3
+F5EB | 99 08 00 | call PrintStr                ; ($08)
+F5EE | 10 0A 00 | ld R0 $0A
+F5F1 | 06 01    | int $01                      ; (out)
+F5F3 | 97       | pop R3
+.lab_57_F5F4:
+F5F4 | E3 10 00 | add R3 $10
+F5F7 | A5 00 EF | cmp R3 $EF00
+F5FA | 9D D0 F5 | jp ne .lab_58_F5D0           ; ($F5D0)
+F5FD | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_27_F600:
+F600 | 12 DF F8 | ld R2 .str_29_F8DF_Wow       ; ($F8DF)
+F603 | 99 08 00 | call PrintStr                ; ($08)
+F606 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_29_F609:
+F609 | 12 8A F8 | ld R2 .str_30_F88A_Filename  ; ($F88A)
+F60C | 99 08 00 | call PrintStr                ; ($08)
+F60F | 10 00 00 | ld R0 $00
+F612 | 11 00 E0 | ld R1 .inp_buffer            ; ($E000)
+F615 | 06 04    | int $04                      ; (load_blk)
+F617 | 12 B0 EF | ld R2 $EFB0
+F61A | 13 10 00 | ld R3 $10
+F61D | 99 30 00 | call ReadStr                 ; ($30)
+F620 | A5 00 00 | cmp R3 $00
+F623 | 9C 8A F6 | jp eq .lab_61_F68A           ; ($F68A)
+F626 | 12 B0 EF | ld R2 $EFB0
+F629 | 99 38 00 | call StrTrim                 ; ($38)
+F62C | 13 03 E0 | ld R3 $E003
+.lab_64_F62F:
+F62F | 12 B0 EF | ld R2 $EFB0
+F632 | 93       | push R3
+F633 | 99 10 00 | call StrCmp                  ; ($10)
+F636 | 97       | pop R3
+F637 | A2 00 00 | cmp R0 $00
+F63A | 9C 49 F6 | jp eq .lab_62_F649           ; ($F649)
+F63D | E3 10 00 | add R3 $10
+F640 | A5 03 EF | cmp R3 $EF03
+F643 | 9C 81 F6 | jp eq .lab_63_F681           ; ($F681)
+F646 | 98 2F F6 | jp .lab_64_F62F              ; ($F62F)
+.lab_62_F649:
+F649 | AF       | dec R3
+F64A | AF       | dec R3
+F64B | AF       | dec R3
+F64C | 43       | ldb R0 [R3]
+F64D | AB       | inc R3
+F64E | 57       | ld R1 [R3]
+F64F | 91       | push R1
+F650 | 11 00 E0 | ld R1 .inp_buffer            ; ($E000)
+F653 | 06 04    | int $04                      ; (load_blk)
+F655 | 12 F0 F7 | ld R2 .str_14_F7F0_Which     ; ($F7F0)
+F658 | 99 08 00 | call PrintStr                ; ($08)
+F65B | 12 E0 EF | ld R2 $EFE0
+F65E | 13 10 00 | ld R3 $10
+F661 | 99 30 00 | call ReadStr                 ; ($30)
+F664 | 12 E0 EF | ld R2 $EFE0
+F667 | 99 20 00 | call ConvertHex              ; ($20)
+F66A | 95       | pop R1
+F66B | A2 FF FF | cmp R0 $FFFF
+F66E | 9C 93 F6 | jp eq .lab_65_F693           ; ($F693)
+F671 | 28       | ld R2 R0
+F672 | 13 00 E0 | ld R3 .inp_buffer            ; ($E000)
+F675 | 99 28 00 | call MemCpy                  ; ($28)
+F678 | 12 62 F8 | ld R2 .str_20_F862_Loaded    ; ($F862)
+F67B | 99 08 00 | call PrintStr                ; ($08)
+F67E | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_63_F681:
+F681 | 12 97 F8 | ld R2 .str_33_F897_File      ; ($F897)
+F684 | 99 08 00 | call PrintStr                ; ($08)
+F687 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_61_F68A:
+F68A | 12 9C F7 | ld R2 .str_12_F79C_Input     ; ($F79C)
+F68D | 99 08 00 | call PrintStr                ; ($08)
+F690 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.lab_65_F693:
+F693 | 12 D8 F7 | ld R2 .str_17_F7D8_Invalid   ; ($F7D8)
+F696 | 99 08 00 | call PrintStr                ; ($08)
+F699 | 98 A9 F3 | jp .lab_32_F3A9              ; ($F3A9)
+.str_1_F69C_nWelcome:
+F69C | 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0D 0A 57 65 6C 63 6F 6D 65 20 74 6F 20 47 6C 69 74 63 68 20 52 65 73 65 61 72 63 68 20 4C 61 62 6F 72 61 74 6F 72 79 20 4E 65 74 77 6F 72 6B 3A 20 54 65 73 74 20 53 65 72 76 65 72 20 32 20 28 47 52 4C 54 53 30 32 29 0D 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0D 0A 54 68 69 73 20 6D 61 63 68 69 6E 65 20 72 65 71 75 69 72 65 73 20 61 75 74 68 65 6E 74 69 63 61 74 69 6F 6E 2E 0D 0A 00  |
+    ds "======================================================================\nWelcome to Glitch Research Laboratory Network: Test Server 2 (GRLTS02)\n======================================================================\nThis machine requires authentication.\n"
+.str_12_F79C_Input:
+F79C | 21 20 49 6E 70 75 74 20 74 6F 6F 20 6C 6F 6E 67 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Input too long error.\n"
+.str_11_F7B5_Bad:
+F7B5 | 21 20 42 61 64 20 63 6F 6D 6D 61 6E 64 20 65 72 72 6F 72 20 28 68 20 66 6F 72 20 68 65 6C 70 29 2E 0A 00  |
+    ds "! Bad command error (h for help).\n"
+.str_17_F7D8_Invalid:
+F7D8 | 21 20 49 6E 76 61 6C 69 64 20 69 6E 70 75 74 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Invalid input error.\n"
+.str_14_F7F0_Which:
+F7F0 | 3E 20 57 68 69 63 68 20 61 64 64 72 65 73 73 3F 20 00  |
+    ds "> Which address? "
+.str_15_F802_How:
+F802 | 3E 20 48 6F 77 20 6D 61 6E 79 20 6C 69 6E 65 73 3F 20 00  |
+    ds "> How many lines? "
+.str_24_F815_Really:
+F815 | 3E 20 52 65 61 6C 6C 79 20 65 78 65 63 20 61 74 20 F0 D6 FB 3F 20 54 79 70 65 20 59 20 69 66 20 73 6F 3A 20 00  |
+    ds "> Really exec at \F0[$FBD6]? Type Y if so: "
+.str_25_F83A_Cancelled:
+F83A | 21 20 43 61 6E 63 65 6C 6C 65 64 20 61 63 74 69 6F 6E 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! Cancelled action error.\n"
+.str_26_F855_Continuing:
+F855 | 43 6F 6E 74 69 6E 75 69 6E 67 2E 0A 00  |
+    ds "Continuing.\n"
+.str_20_F862_Loaded:
+F862 | 4C 6F 61 64 65 64 2E 0A 00  |
+    ds "Loaded.\n"
+.str_5_F86B_Dry:
+F86B | 21 20 44 72 79 20 73 74 61 63 6B 2E 20 48 61 6C 74 69 6E 67 20 6D 61 63 68 69 6E 65 2E 0A 00  |
+    ds "! Dry stack. Halting machine.\n"
+.str_30_F88A_Filename:
+F88A | 3E 20 46 69 6C 65 6E 61 6D 65 3F 20 00  |
+    ds "> Filename? "
+.str_33_F897_File:
+F897 | 21 20 46 69 6C 65 20 6E 6F 74 20 66 6F 75 6E 64 20 65 72 72 6F 72 2E 0A 00  |
+    ds "! File not found error.\n"
+.str_19_F8B0_Enter:
+F8B0 | 3E 20 45 6E 74 65 72 20 68 65 78 20 64 61 74 61 2E 20 45 6E 64 20 77 69 74 68 20 64 6F 74 20 22 2E 22 20 2B 20 6E 65 77 6C 69 6E 65 3A 0A 00  |
+    ds "> Enter hex data. End with dot "." + newline:\n"
+.str_29_F8DF_Wow:
+F8DF | 57 6F 77 2C 20 75 6E 64 6F 63 75 6D 65 6E 74 65 64 20 6D 6F 6E 69 74 6F 72 20 63 6F 6D 6D 61 6E 64 21 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 53 65 63 72 65 74 F0 00 E0 78 F0 01 E0 43 6F 6D 6D 61 6E 64 7D 0A 00  |
+    ds "Wow, undocumented monitor command! FOOLS2023_{Secret\F0[.inp_buffer]x\F0[$E001]Command}\n" ; ($E000)
+.str_13_F924_Available:
+F924 | 41 76 61 69 6C 61 62 6C 65 20 63 6F 6D 6D 61 6E 64 73 3A 0A 72 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 68 65 78 0A 70 20 20 20 3A 3A 20 70 72 69 6E 74 20 6D 65 6D 6F 72 79 20 61 73 20 74 65 78 74 0A 77 20 20 20 3A 3A 20 77 72 69 74 65 20 68 65 78 20 64 61 74 61 20 74 6F 20 6D 65 6D 6F 72 79 0A 78 20 20 20 3A 3A 20 65 78 65 63 75 74 65 20 6D 65 6D 6F 72 79 0A 72 66 20 20 3A 3A 20 6C 6F 61 64 20 6D 65 6D 6F 72 79 20 66 72 6F 6D 20 66 69 6C 65 0A 6C 73 20 20 3A 3A 20 70 72 69 6E 74 20 66 69 6C 65 20 69 6E 64 65 78 0A 68 20 20 20 3A 3A 20 70 72 69 6E 74 20 74 68 69 73 20 68 65 6C 70 20 6D 65 73 73 61 67 65 0A 63 20 20 20 3A 3A 20 65 78 69 74 20 6D 6F 6E 69 74 6F 72 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 0A 50 6C 65 61 73 65 20 65 6E 74 65 72 20 68 65 78 20 6E 75 6D 62 65 72 73 20 77 68 65 6E 20 70 72 6F 6D 70 74 65 64 2E 0A 49 66 20 6E 65 63 65 73 73 61 72 79 20 66 6F 72 20 64 65 62 75 67 67 69 6E 67 2C 20 79 6F 75 20 63 61 6E 20 62 72 65 61 6B 20 69 6E 74 6F 20 6D 6F 6E 69 74 6F 72 0A 77 69 74 68 20 69 6E 73 74 72 75 63 74 69 6F 6E 20 42 52 4B 20 28 30 78 30 30 29 20 61 6E 64 20 63 6F 6E 74 69 6E 75 65 20 77 69 74 68 20 27 63 27 0A 4E 6F 74 65 3A 20 6D 65 6D 6F 72 79 20 72 65 67 69 6F 6E 20 45 30 30 30 2D 46 46 46 46 20 69 73 20 75 73 65 64 20 62 79 20 6D 6F 6E 69 74 6F 72 0A 00  |
+    ds "Available commands:\nr   :: print memory as hex\np   :: print memory as text\nw   :: write hex data to memory\nx   :: execute memory\nrf  :: load memory from file\nls  :: print file index\nh   :: print this help message\nc   :: exit monitor and continue\nPlease enter hex numbers when prompted.\nIf necessary for debugging, you can break into monitor\nwith instruction BRK (0x00) and continue with 'c'\nNote: memory region E000-FFFF is used by monitor\n"
+.str_27_FADD_BLK:
+FADD | 42 4C 4B 20 20 53 49 5A 45 20 20 4E 41 4D 45 0A 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 3D 0A 00  |
+    ds "BLK  SIZE  NAME\n=======================\n"
+.str_28_FB06_F1:
+FB06 | F1 CE FB 20 20 20 F0 D6 FB 20 20 00  |
+    ds "\F1[$FBCE]   \F0[$FBD6]  "
+.str_10_FB12_Ready:
+FB12 | 52 65 61 64 79 2E 0A 3E 20 00  |
+    ds "Ready.\n> "
+.str_9_FB1C_BREAK:
+FB1C | 2A 2A 2A 20 42 52 45 41 4B 20 49 4E 54 4F 20 4D 4F 4E 49 54 4F 52 20 41 54 20 24 F0 C0 FB 20 2A 2A 2A 0A 52 30 3D 24 F0 B6 FB 20 52 31 3D 24 F0 B8 FB 20 52 32 3D 24 F0 BA FB 20 52 33 3D 24 F0 BC FB 0A 53 50 3D 24 F0 BE FB 20 5B F1 C2 FB F1 C3 FB F1 C4 FB F1 C5 FB F1 C6 FB F1 C7 FB F1 C8 FB F1 C9 FB F1 CA FB F1 CB FB F1 CC FB F1 CD FB 5D 0A 00  |
+    ds "*** BREAK INTO MONITOR AT $\F0[$FBC0] ***\nR0=$\F0[$FBB6] R1=$\F0[$FBB8] R2=$\F0[$FBBA] R3=$\F0[$FBBC]\nSP=$\F0[$FBBE] [\F1[$FBC2]\F1[$FBC3]\F1[$FBC4]\F1[$FBC5]\F1[$FBC6]\F1[$FBC7]\F1[$FBC8]\F1[$FBC9]\F1[$FBCA]\F1[$FBCB]\F1[$FBCC]\F1[$FBCD]]\n"
+.str_16_FB8F_F0:
+FB8F | F0 D6 FB 20 7C 20 F1 CE FB 20 F1 CF FB 20 F1 D0 FB 20 F1 D1 FB 20 F1 D2 FB 20 F1 D3 FB 20 F1 D4 FB 20 F1 D5 FB 0A 00  |
+    ds "\F0[$FBD6] | \F1[$FBCE] \F1[$FBCF] \F1[$FBD0] \F1[$FBD1] \F1[$FBD2] \F1[$FBD3] \F1[$FBD4] \F1[$FBD5]\n"
+FBB6 | 00       | BRK
+FBB7 | 00       | BRK
+FBB8 | FF       | [wait! that's illegal!]
+FBB9 | C3       | [wait! that's illegal!]
+FBBA | 7D       | ld [R3] R1
+FBBB | F3       | [wait! that's illegal!]
+FBBC | F7       | [wait! that's illegal!]
+FBBD | F1       | [wait! that's illegal!]
+FBBE | FE       | [wait! that's illegal!]
+FBBF | FE       | [wait! that's illegal!]
+FBC0 | A0 F0 A1 | call eq $A1F0
+FBC3 | F0       | [wait! that's illegal!]
+FBC4 | 00       | BRK
+FBC5 | 00       | BRK
+FBC6 | 00       | BRK
+FBC7 | 00       | BRK
+FBC8 | 00       | BRK
+FBC9 | 00       | BRK
+FBCA | 00       | BRK
+FBCB | 00       | BRK
+FBCC | 00       | BRK
+FBCD | 00       | BRK
+FBCE | 00       | BRK
+FBCF | 00       | BRK
+FBD0 | 00       | BRK
+FBD1 | 00       | BRK
+FBD2 | 00       | BRK
+FBD3 | 00       | BRK
+FBD4 | 00       | BRK
+FBD5 | 00       | BRK
+FBD6 | C8       | jp R3
+FBD7 | FB       | [wait! that's illegal!]
+FBD8 | 00       | BRK
+FBD9 | 00       | BRK
+FBDA | 00       | BRK
+FBDB | 00       | BRK
+FBDC | 00       | BRK
+FBDD | 00       | BRK
+FBDE | 00       | BRK
+FBDF | 00       | BRK
