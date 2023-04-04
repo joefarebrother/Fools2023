@@ -1,12 +1,10 @@
 # pylint: disable=global-statement,invalid-name,wildcard-import,unused-wildcard-import,pointless-string-statement
-from collections import defaultdict
 import sys
 import socket
 import select
 import re
 from datetime import datetime
 from assemble import assemble_inline, assemble_file
-import subprocess
 from utils import *
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -386,52 +384,6 @@ def connect_serv2_and_measure_time(password, username="ax.arwen"):
     res = send(password + "\n", timeout=10, expected_end="Username: ")
     end_time = datetime.now()
     return (end_time-start_time), res
-
-
-def try_password(pw):
-    out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", pw])
-    out = out.decode("utf8").rstrip()
-    print(out)
-
-    _pw, header_time_ns, un_time_ns, pw_time_ns, succ = out.split(", ")
-    assert pw == _pw
-    header_time_ns = int(header_time_ns)
-    un_time_ns = int(un_time_ns)
-    pw_time_ns = int(pw_time_ns)
-
-    return header_time_ns, un_time_ns, pw_time_ns, succ
-
-
-def try_passwords(prefix):
-    timings = {}
-    chrs = printable_no_ws | {" "}
-
-    for ch in sorted(chrs):
-        pw = prefix + ch
-        header_time_ns, un_time_ns, pw_time_ns, succ = try_password(pw)
-        timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
-        if succ == "true":
-            print("Successful password??", pw)
-            raise Exception("Yay!", pw)
-
-    return timings
-
-
-def try_passwords_ntimes(prefix, ntimes=10):
-    best_timings = defaultdict(lambda: 0xffffffffffffffffffffffffffff)
-    full_data = defaultdict(list)
-
-    for i in range(ntimes):
-        print(f"=== Iteration {i} ===")
-        timings = try_passwords(prefix)
-        for pw, dt in timings.items():
-            pw_time = dt[2]
-            best_timings[pw] = min(best_timings[pw], pw_time)
-            full_data[pw].append(dt)
-
-    print(sorted(best_timings.items(), key=lambda kv: kv[1]))
-
-    return best_timings, full_data
 
 
 def test_syscall(n, rs=None):
