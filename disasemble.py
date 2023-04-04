@@ -92,6 +92,8 @@ def op_len(op):
 for k, v in known_opcodes.items():
     if "$XXXX" in v and op_len(k) == 0:
         op_lens[k] = 2
+    elif "$XX" in v:
+        op_lens[k] = 1
 
 known_funcs = {
     0x0008: "PrintStr  ",
