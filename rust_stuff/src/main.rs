@@ -1,11 +1,13 @@
 use clap::Parser;
+use rayon::prelude::*;
 use std::io::prelude::*;
 use std::net::TcpStream;
 use std::time::{Duration, Instant};
 
 #[derive(Parser)]
 struct Args {
-    password: String,
+    passwords: Vec<String>,
+    #[arg(long)]
     username: Option<String>,
     #[arg(short, long)]
     upfront: bool,
@@ -87,18 +89,27 @@ fn try_pass(username: &str, password: &str, upfront: bool) -> std::io::Result<Ou
 fn main() -> std::io::Result<()> {
     let args = Args::parse();
 
-    let username = args.username.unwrap_or("ax.arwen".to_owned());
+    let username = args.username.clone().unwrap_or("ax.arwen".to_owned());
 
-    let res = try_pass(&username, &args.password, args.upfront)?;
+    println!("{}, {:?}", username, args.passwords);
 
-    println!(
-        "{}, {}, {}, {}, {}",
-        args.password,
-        res.header_time.as_nanos(),
-        res.un_time.as_nanos(),
-        res.pw_time.as_nanos(),
-        res.correct
-    );
+    let results: std::io::Result<Vec<Out>> = args
+        .passwords
+        .par_iter()
+        .map(|password| try_pass(&username, &password, args.upfront))
+        .collect();
+    let results = results?;
+
+    for (password, res) in args.passwords.into_iter().zip(results.into_iter()) {
+        println!(
+            "{}, {}, {}, {}, {}",
+            password,
+            res.header_time.as_nanos(),
+            res.un_time.as_nanos(),
+            res.pw_time.as_nanos(),
+            res.correct
+        );
+    }
 
     Ok(())
 }

@@ -8,5 +8,6 @@ edition = "2018"
 
 [dependencies]
 clap = {version = "4.2.1", features = ["derive"] }
+rayon = "1.7.0"
 
 

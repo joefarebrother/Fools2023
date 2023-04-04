@@ -4,10 +4,11 @@ from collections import defaultdict
 from utils import *
 
 
-def try_password(pw):
-    out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", pw])
+def try_password_list(pws):
+    out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", "--"] + pws)
     out = out.decode("utf8").rstrip()
     print(out)
+    out = out.splitlines()
 
     _pw, header_time_ns, un_time_ns, pw_time_ns, succ = out.split(", ")
     assert pw == _pw
@@ -28,7 +29,7 @@ def try_passwords(prefix):
 
     for ch in sorted(chrs):
         pw = prefix + ch
-        header_time_ns, un_time_ns, pw_time_ns, succ = try_password(pw)
+        header_time_ns, un_time_ns, pw_time_ns, succ = try_password_list(pw)
         timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
         if succ == "true":
             print("Successful password??", pw)
@@ -51,7 +52,7 @@ def try_passwords_ntimes(prefix, ntimes=10):
 
     print(sorted(best_timings.items(), key=lambda kv: kv[1]))
 
-    return best_timings, full_data
+    return dict(best_timings), dict(full_data)
 
 
 def crack_password(prefix, ntimes=10):
