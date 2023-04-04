@@ -8,7 +8,7 @@ def try_password_list(pws):
     out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", "--"] + pws)
     out = out.decode("utf8").rstrip()
     print(out)
-    out = out.splitlines()
+    out = out.splitlines()[1:]
 
     res = []
     for line in out:
@@ -18,7 +18,7 @@ def try_password_list(pws):
         un_time_ns = int(un_time_ns)
         pw_time_ns = int(pw_time_ns)
 
-        res.append(header_time_ns, un_time_ns, pw_time_ns, succ)
+        res.append((pw, header_time_ns, un_time_ns, pw_time_ns, succ))
 
     return res
 
