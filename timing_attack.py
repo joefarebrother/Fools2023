@@ -101,4 +101,9 @@ def crack_password(prefix, ntimes=10):
                             snd_slowest_pw, snd_slowest_t, fastest_pw, fastest_t, rng, best_dif)
 
 
-crack_password("sepi")
+import sys
+if __name__=="__main__":
+    p="sepi"
+    if len(sys.argv)>1:
+        p=sys.argv[1]
+    crack_password(p,7)
