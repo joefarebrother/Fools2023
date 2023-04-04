@@ -77,7 +77,7 @@ def crack_password(prefix, ntimes=10):
         snd_slowest_pw, snd_slowest_t = timings[-2]
         fastest_pw, fastest_t = timings[0]
         rng = snd_slowest_t - fastest_t
-        best_dif = slowest_t - snd_slowest_pw
+        best_dif = slowest_t - snd_slowest_t
 
         if best_dif > 2*rng:
             print("Statistically significant difference found", slowest_pw, slowest_t,
