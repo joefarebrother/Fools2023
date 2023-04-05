@@ -129,6 +129,8 @@ def process_string(mem, pc):
                 the_escaped_str += "\\\\"
             elif ch == '\n':
                 the_escaped_str += "\\n"
+            elif ch == '"':
+                the_escaped_str += '\"'
             else:
                 the_escaped_str += ch
         else:
@@ -141,16 +143,19 @@ def process_string(mem, pc):
     return pc, the_escaped_str
 
 
-def disasm_file(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
+def disasm_file(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0, should_dump=True):
     dump = open(fname)
     mem = bytes_from_dump(dump)
-    return disasm(mem,prog_offset,maxlen)
+    return disasm(mem, prog_offset, maxlen, fname, should_dump)
+
+
 def disasm_str(arg, prog_offset=0x2000, maxlen=0):
     dump = arg.split("\n")
     mem = bytes_from_dump(dump)
-    return disasm(mem,prog_offset,maxlen)
+    return disasm(mem, prog_offset, maxlen)
 
-def disasm(mem, prog_offset=0x2000, maxlen=0):
+
+def disasm(mem, prog_offset=0x2000, maxlen=0, fname="", dump=True):
     out = []
     jump_locs = []
     str_locs = []
@@ -310,15 +315,25 @@ def disasm(mem, prog_offset=0x2000, maxlen=0):
         if ";" in rest:
             code, comment = rest.split(";", 1)
             rest = code + " "*(40-len(code)) + ";" + comment
-        print(f"{addr} | {rest}")
+
+        if dump:
+            print(f"{addr} | {rest}")
+        else:
+            rest = rest.split("|", 1)[1].strip()
+            if ":" in rest:
+                print(rest)
+            else:
+                print("    " + rest)
 
 
 if __name__ == "__main__":
+    dump = True
+    if "--nodump" in sys.argv:
+        dump = False
+        sys.argv = [a for a in sys.argv if a != "--nodump"]
     argc = len(sys.argv)
-    if argc == 1:
-        disasm()
-        exit()
+    assert argc > 1
     filename = sys.argv[1]
     offset = fromhex(sys.argv[2]) if argc >= 3 else 0x2000
     max_size = fromhex(sys.argv[3]) if argc >= 4 else 0
-    disasm_file(filename, offset, max_size)
+    disasm_file(filename, offset, max_size, dump)

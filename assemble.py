@@ -42,7 +42,7 @@ useful_vals = {
     "readstr": 0x0030,
     "strtrim": 0x0038,
     "memset": 0x0040,
-    "breakpoint": 0xFFF0
+    # "breakpoint": 0xFFF0
 }
 
 xxops = {x.split()[0] for x in opcode if "$xx" in x and "$xxxx" not in x}
@@ -71,22 +71,68 @@ def instrlen(instr):
     return len(opcode[instr])+("$xxxx" in instr)+("$xx" in instr)
 
 
+def process_assemble_string(string, labels, dummy=False):
+    for m, c, arg in re.findall(r'(\\(F[01])\[(.*?)\])', string, re.MULTILINE):
+        arg = arg.replace("$", "0x")
+        arg = arg.replace(".", "zx")
+        arg = arg.lower()
+
+        ev_arg = 0 if dummy else eval(arg, labels)  # pylint:disable=eval-used
+        lo, hi = to_le(ev_arg)
+
+        string = string.replace(m, f"\\x{c}\\x{tohex(lo)}\\x{tohex(hi)}")
+
+    as_bytes = eval("b" + string)  # pylint:disable=eval-used
+    return list(as_bytes) + [0]
+
+
 def assemble_code(lines, offset=0x2000):
     labs = {k: v for k, v in useful_vals.items()}
     instrs = []
+    ml_string_assemble_buf = ""
 
     for ln, line in enumerate(lines):
-        line = line.replace("$", "0x")
-        line = line.replace(".", "zx")
-        line = line.lower()
         try:
+            if ml_string_assemble_buf:
+                ml_string_assemble_buf += line
+                the_str = ml_string_assemble_buf.strip()
+                if the_str.endswith('"""'):
+                    instrs.append(("ds", the_str))
+                    offset += len(process_assemble_string(the_str, None, True))
+                    ml_string_assemble_buf = ""
+                continue
+
+            if line.strip().startswith('ds '):
+                _op, arg = line.split(maxsplit=1)
+                sarg = arg.strip()
+                if sarg.startswith('"""') and not sarg.endswith('"""'):
+                    ml_string_assemble_buf = arg
+                    continue
+                arg = sarg
+                if (comment := arg.find(";")) >= 0:
+                    arg = arg[:comment].strip()
+                assert arg.startswith('"') and arg.endswith('"')
+                instrs.append(("ds", arg))
+                offset += len(process_assemble_string(arg, None, True))
+                continue
+
+            line = line.replace("$", "0x")
+            line = line.replace(".", "zx")
+            line = line.lower()
+
             if (comment := line.find(";")) >= 0:
                 line = line[:comment]
+
+            if "=" in line:
+                var, val = line.split("=", 1)
+                labs[var] = eval(val)  # pylint:disable=eval-used
+                continue
+
             ps = line.split()
             if len(ps) > 0:
                 if ps[0][-1] == ":":
                     newlabname = ps.pop(0)[:-1]
-                    assert newlabname not in labs
+                    assert newlabname not in labs, newlabname
                     labs[newlabname] = offset
                     if newlabname.startswith("zx"):
                         labs[newlabname[2:]] = offset
@@ -114,6 +160,9 @@ def assemble_code(lines, offset=0x2000):
             raise e
     bytesout = []
     for instr, data in instrs:
+        if instr == "ds":
+            bytesout += process_assemble_string(data, labs)
+            continue
         for op in opcode[instr]:
             bytesout.append(op)
         for x in data:
