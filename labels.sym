@@ -19,6 +19,7 @@ memory:F724:.str_Inp_too_long
 memory:F760:.str_Invalid_inp
 memory:F73D:.str_Bad_cmd
 memory:F812:.str_Filename
+memory:FAA4:.str_break_into_monitor
 memory:F12D:.read_mem_loop
 memory:FB17:.str_mem_dump
 memory:F1E4:.write_invalid_inp
@@ -41,6 +42,7 @@ memory:FB40:.mem_R1
 memory:FB42:.mem_R2
 memory:FB44:.mem_R3
 memory:FB46:.mem_sp
+memory:FB48:.mem_at_sp
 :E000:.inp_buffer
 :E002:.inp_buffer+2
 MATH:2040:.go
