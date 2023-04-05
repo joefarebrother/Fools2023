@@ -5,7 +5,7 @@ from collections import defaultdict
 from utils import *
 
 
-def try_password_list(pws):
+def try_password_list_from_rust(pws):
     out = subprocess.check_output(["rust_stuff/target/release/rust_stuff", "--"] + pws)
     out = out.decode("utf8").rstrip()
     print(out)
@@ -30,10 +30,9 @@ class SuccessfulPasswordException(Exception):  # exceptions are totally for succ
 
 def try_passwords(plist):
     timings = {}
-    prefixes = printable_no_ws | {" "}
 
     for chunk in chunks(plist, 8):
-        for pw, header_time_ns, un_time_ns, pw_time_ns, succ in try_password_list([c for c in chunk]):
+        for pw, header_time_ns, un_time_ns, pw_time_ns, succ in try_password_list_from_rust([c for c in chunk]):
             timings[pw] = header_time_ns, un_time_ns, pw_time_ns,
             if succ == "true":
                 print("Successful password??", pw)
@@ -70,7 +69,7 @@ def crack_password(prefix, ntimes=10):
             best_timings, full_data = None, None
             chrs = sorted(printable_no_ws | {" "})
             pwds = [pw+c for c in chrs]
-            for i in range(ntimes):
+            for _ in range(ntimes):
                 best_timings, full_data = try_passwords_ntimes(pw, ntimes=1, best_timings=best_timings, full_data=full_data, pwds=pwds)
                 timingsSrt = sorted(best_timings.items(), key=lambda kv: kv[1])
                 threshold = timingsSrt[0][1] + (timingsSrt[-1][1] - timingsSrt[0][1])/5
