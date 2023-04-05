@@ -1,13 +1,10 @@
-Start:
-  ld R3 $6969
-  ld [R3] R3 
-  ld R2 $01CD 
-  call MemCpy1 ; write $69 to $0420
-  ld R3 $01CD
-  ld R2 $1337 
-  call MemCpy1 ; read from $0420 to $1337
-  ld R1 [$1337] 
-  brk
+ld R3 $0000
+ld R2 $1000
+.loop:
+  call MemCpy1 
+  cmp R3 $1000
+  jp ne .loop
+  ret
 
 
 MemCpy1:       ; R2 = dest, R3 = src 

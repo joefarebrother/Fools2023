@@ -87,4 +87,5 @@ flags:
 - serv3 mem     - 150
 - serv3 exploit - 187
 - server2       - 100
-total score so far: 1087
+- server2 pw    - 100
+total score so far: 1187
