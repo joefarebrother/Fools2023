@@ -1,0 +1,161 @@
+2000 | A7       | push pc
+2001 | 97       | pop R3
+2002 | A5 00 20 | cmp R3 $2000
+2005 | 9C 0F 20 | jp eq .lab_0_200F            ; ($200F)
+2008 | 2B       | ld R2 R3
+2009 | E2 20 01 | add R2 $120
+200C | 98 08 00 | jp PrintStr                  ; ($08)
+.lab_0_200F:
+200F | 12 81 20 | ld R2 .str_0_2081_MIX        ; ($2081)
+2012 | 99 08 00 | call PrintStr                ; ($08)
+2015 | 12 4C 21 | ld R2 $214C
+2018 | 13 10 00 | ld R3 $10
+201B | 99 30 00 | call ReadStr                 ; ($30)
+201E | 12 4C 21 | ld R2 $214C
+2021 | 99 38 00 | call StrTrim                 ; ($38)
+2024 | 12 D6 20 | ld R2 .str_1_20D6_Validating ; ($20D6)
+2027 | 99 08 00 | call PrintStr                ; ($08)
+202A | 13 00 00 | ld R3 $00
+202D | 07       | [wait! that's illegal!]
+202E | A7 4C 21  | <- 214C points to the start of the entered password
+2031 | FC       | [wait! that's illegal!]
+2032 | F0       | [wait! that's illegal!]
+2033 | A7       | same instruction as above
+2034 | 71       | q
+2035 | 58       | X
+2036 | 1A       | perhaps a comparison
+2037 | 65  3B 20  | a short jump (perhaps preceded by a comparison)
+203A | DF       |  ret?
+203B | 78       | ld [R2] R0
+203C | 37       | add R1 R3
+203D | 4F       | ldb R3 [R3]
+203E | 21       | <- could be part of 214f as an address
+203F | FC       | [wait! that's illegal!]
+2040 | C2       | [wait! that's illegal!]
+2041 | 54       | ld R1 [R0]
+2042 | 5F       | ld R3 [R3]
+2043 | A4 6D
+2045 | DD  49  20       | ld R0 R0
+2048 | 49       | ldb R2 [R1]
+2049 | 95       | pop R1
+204A | 8B       | cmp R2 R3
+204B | 4D       | ldb R3 [R1]
+204C | 21       | ld R0 R1
+204D | 67       | ldb [R1] R3
+204E | 2A       | ld R2 R2
+204F | F2       | [wait! that's illegal!]
+2050 | F2       | [wait! that's illegal!]
+2051 | 5B       | ld R2 [R3]
+2052 | 1C       | [wait! that's illegal!]
+2053 | 01 3B 58 | mul R0 $583B
+2056 | 20       | ld R0 R0
+2057 | 8A       | cmp R2 R2
+2058 | 4D       | ldb R3 [R1]
+2059 | FF       | [wait! that's illegal!]
+205A | FF       | [wait! that's illegal!]
+205B | 64       | ldb [R1] R0
+205C | 5B       | ld R2 [R3]
+205D | 01 02 3B | mul R0 $3B02
+2060 | 5B       | ld R2 [R3]
+2061 | 20       | ld R0 R0
+2062 | 5C       | ld R3 [R0]
+2063 | B0 51 21 | ldb R0 [$2151]
+2066 | A2 00 00 | cmp R0 $00
+2069 | 9D 6D 20 | jp ne .lab_1_206D            ; ($206D)
+206C | AB       | inc R3
+.lab_1_206D:
+206D | A5 04 00 | cmp R3 $04
+2070 | 9C 7A 20 | jp eq .lab_2_207A            ; ($207A)
+2073 | 12 C3 20 | ld R2 .str_2_20C3_Nope       ; ($20C3)
+2076 | 99 08 00 | call PrintStr                ; ($08)
+2079 | 05       | ret
+.lab_2_207A:
+207A | 12 E5 20 | ld R2 .str_3_20E5_Yes        ; ($20E5)
+207D | 99 08 00 | call PrintStr                ; ($08)
+2080 | 05       | ret
+.str_0_2081_MIX:
+2081 | 4D 49 58 2F 55 4E 4D 49 58 20 6F 70 63 6F 64 65 73 20 2D 20 70 72 6F 6F 66 20 6F 66 20 63 6F 6E 63 65 70 74 0A 45 6E 74 65 72 20 61 20 70 61 73 73 77 6F 72 64 3A 20 00  |
+    ds "MIX/UNMIX opcodes - proof of concept\nEnter a password: "
+20B9 | 41       | ldb R0 [R1]
+20BA | 62       | ldb [R0] R2
+20BB | 6F       | ldb [R3] R3
+20BC | 72       | ld [R0] R2
+20BD | 74       | ld [R1] R0
+20BE | 65       | ldb [R1] R1
+20BF | 64       | ldb [R1] R0
+20C0 | 2E       | ld R3 R2
+20C1 | 0A       | ld R0 sp
+20C2 | 00       | BRK
+.str_2_20C3_Nope:
+20C3 | 4E 6F 70 65 2C 20 69 74 27 73 20 77 72 6F 6E 67 2E 0A 00  |
+    ds "Nope, it's wrong.\n"
+.str_1_20D6_Validating:
+20D6 | 56 61 6C 69 64 61 74 69 6E 67 2E 2E 2E 0A 00  |
+    ds "Validating...\n"
+.str_3_20E5_Yes:
+20E5 | 59 65 73 2C 20 69 74 27 73 20 63 6F 72 72 65 63 74 21 20 46 4F 4F 4C 53 32 30 32 33 5F 7B 2A 69 6E 73 65 72 74 20 63 6F 72 72 65 63 74 20 70 61 73 73 20 68 65 72 65 2A 7D 0A 00  |
+    ds "Yes, it's correct! FOOLS2023_{*insert correct pass here*}\n"
+2120 | 50       | ld R0 [R0]
+2121 | 6C       | ldb [R3] R0
+2122 | 65       | ldb [R1] R1
+2123 | 61       | ldb [R0] R1
+2124 | 73       | ld [R0] R3
+2125 | 65       | ldb [R1] R1
+2126 | 20       | ld R0 R0
+2127 | 6C       | ldb [R3] R0
+2128 | 6F       | ldb [R3] R3
+2129 | 61       | ldb [R0] R1
+212A | 64       | ldb [R1] R0
+212B | 20       | ld R0 R0
+212C | 74       | ld [R1] R0
+212D | 68       | ldb [R2] R0
+212E | 69       | ldb [R2] R1
+212F | 73       | ld [R0] R3
+2130 | 20       | ld R0 R0
+2131 | 70       | ld [R0] R0
+2132 | 72       | ld [R0] R2
+2133 | 6F       | ldb [R3] R3
+2134 | 67       | ldb [R1] R3
+2135 | 72       | ld [R0] R2
+2136 | 61       | ldb [R0] R1
+2137 | 6D       | ldb [R3] R1
+2138 | 20       | ld R0 R0
+2139 | 61       | ldb [R0] R1
+213A | 74       | ld [R1] R0
+213B | 20       | ld R0 R0
+213C | 61       | ldb [R0] R1
+213D | 64       | ldb [R1] R0
+213E | 64       | ldb [R1] R0
+213F | 72       | ld [R0] R2
+2140 | 65       | ldb [R1] R1
+2141 | 73       | ld [R0] R3
+2142 | 73       | ld [R0] R3
+2143 | 20       | ld R0 R0
+2144 | 24       | ld R1 R0
+2145 | 32       | add R0 R2
+2146 | 30       | add R0 R0
+2147 | 30       | add R0 R0
+2148 | 30       | add R0 R0
+2149 | 2E       | ld R3 R2
+214A | 0A       | ld R0 sp
+214B | 00       | BRK
+214C | 5F       | ld R3 [R3]
+214D | 5F       | ld R3 [R3]
+214E | 5F       | ld R3 [R3]
+214F | 5F       | ld R3 [R3]
+2150 | 5F       | ld R3 [R3]
+2151 | 5F       | ld R3 [R3]
+2152 | 5F       | ld R3 [R3]
+2153 | 5F       | ld R3 [R3]
+2154 | 5F       | ld R3 [R3]
+2155 | 5F       | ld R3 [R3]
+2156 | 5F       | ld R3 [R3]
+2157 | 5F       | ld R3 [R3]
+2158 | 5F       | ld R3 [R3]
+2159 | 5F       | ld R3 [R3]
+215A | 5F       | ld R3 [R3]
+215B | 5F       | ld R3 [R3]
+215C | 5F       | ld R3 [R3]
+215D | 5F       | ld R3 [R3]
+215E | 5F       | ld R3 [R3]
+215F | 5F       | ld R3 [R3]

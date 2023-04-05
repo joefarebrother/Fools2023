@@ -141,10 +141,16 @@ def process_string(mem, pc):
     return pc, the_escaped_str
 
 
-def disasm(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
+def disasm_file(fname="REPORT03.PRG.dump", prog_offset=0x2000, maxlen=0):
     dump = open(fname)
     mem = bytes_from_dump(dump)
+    return disasm(mem,prog_offset,maxlen)
+def disasm_str(arg, prog_offset=0x2000, maxlen=0):
+    dump = arg.split("\n")
+    mem = bytes_from_dump(dump)
+    return disasm(mem,prog_offset,maxlen)
 
+def disasm(mem, prog_offset=0x2000, maxlen=0):
     out = []
     jump_locs = []
     str_locs = []
@@ -315,4 +321,4 @@ if __name__ == "__main__":
     filename = sys.argv[1]
     offset = fromhex(sys.argv[2]) if argc >= 3 else 0x2000
     max_size = fromhex(sys.argv[3]) if argc >= 4 else 0
-    disasm(filename, offset, max_size)
+    disasm_file(filename, offset, max_size)
