@@ -98,7 +98,7 @@ Mixed instrs (server 3 after 07, don't use exec_data)
 context (for some of them):
 #1030F011505012707013999907<op>F800F800
 
-FF: hangs
+FF: hangs on server 2, crashes on server 1? [could be breakpoint, i.e. jp FF00, as they have different data there?]
 F8: unmix (happens to be ~07. coincidence?)
 
 

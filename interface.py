@@ -432,23 +432,26 @@ def connect_serv2_with_console():
     connect_serv2()
     send("ax.arwen\nsepiB7705*X\n")
 
-s2_conn=False
-def test_s3_instr(i,regs=(0xE000,0xE100,0xE200,0xE300)):
+
+s2_conn = False
+
+
+def test_s3_instr(i, regs=(0xE000, 0xE100, 0xE200, 0xE300)):
     global s2_conn
     if not s2_conn:
         connect_serv2_with_console()
-        s2_conn=True
-    wr=""
+        s2_conn = True
+    wr = ""
     for r in range(4):
-        lo,hi=to_le(regs[r])
-        wr+="1"+tohex(r,1)+tohex(lo)+tohex(hi)
-    wr+= "07" + tohex(i,2) + "F800F800"
-    write_mem(0x2000,wr)
+        lo, hi = to_le(regs[r])
+        wr += "1"+tohex(r, 1)+tohex(lo)+tohex(hi)
+    wr += "07" + tohex(i, 2) + "F800F800"
+    write_mem(0x2000, wr)
     try:
-        res = exec_mem(0x2000,timeout=3)
+        res = exec_mem(0x2000, timeout=3)
         if "MONITOR" not in res:
             raise "Didn't return to MONITOR"
     except Exception as e:
-        s2_conn=False
+        s2_conn = False
         raise e
     return res
