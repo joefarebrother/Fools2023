@@ -16,21 +16,26 @@
 2024 | 12 D6 20 | ld R2 .str_1_20D6_Validating ; ($20D6)
 2027 | 99 08 00 | call PrintStr                ; ($08)
 202A | 13 00 00 | ld R3 $00
-202D | 07       | [wait! that's illegal!]
-202E | A7 4C 21  | <- 214C points to the start of the entered password
-2031 | FC       | [wait! that's illegal!]
-2032 | F0       | [wait! that's illegal!]
-2033 | A7       | same instruction as above
-2034 | 71       | q
-2035 | 58       | X
-2036 | 1A       | perhaps a comparison
-2037 | 65  3B 20  | a short jump (perhaps preceded by a comparison)
-203A | DF       |  ret?
-203B | 78       | ld [R2] R0
-203C | 37       | add R1 R3
-203D | 4F       | ldb R3 [R3]
-203E | 21       | <- could be part of 214f as an address
-203F | FC       | [wait! that's illegal!]
+202D | 07       | [wait! that's illegal!] (switch to mixed mode)
+.switched
+202E | A7       | 0args? 
+202F | 4C       |   0args
+2030 | 21       |     <- 214C points to the start of the entered password
+2031 | FC       | do something with A7F0
+2032 | F0       | 0arg
+2033 | A7       | 0arg
+2034 | 71       | err
+2035 | 58       | err
+2036 | 1A       | ld R0 $3B65
+2037 | 65  3B   |
+     | 20       |  ld R3 [R1]
+203A | DF       |  err
+203B | 78       | add R3 $4F37
+203C | 37       |   0args
+203D | 4F       |   ld R0 [R3]
+203E | 21       | and R0 $C2FC
+203F | FC       |  ? $54C2
+.end_of_guesses
 2040 | C2       | [wait! that's illegal!]
 2041 | 54       | ld R1 [R0]
 2042 | 5F       | ld R3 [R3]

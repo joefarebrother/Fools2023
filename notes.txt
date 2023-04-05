@@ -137,14 +137,16 @@ A6: 0 arg
 
 
 2 byte arg
-ld,ldb [$XXXX] R
+ld,ldb [$XXXX] R ; failed conditional jumps
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$E000 R1=$E100 R2=$E200 R3=$E300
  ['00', '00', '0F', '45', '4B', '7D', 'A1', 'BE', 'E0', 'E7', '42', '84', 'AE', 'B5', 'C7', 'D2', 'E8', 'FC', 'FF']
 
 
-jumps, 1 byte arg, etc
-ERR ['01', '08', '0E', '12', '13', '1C', '28', '2D', '2E', '2F', '33', '36', '38', '3C', '43', '44', '46', '48', '49', '4A', '4E', '55', '58', '5A', '5C', '65', '67', '6A', '6D', '71', '74', '7C', '7F', '82', '86', '87', '90', '95', '98', '9D', 'A0', 'A8', 'AB', 'AF', 'B1', 'B2', 'B7', 'BC', 'BD', 'C9', 'CD', 'CE', 'D5', 'D9', 'DF', 'E2', 'E3', 'E4', 'E6', 'ED', 'F1', 'F8', 'F9', 'FD']
+jumps, 1 byte arg, ld sp $XXXX, etc
+ERR ['01', '08', '0E', '12', '13', '1C', '28', '2D', '2E', '2F', '33', '36', '38', '3C', '43', '44', '46', '48', '49', '4A', '4E', '55', '58', '5A', '5C', '65', '67', '6A', '6D', '71', '74', '7C', '7F', '82', '86', '87', '90', '95', '98', '9D', 'A0', 'A8', 'AB', 'AF', 'B1', 'B2', 'B7', 'BC', 'BD', 'C9', 'CD', 'CE', 'D5', 'D9', 'DF', 'E2', 'E3', 'E4', 'E6', 'ED', 'F1',
+'F8', # leave mixed mode
+'F9', 'FD']
 
 ld R2 R3
  *** BREAK INTO MONITOR AT $200F ***
@@ -154,12 +156,16 @@ R0=$E000 R1=$E300 R2=$E200 R3=$E300
  0 args (ld,ldb [RA] RB; and R0,x; or x,R3, cmp, nops galore)
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E200 R3=$E300
- ['03', '1E', '31', '3E', '5E', 'AD', 'EF', '06', '09', '1D', '29', '34', '37', '56', '59', '6E', '72', '83', 'B3', 'CA', 'D6', 'DA', '10', '4C', '7E', 'BF', 'E1', 'F3', '15', '81', '1B', '22', '23', '25', '26', '2B', '3B', '3F', '70', '40', '8B', 'F5', '41', '53', '62', 'A6', 'EC', '8F', '94', '99', '9C', '9F', 'A3', 'A4', 'A7', 'C0', 'F4', 'C2', 'C4', 'C5', 'CC', 'D3', 'EA', 'F0', 'FE']
+ ['03', '1E', '31', '3E', '5E', 'AD', 'EF', '06', '09', '1D', '29', '34', '37', '56', '59', '6E', '72', '83', 'B3', 'CA', 'D6', 'DA', '10', '4C', '7E', 'BF', 'E1', 'F3', '15', '81', '1B', '22', '23', '25',
+ '26', # pop
+ '2B', '3B', '3F', '70', '40', '8B', 'F5', '41', '53', '62', 'A6', 'EC', '8F', '94',
+ '99', # ld sp R0
+ '9C', '9F', 'A3', 'A4', 'A7', 'C0', 'F4', 'C2', 'C4', 'C5', 'CC', 'D3', 'EA', 'F0', 'FE']
 
  pop
  *** BREAK INTO MONITOR AT $200F ***
 R0=$F5A9 R1=$E100 R2=$E200 R3=$E300
- ['04']
+ ['04'] # pop R0
 
  swap r0 (4 times)
  *** BREAK INTO MONITOR AT $200F ***
@@ -210,13 +216,17 @@ R0=$E000 R1=$E100 R2=$0000 R3=$E300
  ['19', '61', 'C3', 'C8', 'CF']
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$00F8 R1=$E100 R2=$E200 R3=$E300
- ['1A']
+ ['1A'] ld R0 $XXXX
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$C300 R2=$E200 R3=$E300
  ['1F']
+
+ ld r3 []
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E200 R3=$0000
- ['20', '3D', '5D', '4D', '8A', 'DB']
+ ['20', # ld R3 [R1]
+ '3D',  # ld R3 [R2]
+ '5D', '4D', '8A', 'DB']
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$0000 R1=$E100 R2=$E200 R3=$E300
  ['21', 'FB']
@@ -294,43 +304,43 @@ R0=$E000 R1=$E000 R2=$E200 R3=$E300
  ['77']
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$E000 R1=$E100 R2=$E200 R3=$E3F8
- ['78']
+ ['78'] add R3 $XXXX
  *** BREAK INTO MONITOR AT $200F ***
 R0=$C100 R1=$E100 R2=$E200 R3=$E300
  ['7A']
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E200 R3=$E000
- ['7B']
+ ['7B'] # ld R3 R0
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$F5A9 R3=$E300
- ['80']
+ ['80'] # pop R2
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$C500 R3=$E300
- ['85']
+ ['85'] # add R2 R3
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$E000 R1=$E100 R2=$E200 R3=$00F8
- ['88']
+ ['88'] # ld R3 $XXXX
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E001 R1=$E100 R2=$E200 R3=$E300
- ['89']
+ ['89'] # inc R0
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E100 R3=$E300
- ['8C']
+ ['8C'] # ld R2 R1
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$00FF R1=$E100 R2=$E200 R3=$E300
- ['8D', 'D1']
+ ['8D', 'D1'] # ld,ldb R0 [$XXXX]
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$0079 R2=$E200 R3=$E300
- ['92']
+ ['92'] # ldb R2 [R0]
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$E000 R1=$E100 R2=$E200 R3=$00FF
- ['93', 'B9']
+ ['93', 'B9'] # ld,ldb R3 [$XXXX]
  *** BREAK INTO MONITOR AT $200F ***
 R0=$C300 R1=$E100 R2=$E200 R3=$E300
- ['96']
+ ['96'] # add R0 R3
  *** BREAK INTO MONITOR AT $200F ***
 R0=$C200 R1=$E100 R2=$E200 R3=$E300
- ['9B']
+ ['9B'] # add R0 R2
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$E000 R1=$00FF R2=$E200 R3=$E300
  ['9E', 'F6']
@@ -339,10 +349,10 @@ R0=$E000 R1=$E100 R2=$00F8 R3=$E300
  ['A2']
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$0079 R3=$E300
- ['A9']
+ ['A9'] # ldb R2 [R0]
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E201 R3=$E300
- ['AC']
+ ['AC'] # inc R2
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E200 R3=$E301
  ['B6']
@@ -369,16 +379,16 @@ R0=$E000 R1=$E101 R2=$E200 R3=$E300
  ['D7']
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$C300 R3=$E300
- ['DD']
+ ['DD'] # add R2 R1
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$0A79 R2=$E200 R3=$E300
- ['DE']
+ ['DE'] # ld R1 [R0]
  *** BREAK INTO MONITOR AT $200F ***
 R0=$E000 R1=$E100 R2=$E200 R3=$0A79
- ['E5']
+ ['E5'] # ld R3 [R0]
  *** BREAK INTO MONITOR AT $200F ***
 R0=$0079 R1=$E100 R2=$E200 R3=$E300
- ['EE']
+ ['EE'] # ldb R0 [R0]
  *** BREAK INTO MONITOR AT $2011 ***
 R0=$00E7 R1=$E100 R2=$E200 R3=$E300
  ['F2']
