@@ -61,7 +61,7 @@ def assemble_file(fname, offset=0x2000):
 
 
 def assemble_inline(code, offset=0x2000, as_hex=True):
-    res = assemble_code(code.split("/"), offset)
+    res = assemble_code(code.replace("/", "\n").splitlines(), offset)
     if as_hex:
         res = "".join(tohex(b) for b in res)
     return res
@@ -103,7 +103,7 @@ def assemble_code(lines, offset=0x2000):
                 continue
 
             if line.strip().startswith('ds '):
-                _op, arg = line.split(maxsplit=1)
+                _op, arg = line.lstrip().split(maxsplit=1)
                 sarg = arg.strip()
                 if sarg.startswith('"""') and not sarg.endswith('"""'):
                     ml_string_assemble_buf = arg

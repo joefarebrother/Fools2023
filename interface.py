@@ -1,4 +1,5 @@
 # pylint: disable=global-statement,invalid-name,wildcard-import,unused-wildcard-import,pointless-string-statement
+from collections import defaultdict
 import sys
 import socket
 import select
@@ -14,12 +15,16 @@ class ConnectionClosedException(Exception):
     pass
 
 
+improved_console_loaded = False
+
+
 def connect(port=13337, expected_end="Ready.\n> "):
-    global con
+    global con, improved_console_loaded
     if con:
         con.close()
     con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     con.connect(("fools2023.online", port))
+    improved_console_loaded = False
     read_all_poss(timeout=3, expected_end=expected_end)
 
 
@@ -146,7 +151,7 @@ def write_mem(addr, data):
         data_ += c
         if i % 64 == 0:
             data_ += "\n"
-    res = send(f"w\n{tohex(addr)}\n{data_}.\n")
+    res = send(f"w\n{tohex(addr)}\n{data_}.\n", timeout=20)
     res = expect_prompt_and_ready_suffix('> Which address? > Enter hex data. End with dot "." + newline:\n', res)
     assert res == "Loaded.\n", res
 
@@ -164,12 +169,12 @@ def exec_mem(addr, timeout=None, return_bytes=False):
     return res
 
 
-def exec_data(code, addr=0x2000, timeout=None, return_bytes=True):
+def exec_data(code, addr=0x2000, timeout=None, return_bytes=False):
     write_mem(addr, code)
     return exec_mem(addr, timeout, return_bytes=return_bytes)
 
 
-def exec_asm(code, addr=0x2000, timeout=None, return_bytes=True):
+def exec_asm(code, addr=0x2000, timeout=None, return_bytes=False):
     return exec_data(assemble_inline(code, addr), addr, timeout, return_bytes=return_bytes)
 
 
@@ -394,15 +399,34 @@ def test_syscall(n, rs=None):
     return test_instr(f"int {n}", rs)
 
 
-def test_instr(instr, rs=None):
+def load_improved_console():
+    global improved_console_loaded
+    if not improved_console_loaded:
+        exec_data(assemble_file("improved_console.prg", 0xD000), 0xD000)
+        improved_console_loaded = True
+
+
+def test_instr(instr, regs=(0x2000, 0x2100, 0x2200, 0x2300), vals=(0x0123, 0x4567, 0x89AB, 0xCDEF), rs=None):
     # for i in range(4):
     #    write_mem(0x2000+i*0x100, [65+i*3,66+i*3])
+    load_improved_console()
     if rs is None:
         rs = []
-    rs.append(exec_asm("ld R0 $2000 / ld R3 $6968 / ld [R0] R3 / ld R1 $2100 / add R3 $303 / ld [R1] R3 / ld R2 $2300 / add R3 $606 / ld [R2] R3 / ld R2 $2200 / add R3 $FDFD / ld [R2] R3 / ld R3 $2300 / cmp R3 $2300 / " +
-                       instr+" / jp eq labe / jp lt lablt / jp gt labgt / jp ne labne  / brk / labe: brk / lablt: brk / labgt: brk / labne: brk ", 0x3000))
-    for i in range(4):
-        rs.append(read_mem(0x2000+0x100*i, nbytes=10))
+    rs.append(exec_asm(f"""
+            ld R0 {regs[0]} 
+            ld R3 {vals[0]}
+            {"ld [R0] R3"*vals[0]>=0} 
+            ld R1 {regs[1]}
+            ld R3 {vals[1]} 
+            {"ld [R1] R3"*vals[1]>=0} 
+            ld R2 {regs[2]}
+            ld R3 {vals[2]}
+            {"ld [R2] R3"*vals[2]>=0} 
+            ld R2 {vals[3]}
+            ld R3 {regs[3]}
+            {"ld [R3] R3"*vals[3]>=0} 
+            ld R2 {regs[2]} 
+            cmp R3 {regs[3]} / """ + instr + "/ brk / brk / brk", 0x3000))
     return rs
 # 30 31 32 33 34
 
@@ -455,3 +479,24 @@ def test_s3_instr(i, regs=(0xE000, 0xE100, 0xE200, 0xE300)):
         s2_conn = False
         raise e
     return res
+
+
+def find_unmixer(op, op2_from=0, pre="", post=""):
+    res = defaultdict(list)
+    for op2 in range(op2_from, 256):
+        try:
+            out = exec_asm(f"{pre} / db {op} / db {op2} / {post} / brk / brk / brk / brk / brk", timeout=3)
+            if "MONITOR" in f"{out}":
+                res["success"].append(op2)
+            else:
+                res["hangs?"].append(op2)
+                connect()
+        except ConnectionClosedException as e:
+            connect()
+            if len(e.args) > 1 and "ILLEGAL" in f"{e.args[1]}":
+                continue
+            res["non-illegal-halt"].append(op2)
+        except Exception as e:
+            print("Failed at op2", tohex(op2))
+            raise e
+    return dict(res)

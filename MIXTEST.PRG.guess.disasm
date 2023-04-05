@@ -18,13 +18,14 @@
 202A | 13 00 00 | ld R3 $00
 202D | 07       | [wait! that's illegal!] (switch to mixed mode)
 .switched
-202E | A7       | 0args? 
-202F | 4C       |   0args
-2030 | 21       |     <- 214C points to the start of the entered password
-2031 | FC       | do something with A7F0
-2032 | F0       | 0arg
-2033 | A7       | 0arg
-2034 | 71       | err
+202E | A7       | 0args?                cmp R2 R3 
+202F | 4C       |   0args               nop?
+2030 | 21 FC F0 |                       and R0 [F0FC]
+2033 | A7       | 0arg                  cmp R2 R3
+2034 | 71       | err           ; is this just always illegal?? it doesn't seem to be a jump, or a 1-arg,
+                                ; and doesn't seem to be mix, as there doesn't seem to be an unmixing pair
+                                ; it could maybe be jp R? But that doesn't make sense either; none of the registers
+                                ; point to a part of this program
 2035 | 58       | err
 2036 | 1A       | ld R0 $3B65
 2037 | 65  3B   |

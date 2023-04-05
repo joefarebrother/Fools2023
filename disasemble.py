@@ -12,7 +12,7 @@ known_opcodes_pre = {
     0x00: 'BRK',
     0x01: 'mul R0 $XXXX',
     0x02: 'mul R0 R1',
-    0x03: 'div R0 $XX',
+    0x03: 'div R0 $XXXX',
     0x04: 'div R0 R1',
     0x05: 'ret',
     0x06: 'int $XX',

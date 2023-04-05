@@ -37,7 +37,7 @@ Breakpoint:
 .flag_eq:
     inc R1 
 .flag_lt:
-    ld [R0] R1
+    ldb [R0] R1
 
     ld R0 sp
     ld R0 [R0]
@@ -392,7 +392,7 @@ InteractLoop:
     call PrintStr                ; ($08)
     jp InteractLoop              ; ($F04C)
 .str_10_F33F_nWelcome:
-ds "======================================================================\nWelcome to Glitch Research Laboratory Network: Test Server 1 (GRLTS01)\n======================================================================\nGRLTS01 is intended for research purposes only, to aid our engineers\nin migrating their software to the latest GLVM architecture.\nThis server will boot into a machine language monitor, providing\na simple environment for development and testing.\n\nNote that this server is publicly accessible, and thus, should never\nbe used to store any confidential information. If storage of data is\nnecessary, consider utilizing encryption, or using our dedicated\nstorage servers GRLFS01.\nAdditionally, consider using GRLTS02 for any serious work - it's\nan authenticated test server, which should be far more secure.\n======================================================================\nRunning machine language monitor now.\n======================================================================\n\n"
+ds "== Welcome ==\n\n"
 .str_Inp_too_long:
     ds "! Input too long error.\n"
 .str_Bad_cmd:
