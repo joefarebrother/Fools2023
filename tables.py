@@ -1,7 +1,12 @@
 import sys
 from utils import bytes_from_dump,bytes_to_dump
+from collections import defaultdict
 
-def read_tables(lines):
+lns = list(open("ENCTABLE.BIN.dump"))
+
+def read_tables(lines = None):
+    if lines is None:
+        lines = lns
     bs = bytes_from_dump(lines)
     print(len(bs))
     tables = zip(*(bs[i::256] for i in range(256)))
@@ -13,13 +18,15 @@ def read_tables(lines):
         res.append((d,dback))
     return res
 
-def dec()
+tabs = read_tables()
 
-def dump_dec_dump(dec_tab, dmp ):
-    bs = bytes_from_dump(dmp)
-    dbs = bytes(map(dec_tab.get,bs))
-    return bytes_to_dump(dbs,0x2000)
+def enc1(n):
+    return sum(tabs[i][0][n] for i in range(4))&0xFF
 
+decs = defaultdict(list)
+
+for i in range(256):
+    decs[enc1(i)].append(i)
 
 if __name__=="__main__":
     if len(sys.argv)>2:
