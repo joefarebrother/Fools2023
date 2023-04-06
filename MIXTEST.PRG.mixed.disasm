@@ -1,12 +1,13 @@
 2000 | A7       | push pc
 2001 | 97       | pop R3
 2002 | A5 00 20 | cmp R3 $2000
-2005 | 9C 0F 20 | jp eq .lab_0_200F            ; ($200F)
+2005 | 9C 0F 20 | jp eq Start            ; ($200F)
 2008 | 2B       | ld R2 R3
 2009 | E2 20 01 | add R2 $120
 200C | 98 08 00 | jp PrintStr                  ; ($08)
-.lab_0_200F:
-200F | 12 81 20 | ld R2 .str_0_2081_MIX        ; ($2081)
+
+Start:
+200F | 12 81 20 | ld R2 .str_intro        ; ($2081)
 2012 | 99 08 00 | call PrintStr                ; ($08)
 2015 | 12 4C 21 | ld R2 $214C
 2018 | 13 10 00 | ld R3 $10
@@ -15,53 +16,44 @@
 2021 | 99 38 00 | call StrTrim                 ; ($38)
 2024 | 12 D6 20 | ld R2 .str_1_20D6_Validating ; ($20D6)
 2027 | 99 08 00 | call PrintStr                ; ($08)
+
 202A | 13 00 00 | ld R3 $00
 202D | 07       | mix
 .mixed
 202E | A7 4C 21 | ld R1 $214C
 2031 | FC       | inc R1
 2032 | F0       | ld R0 [R1]
-2033 | A7 71 58 | ld R1 $5871 
+2033 | A7 71 58 | ld R1 $5871    ; this means that the 2nd and 3rd chars of the pw are qX
 2036 | 1A       | cmp R0 R1
 2037 | 65 3B 20 | jp ne .lab_203B ; $203B
 203A | DF       | inc R3
-.lab_203B
-203B | 78       | unmix??
-203C | 37       | add R1 R3... but looks like 2 arg
-203D | 4F       | ldb R3 [R3]
-203E | 21       | ld R0 R1
-203F | FC       | this is illegal if unmixed...?
-2040 | C2       | 
-2041 | 54       | 
-2042 | 5F       | 
-2043 | A4 6D DD | 
-2046 | 49       | 
-2047 | 20       | 
-2048 | 49       | 
-2049 | 95       | 
-204A | 8B       | 
-204B | 4D       | 
-204C | 21       | 
-204D | 67       | 
-204E | 2A       | 
-204F | F2       | 
-2050 | F2       | 
-2051 | 5B       | 
-2052 | 1C       | 
-2053 | 01 3B 58 | 
-2056 | 20       | 
-2057 | 8A       | 
-2058 | 4D       | 
-2059 | FF       | 
-205A | FF       | 
-205B | 64       | 
-205C | 5B       | 
-205D | 01 02 3B | 
-2060 | 5B       | 
-2061 | 20       | 
-2062 | 5C       | 
-2063 | B0 51 21 | 
-2066 | A2 00 00 | 
+.lab_203B:
+203B | 78       | mix?
+203C | 37 4F 21 | ld R0 [$214F] ; checks characters 4 and 5
+203F | FC C2 54 | xor R0 $542C   
+2042 | 5F A4 6D | cmp R0 $6DA4 
+2045 | DD 20 49 | jp ne .lab_2049 
+2048 | 49       | inc R3
+.lab_2049:
+2049 | 95       | mix
+204A | 8B 4D 21 | ld R1 $214D
+204D | 67       | dec R1        ; checks char 1
+204E | 2A       | ldb R0 [R1]
+204F | F2       | shl R0 
+2050 | F2       | shl R0 ; or add R0 R0 - they're functionally identical
+2051 | 5B 1C 01 | cmp R0 $011C
+2054 | 3B 58 20 | jp ne .lab_2058
+2057 | 8A       | inc R3
+.lab_2058:
+2058 | 4D FF FF | ld R0 $FFFF
+.lab_205B_loop
+205B | 64       | dec R0
+205C | 5B 01 02 | cmp R0 $0201
+205F | 3B 5B 20 | jmp ne .lab_205B_loop
+
+2062 | 5C       | unmix
+2063 | B0 51 21 | ldb R0 [$2151] ; unmixed code that looks like it makes sense
+2066 | A2 00 00 | cmp R0 $00
 2069 | 9D 6D 20 | jp ne .lab_1_206D            ; ($206D)
 206C | AB       | inc R3
 .lab_1_206D:
@@ -74,7 +66,8 @@
 207A | 12 E5 20 | ld R2 .str_3_20E5_Yes        ; ($20E5)
 207D | 99 08 00 | call PrintStr                ; ($08)
 2080 | 05       | ret
-.str_0_2081_MIX:
+
+.str_intro:
 2081 | 4D 49 58 2F 55 4E 4D 49 58 20 6F 70 63 6F 64 65 73 20 2D 20 70 72 6F 6F 66 20 6F 66 20 63 6F 6E 63 65 70 74 0A 45 6E 74 65 72 20 61 20 70 61 73 73 77 6F 72 64 3A 20 00  |
     ds "MIX/UNMIX opcodes - proof of concept\nEnter a password: "
 20B9 | 41       | ldb R0 [R1]

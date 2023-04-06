@@ -5,6 +5,24 @@ find_unmixer:
 
  are 0x13 and 0x78 *both* unmix??
 
+203B | 78       | unmix?? however, this code doesn't make sense for an unmixed section
+203C | 37       | ; this opcode looks like a 2-arg; and the unmixed code manipulates R3
+203D | 4F       | ; when it looks like the goal is to have R3 be 04 by the end
+203E | 21       | ; also the FC appears to always be illegal by the end
+203F | FC       | ; perhaps 78 is actually second mix, which happens to map 00 to unmix; and unmix actually undoes all mixin
+
+find_unmixer for 07 78 95:
+> Failed at op2 0F
+Res so far: defaultdict(<class 'list'>, {'non-illegal-halt': [0, 7]})
+> Failed at op2 6C
+Res so far: defaultdict(<class 'list'>, {'non-illegal-halt': [16, 41, 58, 65, 106], 'success': [92]})
+
+valid password:
+4C    when <<2, get 011c - thus = 0x47 (G)
+4D 4E == 5871 (qX)
+4F 50 == 54C2 xor 6DA4 = 3988 (f9) 
+51    == 0
+
 00 ->  
 01 ->  
 02 ->  

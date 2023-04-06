@@ -498,5 +498,6 @@ def find_unmixer(op, op2_from=0, pre="", post=""):
             res["non-illegal-halt"].append(op2)
         except Exception as e:
             print("Failed at op2", tohex(op2))
+            print("Res so far:", res)
             raise e
     return dict(res)
