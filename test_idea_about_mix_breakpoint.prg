@@ -11,8 +11,8 @@ Start:
   ld R1 $04 
   call MemCpy 
 
-  ld R2 .str_hello_pre
-  call PrintStr 
+  ;ld R2 .str_hello_pre
+  ;call PrintStr 
 
   ; call NormalBreakpoint
   ;brk
@@ -29,7 +29,7 @@ NormalBreakpoint:
 
 NewBreakpoint:
   db $F8
-  jp NewBreakpointPtr;
+  jp NewBreakpointPtr
 
 NewBreakpointPtr:
   ld R3 NormalBreakpoint 
