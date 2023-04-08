@@ -88,6 +88,17 @@ flags:
 - serv3 exploit - 187
 - server2       - 100
 - server2 pw    - 100
-total score so far: 1187
+- mixtest       - 150
+total: 1337
 
 
+$ send("ls\n")
+bash: syntax error near unexpected token `"ls\n"'
+
+In [581]: git commit --amend
+  Cell In[581], line 1
+    git commit --amend
+        ^
+SyntaxError: invalid syntax
+
+lol

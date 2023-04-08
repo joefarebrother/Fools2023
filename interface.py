@@ -6,6 +6,7 @@ import select
 import re
 from datetime import datetime
 from assemble import assemble_inline, assemble_file
+from disasemble import known_opcodes, crashes
 from utils import *
 
 con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -460,7 +461,7 @@ def connect_serv2_with_console():
 s2_conn = False
 
 
-def test_s3_instr(i, regs=(0xE000, 0xE100, 0xE200, 0xE300)):
+def test_s2_instr(i, regs=(0xE000, 0xE100, 0xE200, 0xE300)):
     global s2_conn
     if not s2_conn:
         connect_serv2_with_console()
@@ -501,3 +502,76 @@ def find_unmixer(op, op2_from=0, pre="", post=""):
             print("Res so far:", res)
             raise e
     return dict(res)
+
+
+def collect_instr_info(mixer=(0x20,)*4, unmixer=0x20, rng=range(256)):
+    if not con:
+        connect()
+
+    res = defaultdict(list)
+
+    for op in rng:
+        print("Trying op", tohex(op))
+        try:
+            out = test_instr(f"""
+                ld sp $FFF0-2
+                {"".join(f"db ${tohex(m)} /" for m in mixer)}
+                db ${tohex(op)}
+                db ${tohex(unmixer)} / brk
+                db ${tohex(unmixer)} / brk
+                 """,
+                             regs=(0x2134, 0x2021, 0x224a, 0x231d),
+                             vals=(0x0123, 0x4567, 0x89ab, 0xcdef))[0]
+            if b"MONITOR" not in out:
+                connect()
+        except ConnectionClosedException as e:
+            if len(e.args) > 1:
+                out = e.args[1]
+            else:
+                out = f"Unknown ConnectionClosedException {e}"
+            connect()
+        except Exception as e:  # pylint:disable=broad-except
+            print(e)
+            out = f"Unknown Exception {e}"
+            connect()
+            # raise(e)
+
+        res[out].append(op)
+
+    return res
+
+
+def annotate_known_op(op):
+    if op in known_opcodes:
+        d = known_opcodes[op]
+    elif op in crashes:
+        d = "illegal"
+    else:
+        d = "unk"
+    return tohex(op), d
+
+
+def compare_instr_tables(mixed, base):
+    unknown_mixed = []
+    unknown_base = set(range(256))
+
+    compared = {}
+    annotated = {}
+    confirmed = {}
+
+    for res, ops in mixed.items():
+        if res in base:
+            ops2 = base[res]
+            unknown_base -= set(ops2)
+            compared[tuple(ops)] = ops2
+            annotated[tuple(tohex(o) for o in ops)] = [annotate_known_op(o) for o in ops2]
+            if len(ops) == 1 and len(ops2) == 1:
+                confirmed[ops[0]] = ops2[0]
+        else:
+            unknown_mixed += ops
+    compared[()] = list(unknown_base)
+    annotated[()] = [annotate_known_op(o) for o in unknown_base]
+    compared[tuple(unknown_mixed)] = []
+    annotated[tuple(tohex(o) for o in unknown_mixed)] = []
+
+    return compared, annotated, confirmed
